@@ -1,0 +1,599 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3AA2FEE6287A9DC900B0C97D /* KextCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA2FEE5287A9DC900B0C97D /* KextCommon.swift */; };
+		3ABAFF832879C0D900928C22 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFF822879C0D900928C22 /* AppDelegate.swift */; };
+		3ABAFF852879C0D900928C22 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFF842879C0D900928C22 /* ViewController.swift */; };
+		3ABAFF872879C0DA00928C22 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3ABAFF862879C0DA00928C22 /* Assets.xcassets */; };
+		3ABAFF8A2879C0DA00928C22 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3ABAFF882879C0DA00928C22 /* Main.storyboard */; };
+		3ABAFFA72879C3FA00928C22 /* KextLog.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3ABAFFA62879C3FA00928C22 /* KextLog.hpp */; };
+		3ABAFFAA2879C40A00928C22 /* DriverClient.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3ABAFFA82879C40A00928C22 /* DriverClient.hpp */; };
+		3ABAFFAB2879C40A00928C22 /* DriverClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFFA92879C40A00928C22 /* DriverClient.cpp */; };
+		3ABAFFAD2879C47800928C22 /* NuwaLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFFAC2879C47800928C22 /* NuwaLog.swift */; };
+		3ABAFFAF2879C4A200928C22 /* KextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFFAE2879C4A200928C22 /* KextManager.swift */; };
+		3ADEF952287AE55E00DF7609 /* DriverService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3ADEF950287AE55E00DF7609 /* DriverService.cpp */; };
+		3ADEF953287AE55E00DF7609 /* DriverService.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3ADEF951287AE55E00DF7609 /* DriverService.hpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3ABAFFB12879C9CD00928C22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3ABAFF772879C0D900928C22 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3ABAFF952879C1BC00928C22;
+			remoteInfo = NuwaKext;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3AA2FEE5287A9DC900B0C97D /* KextCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KextCommon.swift; sourceTree = "<group>"; };
+		3ABAFF7F2879C0D900928C22 /* NuwaClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NuwaClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3ABAFF822879C0D900928C22 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		3ABAFF842879C0D900928C22 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		3ABAFF862879C0DA00928C22 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3ABAFF892879C0DA00928C22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		3ABAFF8B2879C0DA00928C22 /* NuwaClient.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NuwaClient.entitlements; sourceTree = "<group>"; };
+		3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = com.nuwastone.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		3ABAFF9A2879C1BC00928C22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3ABAFFA62879C3FA00928C22 /* KextLog.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KextLog.hpp; sourceTree = "<group>"; };
+		3ABAFFA82879C40A00928C22 /* DriverClient.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DriverClient.hpp; sourceTree = "<group>"; };
+		3ABAFFA92879C40A00928C22 /* DriverClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DriverClient.cpp; sourceTree = "<group>"; };
+		3ABAFFAC2879C47800928C22 /* NuwaLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NuwaLog.swift; sourceTree = "<group>"; };
+		3ABAFFAE2879C4A200928C22 /* KextManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KextManager.swift; sourceTree = "<group>"; };
+		3ADEF950287AE55E00DF7609 /* DriverService.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DriverService.cpp; sourceTree = "<group>"; };
+		3ADEF951287AE55E00DF7609 /* DriverService.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DriverService.hpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3ABAFF7C2879C0D900928C22 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3ABAFF932879C1BC00928C22 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3ABAFF762879C0D900928C22 = {
+			isa = PBXGroup;
+			children = (
+				3ABAFFA52879C32300928C22 /* NuwaUtils */,
+				3ABAFF972879C1BC00928C22 /* NuwaKext */,
+				3ABAFF812879C0D900928C22 /* NuwaClient */,
+				3ABAFF802879C0D900928C22 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3ABAFF802879C0D900928C22 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3ABAFF7F2879C0D900928C22 /* NuwaClient.app */,
+				3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3ABAFF812879C0D900928C22 /* NuwaClient */ = {
+			isa = PBXGroup;
+			children = (
+				3ABAFF822879C0D900928C22 /* AppDelegate.swift */,
+				3ABAFFA42879C31200928C22 /* DriverManager */,
+				3ABAFFB02879C82400928C22 /* ViewControllers */,
+				3ABAFF862879C0DA00928C22 /* Assets.xcassets */,
+				3ABAFF882879C0DA00928C22 /* Main.storyboard */,
+				3ABAFF8B2879C0DA00928C22 /* NuwaClient.entitlements */,
+			);
+			path = NuwaClient;
+			sourceTree = "<group>";
+		};
+		3ABAFF972879C1BC00928C22 /* NuwaKext */ = {
+			isa = PBXGroup;
+			children = (
+				3ABAFF9E2879C23A00928C22 /* KextUtils */,
+				3ABAFFA02879C25500928C22 /* SocketFilter */,
+				3ABAFFA22879C27B00928C22 /* KauthListener */,
+				3ABAFF9F2879C24900928C22 /* CacheManager */,
+				3ABAFFA12879C26C00928C22 /* EventDispatcher */,
+				3ABAFFA32879C28600928C22 /* KernelControl */,
+				3ABAFF9A2879C1BC00928C22 /* Info.plist */,
+			);
+			path = NuwaKext;
+			sourceTree = "<group>";
+		};
+		3ABAFF9E2879C23A00928C22 /* KextUtils */ = {
+			isa = PBXGroup;
+			children = (
+				3ABAFFA62879C3FA00928C22 /* KextLog.hpp */,
+			);
+			path = KextUtils;
+			sourceTree = "<group>";
+		};
+		3ABAFF9F2879C24900928C22 /* CacheManager */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = CacheManager;
+			sourceTree = "<group>";
+		};
+		3ABAFFA02879C25500928C22 /* SocketFilter */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = SocketFilter;
+			sourceTree = "<group>";
+		};
+		3ABAFFA12879C26C00928C22 /* EventDispatcher */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = EventDispatcher;
+			sourceTree = "<group>";
+		};
+		3ABAFFA22879C27B00928C22 /* KauthListener */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = KauthListener;
+			sourceTree = "<group>";
+		};
+		3ABAFFA32879C28600928C22 /* KernelControl */ = {
+			isa = PBXGroup;
+			children = (
+				3ABAFFA92879C40A00928C22 /* DriverClient.cpp */,
+				3ABAFFA82879C40A00928C22 /* DriverClient.hpp */,
+				3ADEF950287AE55E00DF7609 /* DriverService.cpp */,
+				3ADEF951287AE55E00DF7609 /* DriverService.hpp */,
+			);
+			path = KernelControl;
+			sourceTree = "<group>";
+		};
+		3ABAFFA42879C31200928C22 /* DriverManager */ = {
+			isa = PBXGroup;
+			children = (
+				3ABAFFAE2879C4A200928C22 /* KextManager.swift */,
+			);
+			path = DriverManager;
+			sourceTree = "<group>";
+		};
+		3ABAFFA52879C32300928C22 /* NuwaUtils */ = {
+			isa = PBXGroup;
+			children = (
+				3ABAFFAC2879C47800928C22 /* NuwaLog.swift */,
+				3AA2FEE5287A9DC900B0C97D /* KextCommon.swift */,
+			);
+			path = NuwaUtils;
+			sourceTree = "<group>";
+		};
+		3ABAFFB02879C82400928C22 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				3ABAFF842879C0D900928C22 /* ViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3ABAFF912879C1BC00928C22 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3ABAFFA72879C3FA00928C22 /* KextLog.hpp in Headers */,
+				3ADEF953287AE55E00DF7609 /* DriverService.hpp in Headers */,
+				3ABAFFAA2879C40A00928C22 /* DriverClient.hpp in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		3ABAFF7E2879C0D900928C22 /* NuwaClient */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3ABAFF8E2879C0DA00928C22 /* Build configuration list for PBXNativeTarget "NuwaClient" */;
+			buildPhases = (
+				3ABAFF7B2879C0D900928C22 /* Sources */,
+				3ABAFF7C2879C0D900928C22 /* Frameworks */,
+				3ABAFF7D2879C0D900928C22 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3ABAFFB22879C9CD00928C22 /* PBXTargetDependency */,
+			);
+			name = NuwaClient;
+			productName = NuwaStone;
+			productReference = 3ABAFF7F2879C0D900928C22 /* NuwaClient.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3ABAFF952879C1BC00928C22 /* NuwaKext */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3ABAFF9B2879C1BC00928C22 /* Build configuration list for PBXNativeTarget "NuwaKext" */;
+			buildPhases = (
+				3ABAFF912879C1BC00928C22 /* Headers */,
+				3ABAFF922879C1BC00928C22 /* Sources */,
+				3ABAFF932879C1BC00928C22 /* Frameworks */,
+				3ABAFF942879C1BC00928C22 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NuwaKext;
+			productName = NuwaKext;
+			productReference = 3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */;
+			productType = "com.apple.product-type.kernel-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3ABAFF772879C0D900928C22 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1340;
+				LastUpgradeCheck = 1340;
+				TargetAttributes = {
+					3ABAFF7E2879C0D900928C22 = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
+					3ABAFF952879C1BC00928C22 = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
+				};
+			};
+			buildConfigurationList = 3ABAFF7A2879C0D900928C22 /* Build configuration list for PBXProject "NuwaStone" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3ABAFF762879C0D900928C22;
+			productRefGroup = 3ABAFF802879C0D900928C22 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3ABAFF7E2879C0D900928C22 /* NuwaClient */,
+				3ABAFF952879C1BC00928C22 /* NuwaKext */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3ABAFF7D2879C0D900928C22 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3ABAFF872879C0DA00928C22 /* Assets.xcassets in Resources */,
+				3ABAFF8A2879C0DA00928C22 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3ABAFF942879C1BC00928C22 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3ABAFF7B2879C0D900928C22 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3ABAFF852879C0D900928C22 /* ViewController.swift in Sources */,
+				3AA2FEE6287A9DC900B0C97D /* KextCommon.swift in Sources */,
+				3ABAFF832879C0D900928C22 /* AppDelegate.swift in Sources */,
+				3ABAFFAD2879C47800928C22 /* NuwaLog.swift in Sources */,
+				3ABAFFAF2879C4A200928C22 /* KextManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3ABAFF922879C1BC00928C22 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3ABAFFAB2879C40A00928C22 /* DriverClient.cpp in Sources */,
+				3ADEF952287AE55E00DF7609 /* DriverService.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3ABAFFB22879C9CD00928C22 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3ABAFF952879C1BC00928C22 /* NuwaKext */;
+			targetProxy = 3ABAFFB12879C9CD00928C22 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		3ABAFF882879C0DA00928C22 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3ABAFF892879C0DA00928C22 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		3ABAFF8C2879C0DA00928C22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		3ABAFF8D2879C0DA00928C22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		3ABAFF8F2879C0DA00928C22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = NuwaClient/NuwaClient.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C48U2B38TC;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.client;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3ABAFF902879C0DA00928C22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = NuwaClient/NuwaClient.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C48U2B38TC;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.client;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		3ABAFF9C2879C1BC00928C22 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C48U2B38TC;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NuwaKext/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MARKETING_VERSION = 1.0;
+				MODULE_NAME = com.nuwastone;
+				MODULE_START = 0;
+				MODULE_STOP = 0;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone;
+				PRODUCT_NAME = com.nuwastone;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Debug;
+		};
+		3ABAFF9D2879C1BC00928C22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C48U2B38TC;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NuwaKext/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MARKETING_VERSION = 1.0;
+				MODULE_NAME = com.nuwastone;
+				MODULE_START = 0;
+				MODULE_STOP = 0;
+				MODULE_VERSION = 1.0.0d1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone;
+				PRODUCT_NAME = com.nuwastone;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = kext;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3ABAFF7A2879C0D900928C22 /* Build configuration list for PBXProject "NuwaStone" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3ABAFF8C2879C0DA00928C22 /* Debug */,
+				3ABAFF8D2879C0DA00928C22 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3ABAFF8E2879C0DA00928C22 /* Build configuration list for PBXNativeTarget "NuwaClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3ABAFF8F2879C0DA00928C22 /* Debug */,
+				3ABAFF902879C0DA00928C22 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3ABAFF9B2879C1BC00928C22 /* Build configuration list for PBXNativeTarget "NuwaKext" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3ABAFF9C2879C1BC00928C22 /* Debug */,
+				3ABAFF9D2879C1BC00928C22 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3ABAFF772879C0D900928C22 /* Project object */;
+}
