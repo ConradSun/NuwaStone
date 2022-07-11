@@ -39,7 +39,7 @@ class KextManager {
                 return
             }
             
-            result = IOConnectCallScalarMethod(selfPtr.isConnected, NuwaKextMethods.kNuwaUserClientOpen.rawValue, nil, 0, nil, nil)
+            result = IOConnectCallScalarMethod(selfPtr.isConnected, kNuwaUserClientOpen.rawValue, nil, 0, nil, nil)
             if result == kIOReturnExclusiveAccess {
                 Log(level: NuwaLogLevel.LOG_ERROR, "A client is already connected.")
                 return

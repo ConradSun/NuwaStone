@@ -10,16 +10,21 @@
 
 #include <IOKit/IOService.h>
 #include <libkern/OSKextLib.h>
+#include "KauthController.hpp"
 
 class DriverService : public IOService {
     OSDeclareDefaultStructors(DriverService);
 
-    public:
-    //  Called by the kernel when the kext is loaded
+public:
+    // Called by the kernel when the kext is loaded
     bool start(IOService *provider) override;
 
-    //  Called by the kernel when the kext is unloaded
+    // Called by the kernel when the kext is unloaded
     void stop(IOService *provider) override;
+    
+private:
+    KauthController *m_kauthController;
+    bool m_kextUnloadProtect;
 };
 
 #endif /* DriverService_hpp */

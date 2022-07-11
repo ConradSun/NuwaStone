@@ -8,6 +8,8 @@
 		<dict>
 			<key>CFBundleIdentifier</key>
 			<string>com.nuwastone</string>
+			<key>IOClass</key>
+			<string>DriverService</string>
 			<key>IOMatchCategory</key>
 			<string>DriverService</string>
 			<key>IOUserClientClass</key>

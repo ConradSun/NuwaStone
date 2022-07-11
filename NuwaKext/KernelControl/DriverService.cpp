@@ -6,7 +6,7 @@
 //
 
 #include "DriverService.hpp"
-#include "KextLog.hpp"
+#include "KextLog.h"
 
 OSDefineMetaClassAndStructors(DriverService, IOService);
 
@@ -15,6 +15,13 @@ bool DriverService::start(IOService *provider) {
         return false;
     }
 
+    m_kauthController = new KauthController();
+    if (m_kauthController == nullptr) {
+        return false;
+    }
+    if (!m_kauthController->init() || m_kauthController->startListeners() != KERN_SUCCESS) {
+        return false;
+    }
     registerService();
 
     KLOG(LOG_INFO, "Kext loaded with version [%s].", OSKextGetCurrentVersionString());
@@ -22,6 +29,10 @@ bool DriverService::start(IOService *provider) {
 }
 
 void DriverService::stop(IOService *provider) {
-    KLOG(LOG_INFO, "Kext stopped for now.");
+    m_kauthController->stopListeners();
+    m_kauthController->release();
+    m_kauthController = nullptr;
+    
     IOService::stop(provider);
+    KLOG(LOG_INFO, "Kext stopped for now.");
 }

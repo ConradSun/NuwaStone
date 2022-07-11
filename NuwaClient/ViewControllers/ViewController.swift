@@ -14,6 +14,7 @@ class ViewController: NSViewController {
         super.viewDidLoad()
         
         kextManager.loadKernelExtension()
+        sleep(3)
         kextManager.unloadKernelExtension()
         // Do any additional setup after loading the view.
     }

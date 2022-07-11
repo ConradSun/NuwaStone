@@ -10,6 +10,7 @@
 
 #include <IOKit/IOUserClient.h>
 #include <sys/kauth.h>
+#include "DriverService.hpp"
 
 class DriverClient : public IOUserClient {
     OSDeclareDefaultStructors(DriverClient);
@@ -36,7 +37,11 @@ public:
     //  Called in clients with IOConnectCallScalarMethod etc. Dispatches to the requested selector using the SantaDriverMethods enum in SNTKernelCommon.
     IOReturn externalMethod(UInt32 selector, IOExternalMethodArguments *arguments, IOExternalMethodDispatch *dispatch, OSObject *target, void *reference) override;
     
+    // Called during client connection.
+    static IOReturn open(OSObject *target, void *reference, IOExternalMethodArguments *arguments);
     
+private:
+    DriverService *myService;
 };
 
 #endif /* DriverClient_hpp */

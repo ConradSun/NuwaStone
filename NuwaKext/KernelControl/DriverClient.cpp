@@ -6,7 +6,8 @@
 //
 
 #include "DriverClient.hpp"
-#include "KextLog.hpp"
+#include "KextCommon.h"
+#include "KextLog.h"
 
 KextLogLevel logLevel = LOG_INFO;
 OSDefineMetaClassAndStructors(DriverClient, IOUserClient);
@@ -48,4 +49,43 @@ IOReturn DriverClient::clientClose() {
 bool DriverClient::didTerminate(IOService *provider, IOOptionBits options, bool *defer) {
     KLOG(LOG_INFO, "Client terminated.")
     return IOUserClient::didTerminate(provider, options, defer);
+}
+
+IOReturn DriverClient::open(OSObject *target, void *reference, IOExternalMethodArguments *arguments) {
+    DriverClient *me = OSDynamicCast(DriverClient, target);
+    
+    if (!me) {
+        return kIOReturnBadArgument;
+    }
+    if (me->isInactive()) {
+        return kIOReturnNotAttached;
+    }
+    if (!me->myService->open(me)) {
+        KLOG(LOG_ERROR, "A second client tried to connect.");
+        return kIOReturnExclusiveAccess;
+    }
+    
+    KLOG(LOG_INFO, "Client connected successfully.");
+    return kIOReturnSuccess;
+}
+
+#pragma mark Method Resolution
+
+IOReturn DriverClient::externalMethod(UInt32 selector, IOExternalMethodArguments *arguments,
+                                      IOExternalMethodDispatch *dispatch, OSObject *target, void *reference) {
+    // Array of methods callable by clients.
+    static IOExternalMethodDispatch sMethods[kNuwaUserClientNMethods] = {
+        // Function ptr, input scalar count, input struct size, output scalar count, output struct size
+        { &DriverClient::open, 0, 0, 0, 0 },
+    };
+
+    if (selector >= static_cast<UInt32>(kNuwaUserClientNMethods)) {
+        return kIOReturnBadArgument;
+    }
+
+    dispatch = &(sMethods[selector]);
+    if (!target) {
+        target = this;
+    }
+    return IOUserClient::externalMethod(selector, arguments, dispatch, target, reference);
 }
