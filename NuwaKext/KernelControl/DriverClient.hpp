@@ -40,6 +40,9 @@ public:
     // Called during client connection.
     static IOReturn open(OSObject *target, void *reference, IOExternalMethodArguments *arguments);
     
+    // Called when the kext log level is setted
+    static IOReturn setLogLevel(OSObject* target, void* reference, IOExternalMethodArguments* arguments);
+    
 private:
     DriverService *m_driverService;
 };

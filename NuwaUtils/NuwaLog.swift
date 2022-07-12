@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum NuwaLogLevel : Int {
+enum NuwaLogLevel : UInt32 {
     case LOG_OFF    = 1
     case LOG_ERROR  = 2
     case LOG_WARN   = 3
@@ -16,11 +16,11 @@ enum NuwaLogLevel : Int {
 }
 
 struct NuwaLog {
-    var logLevel: Int {
+    var logLevel: UInt32 {
         get {
             let savedLevel = UserDefaults.standard.integer(forKey: "logLevel")
             if savedLevel > 0 {
-                return savedLevel
+                return UInt32(savedLevel)
             }
             return NuwaLogLevel.LOG_INFO.rawValue
         }

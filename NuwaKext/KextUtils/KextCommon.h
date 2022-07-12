@@ -10,8 +10,6 @@
 
 typedef enum {
     kNuwaUserClientOpen,
-    kNuwaUserClientsetKextEnabe,
-    kNuwaUserClientsetKextDisable,
     kNuwaUserClientSetLogLevel,
     kNuwaUserClientNMethods
 } NuwaKextMethods;

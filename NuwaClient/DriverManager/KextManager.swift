@@ -19,6 +19,7 @@ class KextManager {
     private let kextID = CFStringCreateWithCString(kCFAllocatorDefault, "com.nuwastone", kCFStringEncodingASCII)
     var connection: io_connect_t = 0
     var isConnected: Bool = false
+    var nuwaLog = NuwaLog()
     
     private func dispatchServiceEvent(for event: Event, iterator: io_iterator_t) {
         repeat {
@@ -44,7 +45,6 @@ class KextManager {
                     break
                 }
                 
-//                IOObjectRelease(nextService)
                 IONotificationPortDestroy(self.notificationPort)
                 self.isConnected = true
                 Log(level: NuwaLogLevel.LOG_INFO, "Connected with kext successfully.")
@@ -70,25 +70,40 @@ class KextManager {
         dispatchServiceEvent(for: .Connect, iterator: iterator)
     }
     
-    func loadKernelExtension() {
+    func loadKernelExtension() -> Bool {
         guard let service = IOServiceMatching("DriverService") else {
-            return
+            return false
         }
         
         let result = KextManagerLoadKextWithIdentifier(kextID, nil)
         if result != kIOReturnSuccess {
             Log(level: NuwaLogLevel.LOG_WARN, "Error occured in loading kext [\(String.init(format: "0x%x", result))].")
+            return false
         }
         
         Log(level: NuwaLogLevel.LOG_INFO, "Wait for kext to be connected.")
         waitForDriver(matchingDict: service)
+        return true
     }
     
-    func unloadKernelExtension() {
+    func unloadKernelExtension() -> Bool {
         IOServiceClose(connection)
         let result = KextManagerUnloadKextWithIdentifier(kextID)
         if result != kIOReturnSuccess {
             Log(level: NuwaLogLevel.LOG_WARN, "Error occured in unloading kext [\(String.init(format: "0x%x", result))].")
+            return false
         }
+        return true
+    }
+    
+    func setLogLevel(level: UInt32) -> Bool {
+        nuwaLog.logLevel = level
+        let scalar: [UInt64] = [UInt64(level)]
+        let result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientSetLogLevel.rawValue, scalar, 1, nil, nil)
+        if result != KERN_SUCCESS {
+            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to set log level for kext [\(String.init(format: "0x%x", result))].")
+            return false
+        }
+        return true
     }
 }

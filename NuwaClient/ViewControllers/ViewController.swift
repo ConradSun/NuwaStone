@@ -13,9 +13,17 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        kextManager.loadKernelExtension()
+        if !kextManager.loadKernelExtension() {
+            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to load kext.")
+            return
+        }
         sleep(3)
-        kextManager.unloadKernelExtension()
+        if !kextManager.setLogLevel(level: NuwaLogLevel.LOG_ERROR.rawValue) {
+            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to set log level.")
+        }
+        if !kextManager.unloadKernelExtension() {
+            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to unload kext.")
+        }
         // Do any additional setup after loading the view.
     }
 

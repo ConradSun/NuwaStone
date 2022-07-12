@@ -9,7 +9,7 @@
 #include "KextCommon.h"
 #include "KextLog.h"
 
-KextLogLevel logLevel = LOG_INFO;
+UInt32 g_logLevel = LOG_INFO;
 OSDefineMetaClassAndStructors(DriverClient, IOUserClient);
 
 #pragma mark Driver Management
@@ -74,11 +74,25 @@ IOReturn DriverClient::open(OSObject *target, void *reference, IOExternalMethodA
         return kIOReturnNotAttached;
     }
     if (!me->m_driverService->open(me)) {
-        KLOG(LOG_ERROR, "A second client tried to connect.");
+        KLOG(LOG_ERROR, "A second client tried to connect.")
         return kIOReturnExclusiveAccess;
     }
     
-    KLOG(LOG_INFO, "Client connected successfully.");
+    KLOG(LOG_INFO, "Client connected successfully.")
+    return kIOReturnSuccess;
+}
+
+IOReturn DriverClient::setLogLevel(OSObject* target, void* reference, IOExternalMethodArguments* arguments) {
+    DriverClient *me = OSDynamicCast(DriverClient, target);
+    if (me == NULL) {
+        return kIOReturnBadArgument;
+    }
+    
+    UInt32 level = (UInt32)arguments->scalarInput[0];
+    if (g_logLevel != level) {
+        KLOG(LOG_INFO, "Log level setted to be %d", level)
+        g_logLevel = level;
+    }
     return kIOReturnSuccess;
 }
 
@@ -90,6 +104,7 @@ IOReturn DriverClient::externalMethod(UInt32 selector, IOExternalMethodArguments
     static IOExternalMethodDispatch sMethods[kNuwaUserClientNMethods] = {
         // Function ptr, input scalar count, input struct size, output scalar count, output struct size
         { &DriverClient::open, 0, 0, 0, 0 },
+        { &DriverClient::setLogLevel, 1, 0, 0, 0},
     };
 
     if (selector >= static_cast<UInt32>(kNuwaUserClientNMethods)) {

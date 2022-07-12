@@ -18,10 +18,10 @@ typedef enum {
     LOG_DEBUG   = 5
 } KextLogLevel;
 
-extern KextLogLevel logLevel;
+extern UInt32 g_logLevel;
 
 #define KLOG(level, format, ...) \
-    if (logLevel >= level) { \
+    if (g_logLevel >= level) { \
         IOLog("%s %s:%d [-] " format "\n", \
         #level, __func__, __LINE__, ##__VA_ARGS__); \
     } \

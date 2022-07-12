@@ -26,7 +26,7 @@ bool DriverService::start(IOService *provider) {
     }
     registerService();
 
-    KLOG(LOG_INFO, "Kext loaded with version [%s].", OSKextGetCurrentVersionString());
+    KLOG(LOG_INFO, "Kext loaded with version [%s].", OSKextGetCurrentVersionString())
     return true;
 }
 
@@ -36,5 +36,5 @@ void DriverService::stop(IOService *provider) {
     m_kauthController = nullptr;
     
     IOService::stop(provider);
-    KLOG(LOG_INFO, "Kext unloaded successfully.");
+    KLOG(LOG_INFO, "Kext unloaded successfully.")
 }
