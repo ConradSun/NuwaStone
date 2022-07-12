@@ -29,10 +29,15 @@ bool DriverClient::initWithTask(task_t owningTask, void *securityID, UInt32 type
 }
 
 bool DriverClient::start(IOService *provider) {
+    m_driverService = OSDynamicCast(DriverService, provider);
+    if (m_driverService == nullptr) {
+        return false;
+    }
     return IOUserClient::start(provider);
 }
 
 void DriverClient::stop(IOService *provider) {
+    m_driverService = nullptr;
     IOUserClient::stop(provider);
 }
 
@@ -42,11 +47,19 @@ IOReturn DriverClient::clientDied() {
 }
 
 IOReturn DriverClient::clientClose() {
+    if (m_driverService != nullptr && m_driverService->isOpen(this)) {
+        m_driverService->close(this);
+    }
+    
     KLOG(LOG_INFO, "Client disconnected.")
     return terminate(0) ? kIOReturnSuccess : kIOReturnError;
 }
 
 bool DriverClient::didTerminate(IOService *provider, IOOptionBits options, bool *defer) {
+    if (m_driverService != nullptr && m_driverService->isOpen(this)) {
+        m_driverService->close(this);
+    }
+    
     KLOG(LOG_INFO, "Client terminated.")
     return IOUserClient::didTerminate(provider, options, defer);
 }
@@ -54,13 +67,13 @@ bool DriverClient::didTerminate(IOService *provider, IOOptionBits options, bool 
 IOReturn DriverClient::open(OSObject *target, void *reference, IOExternalMethodArguments *arguments) {
     DriverClient *me = OSDynamicCast(DriverClient, target);
     
-    if (!me) {
+    if (me == NULL) {
         return kIOReturnBadArgument;
     }
     if (me->isInactive()) {
         return kIOReturnNotAttached;
     }
-    if (!me->myService->open(me)) {
+    if (!me->m_driverService->open(me)) {
         KLOG(LOG_ERROR, "A second client tried to connect.");
         return kIOReturnExclusiveAccess;
     }

@@ -20,6 +20,8 @@ bool DriverService::start(IOService *provider) {
         return false;
     }
     if (!m_kauthController->init() || m_kauthController->startListeners() != KERN_SUCCESS) {
+        m_kauthController->release();
+        m_kauthController = nullptr;
         return false;
     }
     registerService();
@@ -34,5 +36,5 @@ void DriverService::stop(IOService *provider) {
     m_kauthController = nullptr;
     
     IOService::stop(provider);
-    KLOG(LOG_INFO, "Kext stopped for now.");
+    KLOG(LOG_INFO, "Kext unloaded successfully.");
 }

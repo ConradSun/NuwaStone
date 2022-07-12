@@ -10,18 +10,47 @@ import IOKit.kext
 import Foundation
 
 class KextManager {
+    enum Event {
+        case Connect
+        case Disconnect
+    }
+    
     private let notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
     private let kextID = CFStringCreateWithCString(kCFAllocatorDefault, "com.nuwastone", kCFStringEncodingASCII)
-    var isConnected: io_connect_t = 0
+    var connection: io_connect_t = 0
+    var isConnected: Bool = false
     
-    private func dispatchServiceEvent(for callback: IOServiceMatchingCallback, iterator: io_iterator_t) {
+    private func dispatchServiceEvent(for event: Event, iterator: io_iterator_t) {
         repeat {
-            let selfPointer = Unmanaged.passUnretained(self).toOpaque()
             let nextService = IOIteratorNext(iterator)
             guard nextService != 0 else {
                 break
             }
-            callback(selfPointer, nextService)
+            switch event {
+            case .Connect:
+                var result = IOServiceOpen(nextService, mach_task_self_, 0, &self.connection)
+                if result != kIOReturnSuccess {
+                    Log(level: NuwaLogLevel.LOG_ERROR, "Failed to open kext service [\(String.init(format: "0x%x", result))].")
+                    break
+                }
+                
+                result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientOpen.rawValue, nil, 0, nil, nil)
+                if result == kIOReturnExclusiveAccess {
+                    Log(level: NuwaLogLevel.LOG_ERROR, "A client is already connected.")
+                    break
+                }
+                else if result != kIOReturnSuccess {
+                    Log(level: NuwaLogLevel.LOG_ERROR, "An error occurred while opening the connection [\(result)].")
+                    break
+                }
+                
+//                IOObjectRelease(nextService)
+                IONotificationPortDestroy(self.notificationPort)
+                self.isConnected = true
+                Log(level: NuwaLogLevel.LOG_INFO, "Connected with kext successfully.")
+            case .Disconnect:
+                break
+            }
             IOObjectRelease(nextService)
         } while true
     }
@@ -31,36 +60,18 @@ class KextManager {
         let selfPointer = Unmanaged.passUnretained(self).toOpaque()
         let notificationQueue = DispatchQueue(label: "com.nuwastone.waitfordriver")
         
-        let matchCallback: IOServiceMatchingCallback = { refcon, iterator in
+        let appearedCallback: IOServiceMatchingCallback = { refcon, iterator in
             let selfPtr = Unmanaged<KextManager>.fromOpaque(refcon!).takeUnretainedValue()
-            var result = IOServiceOpen(iterator, mach_task_self_, 0, &selfPtr.isConnected)
-            if result != kIOReturnSuccess {
-                Log(level: NuwaLogLevel.LOG_ERROR, "Failed to open kext service [\(result)].")
-                return
-            }
-            
-            result = IOConnectCallScalarMethod(selfPtr.isConnected, kNuwaUserClientOpen.rawValue, nil, 0, nil, nil)
-            if result == kIOReturnExclusiveAccess {
-                Log(level: NuwaLogLevel.LOG_ERROR, "A client is already connected.")
-                return
-            }
-            else if result != kIOReturnSuccess {
-                Log(level: NuwaLogLevel.LOG_ERROR, "An error occurred while opening the connection [\(result)].")
-                return
-            }
-            
-            IOObjectRelease(iterator)
-            IONotificationPortDestroy(selfPtr.notificationPort)
-            selfPtr.isConnected = 1
+            selfPtr.dispatchServiceEvent(for: .Connect, iterator: iterator)
         };
         
         IONotificationPortSetDispatchQueue(notificationPort, notificationQueue)
-        IOServiceAddMatchingNotification(notificationPort, kIOMatchedNotification, matchingDict, matchCallback, selfPointer, &iterator)
-        dispatchServiceEvent(for: matchCallback, iterator: iterator)
+        IOServiceAddMatchingNotification(notificationPort, kIOMatchedNotification, matchingDict, appearedCallback, selfPointer, &iterator)
+        dispatchServiceEvent(for: .Connect, iterator: iterator)
     }
     
     func loadKernelExtension() {
-        guard let service = IOServiceMatching("DriverClient") else {
+        guard let service = IOServiceMatching("DriverService") else {
             return
         }
         
@@ -74,10 +85,10 @@ class KextManager {
     }
     
     func unloadKernelExtension() {
+        IOServiceClose(connection)
         let result = KextManagerUnloadKextWithIdentifier(kextID)
         if result != kIOReturnSuccess {
             Log(level: NuwaLogLevel.LOG_WARN, "Error occured in unloading kext [\(String.init(format: "0x%x", result))].")
         }
-        isConnected = 0
     }
 }

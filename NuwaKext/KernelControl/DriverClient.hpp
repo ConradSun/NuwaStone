@@ -41,7 +41,7 @@ public:
     static IOReturn open(OSObject *target, void *reference, IOExternalMethodArguments *arguments);
     
 private:
-    DriverService *myService;
+    DriverService *m_driverService;
 };
 
 #endif /* DriverClient_hpp */

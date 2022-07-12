@@ -36,10 +36,10 @@ struct NuwaLog {
     }
 };
 
-func Log<T>(level: NuwaLogLevel, _ message: T, file: String = #file, function: String = #function, lineNumber: Int = #line) {
+func Log<T>(level: NuwaLogLevel, _ message: T, file: String = #file, lineNumber: Int = #line) {
     if level.rawValue > NuwaLog().logLevel {
         return
     }
     let fileName = (file as NSString).lastPathComponent
-    print("\(level) \(fileName) \(function): \(lineNumber) [-] \(message)")
+    print("\(level) \(fileName): \(lineNumber) [-] \(message)")
 }
