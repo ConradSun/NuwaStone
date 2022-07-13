@@ -6,10 +6,9 @@
 //
 
 #include "DriverClient.hpp"
-#include "KextCommon.h"
-#include "KextLog.h"
+#include "KextCommon.hpp"
+#include "KextLog.hpp"
 
-UInt32 g_logLevel = LOG_INFO;
 OSDefineMetaClassAndStructors(DriverClient, IOUserClient);
 
 #pragma mark Driver Management
@@ -33,10 +32,15 @@ bool DriverClient::start(IOService *provider) {
     if (m_driverService == nullptr) {
         return false;
     }
+    m_eventDispatcher = EventDispatcher::getInstance();
+    if (m_eventDispatcher == nullptr) {
+        return false;
+    }
     return IOUserClient::start(provider);
 }
 
 void DriverClient::stop(IOService *provider) {
+    m_eventDispatcher = nullptr;
     m_driverService = nullptr;
     IOUserClient::stop(provider);
 }
@@ -64,10 +68,46 @@ bool DriverClient::didTerminate(IOService *provider, IOOptionBits options, bool 
     return IOUserClient::didTerminate(provider, options, defer);
 }
 
+#pragma mark Fetching memory and data queue notifications
+
+IOReturn DriverClient::registerNotificationPort(mach_port_t port, UInt32 type, UInt32 ref) {
+    if (port == MACH_PORT_NULL) {
+        return kIOReturnError;
+    }
+    
+    switch (type) {
+        case kQueueTypeAuth:
+        case kQueueTypeNotify:
+            m_eventDispatcher->setNotificationPortForQueue(type, port);
+            break;
+        default:
+            return kIOReturnBadArgument;
+    }
+    
+    return kIOReturnSuccess;
+}
+
+IOReturn DriverClient::clientMemoryForType(UInt32 type, IOOptionBits *options, IOMemoryDescriptor **memory) {
+    switch (type) {
+        case kQueueTypeAuth:
+        case kQueueTypeNotify:
+            *options = 0;
+            *memory = m_eventDispatcher->getMemoryDescriptorForQueue(type);
+            break;
+        default:
+            return kIOReturnBadArgument;
+    }
+
+    (*memory)->retain();
+    return kIOReturnSuccess;
+}
+
+#pragma mark Callable Methods
+
 IOReturn DriverClient::open(OSObject *target, void *reference, IOExternalMethodArguments *arguments) {
     DriverClient *me = OSDynamicCast(DriverClient, target);
     
-    if (me == NULL) {
+    if (me == nullptr) {
         return kIOReturnBadArgument;
     }
     if (me->isInactive()) {
@@ -84,7 +124,7 @@ IOReturn DriverClient::open(OSObject *target, void *reference, IOExternalMethodA
 
 IOReturn DriverClient::setLogLevel(OSObject* target, void* reference, IOExternalMethodArguments* arguments) {
     DriverClient *me = OSDynamicCast(DriverClient, target);
-    if (me == NULL) {
+    if (me == nullptr) {
         return kIOReturnBadArgument;
     }
     

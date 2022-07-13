@@ -8,13 +8,10 @@
 #ifndef KauthController_hpp
 #define KauthController_hpp
 
-#include <IOKit/IOLib.h>
-#include <IOKit/IODataQueueShared.h>
-#include <IOKit/IOMemoryDescriptor.h>
-#include <IOKit/IOSharedDataQueue.h>
-#include <sys/kauth.h>
-#include <sys/proc.h>
+#include "EventDispatcher.hpp"
 #include <sys/vnode.h>
+#include <sys/kauth.h>
+#include <libkern/c++/OSContainers.h>
 
 class KauthController : public OSObject {
     OSDeclareDefaultStructors(KauthController);
@@ -32,9 +29,13 @@ public:
     // Stops the kauth listeners.
     kern_return_t stopListeners();
     
+    // Called when send event to client.
+    bool postToAuthQueue(NuwaKextEvent *eventInfo);
+    
 private:
     kauth_listener_t m_vnodeListener;
     kauth_listener_t m_fileopListener;
+    EventDispatcher *m_eventDispatcher;
 };
 
 /**

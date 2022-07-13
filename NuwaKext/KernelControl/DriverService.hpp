@@ -11,6 +11,7 @@
 #include <IOKit/IOService.h>
 #include <libkern/OSKextLib.h>
 #include "KauthController.hpp"
+#include "EventDispatcher.hpp"
 
 class DriverService : public IOService {
     OSDeclareDefaultStructors(DriverService);
@@ -22,8 +23,11 @@ public:
     // Called by the kernel when the kext is unloaded
     void stop(IOService *provider) override;
     
+    
+    
 private:
     KauthController *m_kauthController;
+    EventDispatcher *m_eventDispatcher;
     bool m_kextUnloadProtect;
 };
 

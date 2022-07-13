@@ -17,6 +17,7 @@ class KextManager {
     
     private let notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
     private let kextID = CFStringCreateWithCString(kCFAllocatorDefault, "com.nuwastone", kCFStringEncodingASCII)
+    private let authEventQueue = DispatchQueue.global()
     var connection: io_connect_t = 0
     var isConnected: Bool = false
     var nuwaLog = NuwaLog()
@@ -70,6 +71,32 @@ class KextManager {
         dispatchServiceEvent(for: .Connect, iterator: iterator)
     }
     
+    private func processKextRequests(type: UInt32, address: mach_vm_address_t, recvPort: mach_port_t) {
+        let queueMemory = UnsafeMutablePointer<IODataQueueMemory>.init(bitPattern: UInt(address))
+        DispatchQueue.main.async { [self] in
+            repeat {
+                repeat {
+                    var kextEvent = NuwaKextEvent()
+                    var dataSize: UInt32 = UInt32(MemoryLayout.size(ofValue: NuwaKextEvent()))
+                    let result = IODataQueueDequeue(queueMemory, &kextEvent, &dataSize)
+                    if result != kIOReturnSuccess {
+                        Log(level: NuwaLogLevel.LOG_ERROR, "Failed to dequeue data [\(String.init(format: "0x%x", result))].")
+                        return
+                    }
+                    
+                    switch type {
+                    case kQueueTypeAuth.rawValue:
+                        self.authEventQueue.async {
+                            Log(level: NuwaLogLevel.LOG_INFO, "++++++++++++++++.")
+                        }
+                    default:
+                        break
+                    }
+                } while IODataQueueDataAvailable(queueMemory)
+            } while IODataQueueWaitForAvailableData(queueMemory, recvPort) == kIOReturnSuccess
+        }
+    }
+    
     func loadKernelExtension() -> Bool {
         guard let service = IOServiceMatching("DriverService") else {
             return false
@@ -105,5 +132,36 @@ class KextManager {
             return false
         }
         return true
+    }
+    
+    func listenRequestsForType(type: UInt32) {
+        guard isConnected else {
+            return
+        }
+        
+        let recvPort = IODataQueueAllocateNotificationPort()
+        if recvPort == MACH_PORT_NULL {
+            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to allocate notification port.")
+            return
+        }
+        var result = IOConnectSetNotificationPort(connection, type, recvPort, 0)
+        if result != kIOReturnSuccess {
+            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to register notification port [\(String.init(format: "0x%x", result))].")
+            mach_port_deallocate(mach_task_self_, recvPort)
+            return
+        }
+        
+        var address: mach_vm_address_t = 0
+        var size: mach_vm_size_t = 0
+        result = IOConnectMapMemory(connection, type, mach_task_self_, &address, &size, kIOMapAnywhere)
+        if result != kIOReturnSuccess {
+            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to map memory [\(String.init(format: "0x%x", result))].")
+            mach_port_deallocate(mach_task_self_, recvPort)
+            return
+        }
+        
+        processKextRequests(type: type, address: address, recvPort: recvPort)
+        IOConnectUnmapMemory(connection, type, mach_task_self_, address)
+        mach_port_deallocate(mach_task_self_, recvPort)
     }
 }

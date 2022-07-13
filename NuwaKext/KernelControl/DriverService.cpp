@@ -6,8 +6,9 @@
 //
 
 #include "DriverService.hpp"
-#include "KextLog.h"
+#include "KextLog.hpp"
 
+UInt32 g_logLevel = LOG_INFO;
 OSDefineMetaClassAndStructors(DriverService, IOService);
 
 bool DriverService::start(IOService *provider) {
@@ -15,6 +16,11 @@ bool DriverService::start(IOService *provider) {
         return false;
     }
 
+    m_eventDispatcher = EventDispatcher::getInstance();
+    if (m_eventDispatcher == nullptr) {
+        return false;
+    }
+    
     m_kauthController = new KauthController();
     if (m_kauthController == nullptr) {
         return false;
@@ -22,6 +28,9 @@ bool DriverService::start(IOService *provider) {
     if (!m_kauthController->init() || m_kauthController->startListeners() != KERN_SUCCESS) {
         m_kauthController->release();
         m_kauthController = nullptr;
+        
+        m_eventDispatcher->release();
+        m_eventDispatcher = nullptr;
         return false;
     }
     registerService();
@@ -34,6 +43,11 @@ void DriverService::stop(IOService *provider) {
     m_kauthController->stopListeners();
     m_kauthController->release();
     m_kauthController = nullptr;
+    
+    if (m_eventDispatcher != nullptr) {
+        m_eventDispatcher->release();
+        m_eventDispatcher = nullptr;
+    }
     
     IOService::stop(provider);
     KLOG(LOG_INFO, "Kext unloaded successfully.")

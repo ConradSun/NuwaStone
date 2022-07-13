@@ -17,10 +17,12 @@ class ViewController: NSViewController {
             Log(level: NuwaLogLevel.LOG_ERROR, "Failed to load kext.")
             return
         }
-        sleep(3)
-        if !kextManager.setLogLevel(level: NuwaLogLevel.LOG_ERROR.rawValue) {
+        if !kextManager.setLogLevel(level: NuwaLogLevel.LOG_INFO.rawValue) {
             Log(level: NuwaLogLevel.LOG_ERROR, "Failed to set log level.")
         }
+        kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
+        sleep(10)
+        
         if !kextManager.unloadKernelExtension() {
             Log(level: NuwaLogLevel.LOG_ERROR, "Failed to unload kext.")
         }
@@ -32,7 +34,5 @@ class ViewController: NSViewController {
         // Update the view, if already loaded.
         }
     }
-
-
 }
 
