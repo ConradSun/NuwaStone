@@ -55,7 +55,7 @@ bool KauthController::postToAuthQueue(NuwaKextEvent *eventInfo) {
     if (eventInfo == nullptr) {
         return false;
     }
-    KLOG(LOG_INFO, "pid: %d, path: %s.", eventInfo->mainProcess.pid, eventInfo->processCreate.path)
+    KLOG(Info, "pid: %d, path: %s.", eventInfo->mainProcess.pid, eventInfo->processCreate.path)
     return m_eventDispatcher->postToAuthQueue(eventInfo);
 }
 

@@ -8,7 +8,7 @@
 #include "DriverService.hpp"
 #include "KextLog.hpp"
 
-UInt32 g_logLevel = LOG_INFO;
+UInt32 g_logLevel = Info;
 OSDefineMetaClassAndStructors(DriverService, IOService);
 
 bool DriverService::start(IOService *provider) {
@@ -35,7 +35,7 @@ bool DriverService::start(IOService *provider) {
     }
     registerService();
 
-    KLOG(LOG_INFO, "Kext loaded with version [%s].", OSKextGetCurrentVersionString())
+    KLOG(Info, "Kext loaded with version [%s].", OSKextGetCurrentVersionString())
     return true;
 }
 
@@ -50,5 +50,5 @@ void DriverService::stop(IOService *provider) {
     }
     
     IOService::stop(provider);
-    KLOG(LOG_INFO, "Kext unloaded successfully.")
+    KLOG(Info, "Kext unloaded successfully.")
 }

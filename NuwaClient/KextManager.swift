@@ -32,23 +32,23 @@ class KextManager {
             case .Connect:
                 var result = IOServiceOpen(nextService, mach_task_self_, 0, &self.connection)
                 if result != kIOReturnSuccess {
-                    Log(level: NuwaLogLevel.LOG_ERROR, "Failed to open kext service [\(String.init(format: "0x%x", result))].")
+                    Logger(.Error, "Failed to open kext service [\(String.init(format: "0x%x", result))].")
                     break
                 }
                 
                 result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientOpen.rawValue, nil, 0, nil, nil)
                 if result == kIOReturnExclusiveAccess {
-                    Log(level: NuwaLogLevel.LOG_ERROR, "A client is already connected.")
+                    Logger(.Error, "A client is already connected.")
                     break
                 }
                 else if result != kIOReturnSuccess {
-                    Log(level: NuwaLogLevel.LOG_ERROR, "An error occurred while opening the connection [\(result)].")
+                    Logger(.Error, "An error occurred while opening the connection [\(result)].")
                     break
                 }
                 
                 IONotificationPortDestroy(self.notificationPort)
                 self.isConnected = true
-                Log(level: NuwaLogLevel.LOG_INFO, "Connected with kext successfully.")
+                Logger(.Info, "Connected with kext successfully.")
             case .Disconnect:
                 break
             }
@@ -75,12 +75,12 @@ class KextManager {
         let queueMemory = UnsafeMutablePointer<IODataQueueMemory>.init(bitPattern: UInt(address))
         DispatchQueue.global().async {
             repeat {
-                repeat {
+                while IODataQueueDataAvailable(queueMemory) {
                     var kextEvent = NuwaKextEvent()
                     var dataSize: UInt32 = UInt32(MemoryLayout.size(ofValue: NuwaKextEvent()))
                     let result = IODataQueueDequeue(queueMemory, &kextEvent, &dataSize)
                     if result != kIOReturnSuccess {
-                        Log(level: NuwaLogLevel.LOG_ERROR, "Failed to dequeue data [\(String.init(format: "0x%x", result))].")
+                        Logger(.Error, "Failed to dequeue data [\(String.init(format: "0x%x", result))].")
                         break
                     }
                     
@@ -88,12 +88,12 @@ class KextManager {
                     case kQueueTypeAuth.rawValue:
                         self.authEventQueue.async {
                             let str = String(cString: &kextEvent.processCreate.path.0)
-                            Log(level: NuwaLogLevel.LOG_INFO, "pid [\(String.init(format: "%d", kextEvent.mainProcess.pid))], file path [\(str)].")
+                            Logger(.Info, "pid [\(String.init(format: "%d", kextEvent.mainProcess.pid))], file path [\(str)].")
                         }
                     default:
                         break
                     }
-                } while IODataQueueDataAvailable(queueMemory)
+                }
             } while IODataQueueWaitForAvailableData(queueMemory, recvPort) == kIOReturnSuccess
         }
     }
@@ -105,11 +105,11 @@ class KextManager {
         
         let result = KextManagerLoadKextWithIdentifier(kextID, nil)
         if result != kIOReturnSuccess {
-            Log(level: NuwaLogLevel.LOG_WARN, "Error occured in loading kext [\(String.init(format: "0x%x", result))].")
+            Logger(.Warning, "Error occured in loading kext [\(String.init(format: "0x%x", result))].")
             return false
         }
         
-        Log(level: NuwaLogLevel.LOG_INFO, "Wait for kext to be connected.")
+        Logger(.Info, "Wait for kext to be connected.")
         waitForDriver(matchingDict: service)
         return true
     }
@@ -118,7 +118,7 @@ class KextManager {
         IOServiceClose(connection)
         let result = KextManagerUnloadKextWithIdentifier(kextID)
         if result != kIOReturnSuccess {
-            Log(level: NuwaLogLevel.LOG_WARN, "Error occured in unloading kext [\(String.init(format: "0x%x", result))].")
+            Logger(.Warning, "Error occured in unloading kext [\(String.init(format: "0x%x", result))].")
             return false
         }
         return true
@@ -126,10 +126,10 @@ class KextManager {
     
     func setLogLevel(level: UInt32) -> Bool {
         nuwaLog.logLevel = level
-        let scalar: [UInt64] = [UInt64(level)]
+        let scalar = [UInt64(level)]
         let result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientSetLogLevel.rawValue, scalar, 1, nil, nil)
         if result != KERN_SUCCESS {
-            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to set log level for kext [\(String.init(format: "0x%x", result))].")
+            Logger(.Error, "Failed to set log level for kext [\(String.init(format: "0x%x", result))].")
             return false
         }
         return true
@@ -142,12 +142,12 @@ class KextManager {
         
         let recvPort = IODataQueueAllocateNotificationPort()
         if recvPort == MACH_PORT_NULL {
-            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to allocate notification port.")
+            Logger(.Error, "Failed to allocate notification port.")
             return
         }
         var result = IOConnectSetNotificationPort(connection, type, recvPort, 0)
         if result != kIOReturnSuccess {
-            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to register notification port [\(String.init(format: "0x%x", result))].")
+            Logger(.Error, "Failed to register notification port [\(String.init(format: "0x%x", result))].")
             mach_port_deallocate(mach_task_self_, recvPort)
             return
         }
@@ -156,7 +156,7 @@ class KextManager {
         var size: mach_vm_size_t = 0
         result = IOConnectMapMemory(connection, type, mach_task_self_, &address, &size, kIOMapAnywhere)
         if result != kIOReturnSuccess {
-            Log(level: NuwaLogLevel.LOG_ERROR, "Failed to map memory [\(String.init(format: "0x%x", result))].")
+            Logger(.Error, "Failed to map memory [\(String.init(format: "0x%x", result))].")
             mach_port_deallocate(mach_task_self_, recvPort)
             return
         }

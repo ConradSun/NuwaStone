@@ -12,9 +12,9 @@
 
 typedef enum {
     LOG_OFF     = 1,
-    LOG_ERROR   = 2,
+    Error   = 2,
     LOG_WARN    = 3,
-    LOG_INFO    = 4,
+    Info    = 4,
     LOG_DEBUG   = 5
 } KextLogLevel;
 

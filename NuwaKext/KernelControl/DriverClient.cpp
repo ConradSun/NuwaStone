@@ -15,7 +15,7 @@ OSDefineMetaClassAndStructors(DriverClient, IOUserClient);
 
 bool DriverClient::initWithTask(task_t owningTask, void *securityID, UInt32 type) {
     if (clientHasPrivilege(owningTask, kIOClientPrivilegeAdministrator) != KERN_SUCCESS) {
-        KLOG(LOG_ERROR, "Unprivileged client attempted to connect.")
+        KLOG(Error, "Unprivileged client attempted to connect.")
         return false;
     }
 
@@ -23,7 +23,7 @@ bool DriverClient::initWithTask(task_t owningTask, void *securityID, UInt32 type
         return false;
     }
 
-    KLOG(LOG_INFO, "Driver client init successfully.")
+    KLOG(Info, "Driver client init successfully.")
     return true;
 }
 
@@ -46,7 +46,7 @@ void DriverClient::stop(IOService *provider) {
 }
 
 IOReturn DriverClient::clientDied() {
-    KLOG(LOG_INFO, "Client died.")
+    KLOG(Info, "Client died.")
     return terminate(0) ? kIOReturnSuccess : kIOReturnError;
 }
 
@@ -55,7 +55,7 @@ IOReturn DriverClient::clientClose() {
         m_driverService->close(this);
     }
     
-    KLOG(LOG_INFO, "Client disconnected.")
+    KLOG(Info, "Client disconnected.")
     return terminate(0) ? kIOReturnSuccess : kIOReturnError;
 }
 
@@ -64,7 +64,7 @@ bool DriverClient::didTerminate(IOService *provider, IOOptionBits options, bool 
         m_driverService->close(this);
     }
     
-    KLOG(LOG_INFO, "Client terminated.")
+    KLOG(Info, "Client terminated.")
     return IOUserClient::didTerminate(provider, options, defer);
 }
 
@@ -114,11 +114,11 @@ IOReturn DriverClient::open(OSObject *target, void *reference, IOExternalMethodA
         return kIOReturnNotAttached;
     }
     if (!me->m_driverService->open(me)) {
-        KLOG(LOG_ERROR, "A second client tried to connect.")
+        KLOG(Error, "A second client tried to connect.")
         return kIOReturnExclusiveAccess;
     }
     
-    KLOG(LOG_INFO, "Client connected successfully.")
+    KLOG(Info, "Client connected successfully.")
     return kIOReturnSuccess;
 }
 
@@ -130,7 +130,7 @@ IOReturn DriverClient::setLogLevel(OSObject* target, void* reference, IOExternal
     
     UInt32 level = (UInt32)arguments->scalarInput[0];
     if (g_logLevel != level) {
-        KLOG(LOG_INFO, "Log level setted to be %d", level)
+        KLOG(Info, "Log level setted to be %d", level)
         g_logLevel = level;
     }
     return kIOReturnSuccess;
