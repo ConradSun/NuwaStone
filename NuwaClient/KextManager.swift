@@ -73,7 +73,7 @@ class KextManager {
     
     private func processKextRequests(type: UInt32, address: mach_vm_address_t, recvPort: mach_port_t) {
         let queueMemory = UnsafeMutablePointer<IODataQueueMemory>.init(bitPattern: UInt(address))
-        DispatchQueue.main.async {
+        DispatchQueue.global().async {
             repeat {
                 repeat {
                     var kextEvent = NuwaKextEvent()
