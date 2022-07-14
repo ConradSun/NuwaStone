@@ -32,7 +32,7 @@ public:
     bool postToAuthQueue(NuwaKextEvent *eventInfo);
     
 private:
-    IOReturn init();
+    bool init();
     void free();
     static EventDispatcher *m_sharedInstance;
     IOSharedDataQueue *m_authDataQueue;

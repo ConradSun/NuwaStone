@@ -101,8 +101,8 @@
 			isa = PBXGroup;
 			children = (
 				3ABAFF822879C0D900928C22 /* AppDelegate.swift */,
-				3ABAFFA42879C31200928C22 /* DriverManager */,
-				3ABAFFB02879C82400928C22 /* ViewControllers */,
+				3ABAFF842879C0D900928C22 /* ViewController.swift */,
+				3ABAFFAE2879C4A200928C22 /* KextManager.swift */,
 				3ABAFF862879C0DA00928C22 /* Assets.xcassets */,
 				3ABAFF882879C0DA00928C22 /* Main.storyboard */,
 				3ABAFF8B2879C0DA00928C22 /* NuwaClient.entitlements */,
@@ -177,28 +177,12 @@
 			path = KernelControl;
 			sourceTree = "<group>";
 		};
-		3ABAFFA42879C31200928C22 /* DriverManager */ = {
-			isa = PBXGroup;
-			children = (
-				3ABAFFAE2879C4A200928C22 /* KextManager.swift */,
-			);
-			path = DriverManager;
-			sourceTree = "<group>";
-		};
 		3ABAFFA52879C32300928C22 /* NuwaUtils */ = {
 			isa = PBXGroup;
 			children = (
 				3ABAFFAC2879C47800928C22 /* NuwaLog.swift */,
 			);
 			path = NuwaUtils;
-			sourceTree = "<group>";
-		};
-		3ABAFFB02879C82400928C22 /* ViewControllers */ = {
-			isa = PBXGroup;
-			children = (
-				3ABAFF842879C0D900928C22 /* ViewController.swift */,
-			);
-			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

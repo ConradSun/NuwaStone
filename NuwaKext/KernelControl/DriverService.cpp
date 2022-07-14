@@ -25,7 +25,7 @@ bool DriverService::start(IOService *provider) {
     if (m_kauthController == nullptr) {
         return false;
     }
-    if (!m_kauthController->init() || m_kauthController->startListeners() != KERN_SUCCESS) {
+    if (!m_kauthController->init() || !m_kauthController->startListeners()) {
         m_kauthController->release();
         m_kauthController = nullptr;
         

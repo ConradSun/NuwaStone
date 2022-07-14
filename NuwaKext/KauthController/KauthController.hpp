@@ -24,18 +24,28 @@ public:
     void free() override;
     
     // Starts the kauth listeners.
-    kern_return_t startListeners();
+    bool startListeners();
 
     // Stops the kauth listeners.
-    kern_return_t stopListeners();
+    void stopListeners();
     
     // Called when send event to client.
     bool postToAuthQueue(NuwaKextEvent *eventInfo);
+    
+    void increaseEventCount();
+    void decreaseEventCount();
+    
+    int vnodeCallback(const kauth_cred_t cred, const vfs_context_t ctx, const vnode_t vp, int *errno);
+    
+    kern_return_t fillBasicInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp);
+    kern_return_t fillProcInfo(NuwaKextProc *ProctInfo, const vfs_context_t ctx);
+    kern_return_t fillFileInfo(NuwaKextFile *FileInfo, const vfs_context_t ctx, const vnode_t vp);
     
 private:
     kauth_listener_t m_vnodeListener;
     kauth_listener_t m_fileopListener;
     EventDispatcher *m_eventDispatcher;
+    static SInt32 m_activeEventCount;
 };
 
 /**

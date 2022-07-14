@@ -10,6 +10,8 @@
 
 #include <libkern/OSTypes.h>
 
+static const char *kDriverIdentifier = "com.nuwastone";
+static const char *kDriverService = "DriverService";
 static const UInt32 kMaxAuthQueueEvents = 2048;
 static const UInt32 kMaxPathLength = 1024;
 static const UInt32 kMaxNameLength = 256;
@@ -24,7 +26,22 @@ typedef enum {
 typedef enum {
     kQueueTypeAuth,
     kQueueTypeNotify
-} NuwaKextQueueType;
+} NuwaKextQueue;
+
+typedef enum {
+    kActionAuthNull     = 0,
+    
+    kActionAuthBegin    = 0x100,
+    kActionAuthProcessCreate,
+    
+    kActionNotifyBegin  = 0x200,
+    kActionNotifyProcessCreate,
+    kActionNotifyFileCloseModify,
+    kActionNotifyFileRename,
+    kActionNotifyFileDelete,
+    kActionNotifyNetworkAccess,
+    kActionNotifyDnsQuery
+} NuwaKextAction;
 
 typedef struct {
     UInt32 pid;
@@ -47,8 +64,8 @@ typedef struct {
 
 typedef struct {
     UInt64 vnodeID;
-    UInt64 eventType;
     UInt64 eventTime;
+    NuwaKextAction eventType;
     NuwaKextProc mainProcess;
 
     union {

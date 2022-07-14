@@ -10,13 +10,13 @@
 
 EventDispatcher* EventDispatcher::m_sharedInstance = nullptr;
 
-IOReturn EventDispatcher::init() {
+bool EventDispatcher::init() {
     m_authDataQueue = IOSharedDataQueue::withEntries(kMaxAuthQueueEvents, sizeof(NuwaKextEvent));
     if (m_authDataQueue == nullptr) {
         KLOG(LOG_ERROR, "Failed to create auth data queue.")
-        return kIOReturnNoMemory;
+        return false;
     }
-    return kIOReturnSuccess;
+    return true;
 }
 
 void EventDispatcher::free() {
@@ -31,7 +31,7 @@ EventDispatcher *EventDispatcher::getInstance() {
     }
     
     m_sharedInstance = new EventDispatcher();
-    if (m_sharedInstance->init() != kIOReturnSuccess) {
+    if (!m_sharedInstance->init()) {
         KLOG(LOG_ERROR, "Failed to create instance for EventDispatcher.")
         return nullptr;
     }

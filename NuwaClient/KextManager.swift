@@ -16,7 +16,7 @@ class KextManager {
     }
     
     private let notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
-    private let kextID = CFStringCreateWithCString(kCFAllocatorDefault, "com.nuwastone", kCFStringEncodingASCII)
+    private let kextID = CFStringCreateWithCString(kCFAllocatorDefault, kDriverIdentifier, kCFStringEncodingASCII)
     private let authEventQueue = DispatchQueue.global()
     var connection: io_connect_t = 0
     var isConnected: Bool = false
@@ -73,7 +73,7 @@ class KextManager {
     
     private func processKextRequests(type: UInt32, address: mach_vm_address_t, recvPort: mach_port_t) {
         let queueMemory = UnsafeMutablePointer<IODataQueueMemory>.init(bitPattern: UInt(address))
-        DispatchQueue.main.async { [self] in
+        DispatchQueue.main.async {
             repeat {
                 repeat {
                     var kextEvent = NuwaKextEvent()
@@ -81,13 +81,14 @@ class KextManager {
                     let result = IODataQueueDequeue(queueMemory, &kextEvent, &dataSize)
                     if result != kIOReturnSuccess {
                         Log(level: NuwaLogLevel.LOG_ERROR, "Failed to dequeue data [\(String.init(format: "0x%x", result))].")
-                        return
+                        break
                     }
                     
                     switch type {
                     case kQueueTypeAuth.rawValue:
                         self.authEventQueue.async {
-                            Log(level: NuwaLogLevel.LOG_INFO, "++++++++++++++++.")
+                            let str = String(cString: &kextEvent.processCreate.path.0)
+                            Log(level: NuwaLogLevel.LOG_INFO, "pid [\(String.init(format: "%d", kextEvent.mainProcess.pid))], file path [\(str)].")
                         }
                     default:
                         break
@@ -98,7 +99,7 @@ class KextManager {
     }
     
     func loadKernelExtension() -> Bool {
-        guard let service = IOServiceMatching("DriverService") else {
+        guard let service = IOServiceMatching(kDriverService) else {
             return false
         }
         
