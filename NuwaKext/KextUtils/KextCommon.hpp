@@ -13,12 +13,15 @@
 static const char *kDriverIdentifier = "com.nuwastone";
 static const char *kDriverService = "DriverService";
 static const UInt32 kMaxAuthQueueEvents = 2048;
+static const UInt32 kMaxCacheItems = 1024;
 static const UInt32 kMaxPathLength = 1024;
 static const UInt32 kMaxNameLength = 256;
-static const UInt32 kMaxIPLength = 41;
+static const UInt8 kMaxIPLength = 41;
 
 typedef enum {
     kNuwaUserClientOpen,
+    kNuwaUserClientAllowBinary,
+    kNuwaUserClientDenyBinary,
     kNuwaUserClientSetLogLevel,
     kNuwaUserClientNMethods
 } NuwaKextMethods;

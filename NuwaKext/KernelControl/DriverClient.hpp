@@ -8,6 +8,7 @@
 #ifndef DriverClient_hpp
 #define DriverClient_hpp
 
+#include "CacheManager.hpp"
 #include "DriverService.hpp"
 #include "EventDispatcher.hpp"
 #include <sys/kauth.h>
@@ -46,13 +47,20 @@ public:
 
     // Called during client connection.
     static IOReturn open(OSObject *target, void *reference, IOExternalMethodArguments *arguments);
+    
+    // Called by daemon to allow a binary.
+    static IOReturn allowBinary(OSObject *target, void *reference, IOExternalMethodArguments *arguments);
+    
+    // Called by daemon to deny a binary.
+    static IOReturn denyBinary(OSObject *target, void *reference, IOExternalMethodArguments *arguments);
 
     // Called when the kext log level is setted.
     static IOReturn setLogLevel(OSObject* target, void* reference, IOExternalMethodArguments* arguments);
     
 private:
-    DriverService *m_driverService;
+    CacheManager *m_cacheManager;
     EventDispatcher *m_eventDispatcher;
+    DriverService *m_driverService;
 };
 
 #endif /* DriverClient_hpp */

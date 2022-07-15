@@ -7,7 +7,7 @@
 
 #include "KauthController.hpp"
 #include "EventDispatcher.hpp"
-#include "KextLog.hpp"
+#include "KextLogger.hpp"
 #include <sys/proc.h>
 
 OSDefineMetaClassAndStructors(KauthController, OSObject);
@@ -18,6 +18,10 @@ bool KauthController::init() {
         return false;
     }
     
+    m_cacheManager = CacheManager::getInstance();
+    if (m_cacheManager == nullptr) {
+        return false;
+    }
     m_eventDispatcher = EventDispatcher::getInstance();
     if (m_eventDispatcher == nullptr) {
         return false;
@@ -55,7 +59,7 @@ bool KauthController::postToAuthQueue(NuwaKextEvent *eventInfo) {
     if (eventInfo == nullptr) {
         return false;
     }
-    KLOG(Info, "pid: %d, path: %s.", eventInfo->mainProcess.pid, eventInfo->processCreate.path)
+    Logger(LOG_INFO, "pid: %d, path: %s.", eventInfo->mainProcess.pid, eventInfo->processCreate.path)
     return m_eventDispatcher->postToAuthQueue(eventInfo);
 }
 
@@ -65,6 +69,27 @@ void KauthController::increaseEventCount() {
 
 void KauthController::decreaseEventCount() {
     OSDecrementAtomic(&m_activeEventCount);
+}
+
+int KauthController::getDecisionFromClient(UInt64 vnodeID) {
+    kern_return_t errCode = KERN_SUCCESS;
+    int decision = KAUTH_RESULT_DEFER;
+    struct timespec time = {
+        .tv_sec = 0,
+        .tv_nsec = 100000000
+    };
+    
+    errCode = msleep((void *)vnodeID, nullptr, 0, "Wait for reply", &time);
+    if (errCode == KERN_SUCCESS) {
+        decision = m_cacheManager->getObjectForAuthCache(vnodeID);
+    }
+    else if (errCode == EWOULDBLOCK) {
+        decision = KAUTH_RESULT_DEFER;
+        Logger(LOG_ERROR, "Reply event [%llu] timeout.", vnodeID)
+    }
+    decision = decision == 0 ? KAUTH_RESULT_DEFER : decision;
+    
+    return decision;
 }
 
 int KauthController::vnodeCallback(const kauth_cred_t cred, const vfs_context_t ctx, const vnode_t vp, int *errno) {
@@ -77,23 +102,22 @@ int KauthController::vnodeCallback(const kauth_cred_t cred, const vfs_context_t 
     event->eventType = kActionAuthProcessCreate;
     errCode = fillBasicInfo(event, ctx, vp);
     if (errCode != KERN_SUCCESS) {
-        KLOG(LOG_WARN, "Failed to fill basic info [%d].", errCode)
+        Logger(LOG_WARN, "Failed to fill basic info [%d].", errCode)
         return KAUTH_RESULT_DEFER;
     }
     errCode = fillProcInfo(&event->mainProcess, ctx);
     if (errCode != KERN_SUCCESS) {
-        KLOG(LOG_WARN, "Failed to fill proc info [%d].", errCode)
+        Logger(LOG_WARN, "Failed to fill proc info [%d].", errCode)
         return KAUTH_RESULT_DEFER;
     }
     errCode = fillFileInfo(&event->processCreate, ctx, vp);
     if (errCode != KERN_SUCCESS) {
-        KLOG(LOG_WARN, "Failed to fill file info [%d].", errCode)
+        Logger(LOG_WARN, "Failed to fill file info [%d].", errCode)
         return KAUTH_RESULT_DEFER;
     }
     postToAuthQueue(event);
     IOFreeAligned(event, sizeof(NuwaKextEvent));
-    
-    return KAUTH_RESULT_DEFER;
+    return getDecisionFromClient(event->vnodeID);
 }
 
 kern_return_t KauthController::fillBasicInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp) {

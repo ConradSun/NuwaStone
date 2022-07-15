@@ -87,8 +87,7 @@ class KextManager {
                     switch type {
                     case kQueueTypeAuth.rawValue:
                         self.authEventQueue.async {
-                            let str = String(cString: &kextEvent.processCreate.path.0)
-                            Logger(.Info, "pid [\(String.init(format: "%d", kextEvent.mainProcess.pid))], file path [\(str)].")
+                            self.processAuthEvent(kextEvent)
                         }
                     default:
                         break
@@ -124,17 +123,6 @@ class KextManager {
         return true
     }
     
-    func setLogLevel(level: UInt32) -> Bool {
-        nuwaLog.logLevel = level
-        let scalar = [UInt64(level)]
-        let result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientSetLogLevel.rawValue, scalar, 1, nil, nil)
-        if result != KERN_SUCCESS {
-            Logger(.Error, "Failed to set log level for kext [\(String.init(format: "0x%x", result))].")
-            return false
-        }
-        return true
-    }
-    
     func listenRequestsForType(type: UInt32) {
         guard isConnected else {
             return
@@ -164,5 +152,50 @@ class KextManager {
         processKextRequests(type: type, address: address, recvPort: recvPort)
         IOConnectUnmapMemory(connection, type, mach_task_self_, address)
         mach_port_deallocate(mach_task_self_, recvPort)
+    }
+}
+
+extension KextManager {
+    func processAuthEvent(_ event: NuwaKextEvent) {
+        var str = event.processCreate.path
+        let procPath = String(cString: &str.0)
+        Logger(.Info, "pid [\(String.init(format: "%d", event.mainProcess.pid))], file path [\(procPath)].")
+        
+        if procPath == "/bin/ls" {
+            _ = replyAuthEvent(vnodeID: event.vnodeID, isAllowed: false)
+            return
+        }
+        _ = replyAuthEvent(vnodeID: event.vnodeID, isAllowed: true)
+    }
+    
+    func replyAuthEvent(vnodeID: UInt64, isAllowed: Bool) -> Bool {
+        guard vnodeID != 0 else {
+            return false
+        }
+        
+        let scalar = [vnodeID]
+        var result = KERN_SUCCESS
+        if isAllowed {
+            result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientAllowBinary.rawValue, scalar, 1, nil, nil)
+        }
+        else {
+            result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientDenyBinary.rawValue, scalar, 1, nil, nil)
+        }
+        if result != KERN_SUCCESS {
+            Logger(.Error, "Failed to reply auth event [\(String.init(format: "0x%x", result))].")
+            return false
+        }
+        return true
+    }
+    
+    func setLogLevel(level: UInt32) -> Bool {
+        nuwaLog.logLevel = level
+        let scalar = [UInt64(level)]
+        let result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientSetLogLevel.rawValue, scalar, 1, nil, nil)
+        if result != KERN_SUCCESS {
+            Logger(.Error, "Failed to set log level for kext [\(String.init(format: "0x%x", result))].")
+            return false
+        }
+        return true
     }
 }

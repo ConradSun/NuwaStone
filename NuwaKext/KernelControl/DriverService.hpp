@@ -10,6 +10,7 @@
 
 #include <IOKit/IOService.h>
 #include <libkern/OSKextLib.h>
+#include "CacheManager.hpp"
 #include "KauthController.hpp"
 #include "EventDispatcher.hpp"
 
@@ -23,9 +24,10 @@ public:
     // Called by the kernel when the kext is unloaded
     void stop(IOService *provider) override;
     
-    
-    
 private:
+    void clearInstances();
+    
+    CacheManager *m_cacheManager;
     KauthController *m_kauthController;
     EventDispatcher *m_eventDispatcher;
     bool m_kextUnloadProtect;

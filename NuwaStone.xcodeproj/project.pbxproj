@@ -14,7 +14,7 @@
 		3ABAFF852879C0D900928C22 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFF842879C0D900928C22 /* ViewController.swift */; };
 		3ABAFF872879C0DA00928C22 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3ABAFF862879C0DA00928C22 /* Assets.xcassets */; };
 		3ABAFF8A2879C0DA00928C22 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3ABAFF882879C0DA00928C22 /* Main.storyboard */; };
-		3ABAFFA72879C3FA00928C22 /* KextLog.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3ABAFFA62879C3FA00928C22 /* KextLog.hpp */; };
+		3ABAFFA72879C3FA00928C22 /* KextLogger.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3ABAFFA62879C3FA00928C22 /* KextLogger.hpp */; };
 		3ABAFFAA2879C40A00928C22 /* DriverClient.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3ABAFFA82879C40A00928C22 /* DriverClient.hpp */; };
 		3ABAFFAB2879C40A00928C22 /* DriverClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFFA92879C40A00928C22 /* DriverClient.cpp */; };
 		3ABAFFAD2879C47800928C22 /* NuwaLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFFAC2879C47800928C22 /* NuwaLogger.swift */; };
@@ -25,6 +25,9 @@
 		3ADEF952287AE55E00DF7609 /* DriverService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3ADEF950287AE55E00DF7609 /* DriverService.cpp */; };
 		3ADEF953287AE55E00DF7609 /* DriverService.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3ADEF951287AE55E00DF7609 /* DriverService.hpp */; };
 		3AF77239287FFDEF009AC154 /* NuwaEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AF77238287FFDEF009AC154 /* NuwaEvents.swift */; };
+		3AF7723C28801567009AC154 /* CacheManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AF7723A28801567009AC154 /* CacheManager.cpp */; };
+		3AF7723D28801567009AC154 /* CacheManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3AF7723B28801567009AC154 /* CacheManager.hpp */; };
+		3AF772412880308E009AC154 /* DriverCache.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3AF7723F2880308E009AC154 /* DriverCache.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,7 +52,7 @@
 		3ABAFF8B2879C0DA00928C22 /* NuwaClient.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NuwaClient.entitlements; sourceTree = "<group>"; };
 		3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = com.nuwastone.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		3ABAFF9A2879C1BC00928C22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		3ABAFFA62879C3FA00928C22 /* KextLog.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KextLog.hpp; sourceTree = "<group>"; };
+		3ABAFFA62879C3FA00928C22 /* KextLogger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KextLogger.hpp; sourceTree = "<group>"; };
 		3ABAFFA82879C40A00928C22 /* DriverClient.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DriverClient.hpp; sourceTree = "<group>"; };
 		3ABAFFA92879C40A00928C22 /* DriverClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DriverClient.cpp; sourceTree = "<group>"; };
 		3ABAFFAC2879C47800928C22 /* NuwaLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NuwaLogger.swift; sourceTree = "<group>"; };
@@ -60,6 +63,9 @@
 		3ADEF950287AE55E00DF7609 /* DriverService.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DriverService.cpp; sourceTree = "<group>"; };
 		3ADEF951287AE55E00DF7609 /* DriverService.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DriverService.hpp; sourceTree = "<group>"; };
 		3AF77238287FFDEF009AC154 /* NuwaEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NuwaEvents.swift; sourceTree = "<group>"; };
+		3AF7723A28801567009AC154 /* CacheManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CacheManager.cpp; sourceTree = "<group>"; };
+		3AF7723B28801567009AC154 /* CacheManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CacheManager.hpp; sourceTree = "<group>"; };
+		3AF7723F2880308E009AC154 /* DriverCache.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DriverCache.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,7 +136,7 @@
 		3ABAFF9E2879C23A00928C22 /* KextUtils */ = {
 			isa = PBXGroup;
 			children = (
-				3ABAFFA62879C3FA00928C22 /* KextLog.hpp */,
+				3ABAFFA62879C3FA00928C22 /* KextLogger.hpp */,
 				3AD5757D287C18C000C0C2BE /* KextCommon.hpp */,
 			);
 			path = KextUtils;
@@ -139,6 +145,9 @@
 		3ABAFF9F2879C24900928C22 /* CacheManager */ = {
 			isa = PBXGroup;
 			children = (
+				3AF7723A28801567009AC154 /* CacheManager.cpp */,
+				3AF7723B28801567009AC154 /* CacheManager.hpp */,
+				3AF7723F2880308E009AC154 /* DriverCache.hpp */,
 			);
 			path = CacheManager;
 			sourceTree = "<group>";
@@ -196,10 +205,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ADAC52A287D582C00DD8812 /* EventDispatcher.hpp in Headers */,
-				3ABAFFA72879C3FA00928C22 /* KextLog.hpp in Headers */,
+				3ABAFFA72879C3FA00928C22 /* KextLogger.hpp in Headers */,
 				3AD5757E287C18C000C0C2BE /* KextCommon.hpp in Headers */,
 				3ADEF953287AE55E00DF7609 /* DriverService.hpp in Headers */,
 				3A5F3316287B145400A8F76E /* KauthController.hpp in Headers */,
+				3AF772412880308E009AC154 /* DriverCache.hpp in Headers */,
+				3AF7723D28801567009AC154 /* CacheManager.hpp in Headers */,
 				3ABAFFAA2879C40A00928C22 /* DriverClient.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -318,6 +329,7 @@
 			files = (
 				3ABAFFAB2879C40A00928C22 /* DriverClient.cpp in Sources */,
 				3ADAC529287D582C00DD8812 /* EventDispatcher.cpp in Sources */,
+				3AF7723C28801567009AC154 /* CacheManager.cpp in Sources */,
 				3A5F3315287B145400A8F76E /* KauthController.cpp in Sources */,
 				3AB13ABC287EC378004E1093 /* main.cpp in Sources */,
 				3ADEF952287AE55E00DF7609 /* DriverService.cpp in Sources */,

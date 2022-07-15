@@ -6,14 +6,14 @@
 //
 
 #include "EventDispatcher.hpp"
-#include "KextLog.hpp"
+#include "KextLogger.hpp"
 
 EventDispatcher* EventDispatcher::m_sharedInstance = nullptr;
 
 bool EventDispatcher::init() {
     m_authDataQueue = IOSharedDataQueue::withEntries(kMaxAuthQueueEvents, sizeof(NuwaKextEvent));
     if (m_authDataQueue == nullptr) {
-        KLOG(Error, "Failed to create auth data queue.")
+        Logger(LOG_ERROR, "Failed to create auth data queue.")
         return false;
     }
     return true;
@@ -32,7 +32,7 @@ EventDispatcher *EventDispatcher::getInstance() {
     
     m_sharedInstance = new EventDispatcher();
     if (!m_sharedInstance->init()) {
-        KLOG(Error, "Failed to create instance for EventDispatcher.")
+        Logger(LOG_ERROR, "Failed to create instance for EventDispatcher.")
         return nullptr;
     }
     return m_sharedInstance;
@@ -76,7 +76,7 @@ IOMemoryDescriptor *EventDispatcher::getMemoryDescriptorForQueue(UInt32 type) co
 bool EventDispatcher::postToAuthQueue(NuwaKextEvent *eventInfo) {
     bool result = m_authDataQueue->enqueue(eventInfo, sizeof(NuwaKextEvent));
     if (!result) {
-        KLOG(LOG_WARN, "Failed to push back data to auth queue.")
+        Logger(LOG_WARN, "Failed to push back data to auth queue.")
     }
     return result;
 }

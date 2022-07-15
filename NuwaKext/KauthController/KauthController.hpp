@@ -8,10 +8,10 @@
 #ifndef KauthController_hpp
 #define KauthController_hpp
 
+#include "CacheManager.hpp"
 #include "EventDispatcher.hpp"
 #include <sys/vnode.h>
 #include <sys/kauth.h>
-#include <libkern/c++/OSContainers.h>
 
 class KauthController : public OSObject {
     OSDeclareDefaultStructors(KauthController);
@@ -37,13 +37,17 @@ public:
     
     int vnodeCallback(const kauth_cred_t cred, const vfs_context_t ctx, const vnode_t vp, int *errno);
     
+private:
+    
+    int getDecisionFromClient(UInt64 vnodeID);
+    
     kern_return_t fillBasicInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp);
     kern_return_t fillProcInfo(NuwaKextProc *ProctInfo, const vfs_context_t ctx);
     kern_return_t fillFileInfo(NuwaKextFile *FileInfo, const vfs_context_t ctx, const vnode_t vp);
     
-private:
     kauth_listener_t m_vnodeListener;
     kauth_listener_t m_fileopListener;
+    CacheManager *m_cacheManager;
     EventDispatcher *m_eventDispatcher;
     static SInt32 m_activeEventCount;
 };

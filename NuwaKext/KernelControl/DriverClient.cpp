@@ -7,7 +7,7 @@
 
 #include "DriverClient.hpp"
 #include "KextCommon.hpp"
-#include "KextLog.hpp"
+#include "KextLogger.hpp"
 
 OSDefineMetaClassAndStructors(DriverClient, IOUserClient);
 
@@ -15,7 +15,7 @@ OSDefineMetaClassAndStructors(DriverClient, IOUserClient);
 
 bool DriverClient::initWithTask(task_t owningTask, void *securityID, UInt32 type) {
     if (clientHasPrivilege(owningTask, kIOClientPrivilegeAdministrator) != KERN_SUCCESS) {
-        KLOG(Error, "Unprivileged client attempted to connect.")
+        Logger(LOG_ERROR, "Unprivileged client attempted to connect.")
         return false;
     }
 
@@ -23,13 +23,17 @@ bool DriverClient::initWithTask(task_t owningTask, void *securityID, UInt32 type
         return false;
     }
 
-    KLOG(Info, "Driver client init successfully.")
+    Logger(LOG_INFO, "Driver client init successfully.")
     return true;
 }
 
 bool DriverClient::start(IOService *provider) {
     m_driverService = OSDynamicCast(DriverService, provider);
     if (m_driverService == nullptr) {
+        return false;
+    }
+    m_cacheManager = CacheManager::getInstance();
+    if (m_cacheManager == nullptr) {
         return false;
     }
     m_eventDispatcher = EventDispatcher::getInstance();
@@ -41,12 +45,13 @@ bool DriverClient::start(IOService *provider) {
 
 void DriverClient::stop(IOService *provider) {
     m_eventDispatcher = nullptr;
+    m_cacheManager = nullptr;
     m_driverService = nullptr;
     IOUserClient::stop(provider);
 }
 
 IOReturn DriverClient::clientDied() {
-    KLOG(Info, "Client died.")
+    Logger(LOG_INFO, "Client died.")
     return terminate(0) ? kIOReturnSuccess : kIOReturnError;
 }
 
@@ -55,7 +60,7 @@ IOReturn DriverClient::clientClose() {
         m_driverService->close(this);
     }
     
-    KLOG(Info, "Client disconnected.")
+    Logger(LOG_INFO, "Client disconnected.")
     return terminate(0) ? kIOReturnSuccess : kIOReturnError;
 }
 
@@ -64,7 +69,7 @@ bool DriverClient::didTerminate(IOService *provider, IOOptionBits options, bool 
         m_driverService->close(this);
     }
     
-    KLOG(Info, "Client terminated.")
+    Logger(LOG_INFO, "Client terminated.")
     return IOUserClient::didTerminate(provider, options, defer);
 }
 
@@ -114,11 +119,33 @@ IOReturn DriverClient::open(OSObject *target, void *reference, IOExternalMethodA
         return kIOReturnNotAttached;
     }
     if (!me->m_driverService->open(me)) {
-        KLOG(Error, "A second client tried to connect.")
+        Logger(LOG_ERROR, "A second client tried to connect.")
         return kIOReturnExclusiveAccess;
     }
     
-    KLOG(Info, "Client connected successfully.")
+    Logger(LOG_INFO, "Client connected successfully.")
+    return kIOReturnSuccess;
+}
+
+IOReturn DriverClient::allowBinary(OSObject *target, void *reference, IOExternalMethodArguments *arguments) {
+    DriverClient *me = OSDynamicCast(DriverClient, target);
+    if (me == nullptr) {
+        return kIOReturnBadArgument;
+    }
+    
+    UInt64 vnodeID = arguments->scalarInput[0];
+    me->m_cacheManager->setObjectForAuthCache(vnodeID, KAUTH_RESULT_DEFER);
+    return kIOReturnSuccess;
+}
+
+IOReturn DriverClient::denyBinary(OSObject *target, void *reference, IOExternalMethodArguments *arguments) {
+    DriverClient *me = OSDynamicCast(DriverClient, target);
+    if (me == nullptr) {
+        return kIOReturnBadArgument;
+    }
+    
+    UInt64 vnodeID = arguments->scalarInput[0];
+    me->m_cacheManager->setObjectForAuthCache(vnodeID, KAUTH_RESULT_DENY);
     return kIOReturnSuccess;
 }
 
@@ -130,7 +157,7 @@ IOReturn DriverClient::setLogLevel(OSObject* target, void* reference, IOExternal
     
     UInt32 level = (UInt32)arguments->scalarInput[0];
     if (g_logLevel != level) {
-        KLOG(Info, "Log level setted to be %d", level)
+        Logger(LOG_INFO, "Log level setted to be %d", level)
         g_logLevel = level;
     }
     return kIOReturnSuccess;
@@ -144,6 +171,8 @@ IOReturn DriverClient::externalMethod(UInt32 selector, IOExternalMethodArguments
     static IOExternalMethodDispatch sMethods[kNuwaUserClientNMethods] = {
         // Function ptr, input scalar count, input struct size, output scalar count, output struct size
         { &DriverClient::open, 0, 0, 0, 0 },
+        { &DriverClient::allowBinary, 1, 0, 0, 0 },
+        { &DriverClient::denyBinary, 1, 0, 0, 0 },
         { &DriverClient::setLogLevel, 1, 0, 0, 0},
     };
 
