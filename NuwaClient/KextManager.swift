@@ -87,7 +87,7 @@ class KextManager {
                     switch type {
                     case kQueueTypeAuth.rawValue:
                         self.authEventQueue.async {
-                            self.processAuthEvent(kextEvent)
+                            self.processAuthEvent(&kextEvent)
                         }
                     default:
                         break
@@ -156,9 +156,8 @@ class KextManager {
 }
 
 extension KextManager {
-    func processAuthEvent(_ event: NuwaKextEvent) {
-        var str = event.processCreate.path
-        let procPath = String(cString: &str.0)
+    func processAuthEvent(_ event: inout NuwaKextEvent) {
+        let procPath = String(cString: &event.processCreate.path.0)
         Logger(.Info, "pid [\(String.init(format: "%d", event.mainProcess.pid))], file path [\(procPath)].")
         
         if procPath == "/bin/ls" {
