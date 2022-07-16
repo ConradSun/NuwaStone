@@ -21,8 +21,8 @@ enum NuwaEventType : String {
 struct NuwaEventInfo {
     var eventType: NuwaEventType
     var eventTime: UInt64
-    var pid: Int32
-    var ppid: Int32
+    var pid: UInt32
+    var ppid: UInt32
     var procPath: String
     
     var props: Dictionary<String, Any>
@@ -41,8 +41,8 @@ struct NuwaEventInfo {
     init() {
         eventType = .TypeNil
         eventTime = 0
-        pid = -1
-        ppid = -1
+        pid = 0
+        ppid = 0
         procPath = ""
         props = Dictionary<String, Any>()
     }

@@ -157,13 +157,14 @@ class KextManager {
 
 extension KextManager {
     func processAuthEvent(_ event: inout NuwaKextEvent) {
-        let procPath = String(cString: &event.processCreate.path.0)
-        Logger(.Info, "pid [\(String.init(format: "%d", event.mainProcess.pid))], file path [\(procPath)].")
+        var nuwaEvent = NuwaEventInfo()
+        nuwaEvent.eventType = .ProcessCreate
+        nuwaEvent.eventTime = event.eventTime
+        nuwaEvent.pid = event.mainProcess.pid
+        nuwaEvent.ppid = event.mainProcess.ppid
+        nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
+        Logger(.Info, "\(nuwaEvent.desc)")
         
-        if procPath == "/bin/ls" {
-            _ = replyAuthEvent(vnodeID: event.vnodeID, isAllowed: false)
-            return
-        }
         _ = replyAuthEvent(vnodeID: event.vnodeID, isAllowed: true)
     }
     
