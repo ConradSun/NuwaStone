@@ -12,9 +12,13 @@
 
 static const char *kDriverIdentifier = "com.nuwastone";
 static const char *kDriverService = "DriverService";
+
+static const UInt32 kMaxAuthWaitTime = 100; // ms
+
 static const UInt32 kMaxAuthQueueEvents = 1024;
 static const UInt32 kMaxNotifyQueueEvents = 2048;
 static const UInt32 kMaxCacheItems = 1024;
+
 static const UInt32 kMaxPathLength = 1024;
 static const UInt32 kMaxNameLength = 256;
 static const UInt8 kMaxIPLength = 41;

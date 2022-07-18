@@ -81,14 +81,14 @@ void KauthController::decreaseEventCount() {
 int KauthController::getDecisionFromClient(UInt64 vnodeID) {
     kern_return_t errCode = KERN_SUCCESS;
     int decision = KAUTH_RESULT_DEFER;
-    struct timespec time = {
-        .tv_sec = 1,
-        .tv_nsec = 0
+    static struct timespec time = {
+        .tv_sec = kMaxAuthWaitTime / 1000,
+        .tv_nsec = (kMaxAuthWaitTime - time.tv_sec * 1000) * 1000000
     };
     
     errCode = msleep((void *)vnodeID, nullptr, 0, "Wait for reply", &time);
     if (errCode == KERN_SUCCESS) {
-        decision = m_cacheManager->getObjectForAuthCache(vnodeID);
+        decision = m_cacheManager->getFromAuthResultCache(vnodeID);
     }
     else if (errCode == EWOULDBLOCK) {
         decision = KAUTH_RESULT_DEFER;
@@ -112,6 +112,10 @@ int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, in
     if (errCode == KERN_SUCCESS) {
         postToAuthQueue(event);
         response = getDecisionFromClient(event->vnodeID);
+        if (response == KAUTH_RESULT_DEFER || response == KAUTH_RESULT_ALLOW) {
+            UInt64 value = ((UInt64)event->mainProcess.pid << 32) | event->mainProcess.ppid;
+            m_cacheManager->setForAuthExecCache(event->vnodeID, value);
+        }
     }
     
     IOFreeAligned(event, sizeof(NuwaKextEvent));
@@ -150,6 +154,12 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
     }
     
     errCode = fillEventInfo(event, ctx, vp);
+    if (action == KAUTH_FILEOP_EXEC) {
+        UInt64 result = m_cacheManager->getFromAuthExecCache(event->vnodeID);
+        if (result != 0 && (result >> 32) == event->mainProcess.pid) {
+            event->mainProcess.ppid = (result << 32) >> 32;
+        }
+    }
     if (errCode == KERN_SUCCESS) {
         postToNotifyQueue(event);
     }

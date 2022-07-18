@@ -17,16 +17,24 @@ lck_grp_t *g_driverLockGrp = lck_grp_alloc_init("nuwa-locks", g_driverLockGrpAtt
 CacheManager* CacheManager::m_sharedInstance = nullptr;
 
 bool CacheManager::init() {
-    m_authCache = new DriverCache<UInt64, UInt8>(kMaxCacheItems);
-    if (m_authCache == nullptr) {
+    m_authResultCache = new DriverCache<UInt64, UInt8>(kMaxCacheItems);
+    if (m_authResultCache == nullptr) {
+        return false;
+    }
+    m_authExecCache = new DriverCache<UInt64, UInt64>(kMaxCacheItems);
+    if (m_authExecCache == nullptr) {
+        delete m_authResultCache;
+        m_authResultCache = nullptr;
         return false;
     }
     return true;
 }
 
 void CacheManager::free() {
-    delete m_authCache;
-    m_authCache = nullptr;
+    delete m_authResultCache;
+    m_authResultCache = nullptr;
+    delete m_authExecCache;
+    m_authExecCache = nullptr;
 }
 
 CacheManager *CacheManager::getInstance() {
@@ -52,18 +60,37 @@ void CacheManager::release() {
     m_sharedInstance = nullptr;
 }
 
-bool CacheManager::setObjectForAuthCache(UInt64 vnodeID, UInt8 result) {
+bool CacheManager::setForAuthResultCache(UInt64 vnodeID, UInt8 result) {
     if (vnodeID == 0) {
         return false;
     }
-    m_authCache->setObject(vnodeID, result);
-    wakeup((void *)vnodeID);
-    return true;
+    
+    if (m_authResultCache->setObject(vnodeID, result)) {
+        wakeup((void *)vnodeID);
+        return true;
+    }
+    return false;
 }
 
-UInt8 CacheManager::getObjectForAuthCache(UInt64 vnodeID) {
+bool CacheManager::setForAuthExecCache(UInt64 vnodeID, UInt64 value) {
+    if (vnodeID == 0) {
+        return false;
+    }
+    
+    return m_authExecCache->setObject(vnodeID, value);
+}
+
+UInt8 CacheManager::getFromAuthResultCache(UInt64 vnodeID) {
     if (vnodeID == 0) {
         return 0;
     }
-    return m_authCache->getObject(vnodeID);
+    return m_authResultCache->getObject(vnodeID);
+}
+
+UInt64 CacheManager::getFromAuthExecCache(UInt64 vnodeID) {
+    if (vnodeID == 0) {
+        return 0;
+    }
+    
+    return m_authExecCache->getObject(vnodeID);
 }

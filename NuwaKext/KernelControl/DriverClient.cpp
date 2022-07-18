@@ -134,7 +134,7 @@ IOReturn DriverClient::allowBinary(OSObject *target, void *reference, IOExternal
     }
     
     UInt64 vnodeID = arguments->scalarInput[0];
-    me->m_cacheManager->setObjectForAuthCache(vnodeID, KAUTH_RESULT_DEFER);
+    me->m_cacheManager->setForAuthResultCache(vnodeID, KAUTH_RESULT_DEFER);
     return kIOReturnSuccess;
 }
 
@@ -145,7 +145,7 @@ IOReturn DriverClient::denyBinary(OSObject *target, void *reference, IOExternalM
     }
     
     UInt64 vnodeID = arguments->scalarInput[0];
-    me->m_cacheManager->setObjectForAuthCache(vnodeID, KAUTH_RESULT_DENY);
+    me->m_cacheManager->setForAuthResultCache(vnodeID, KAUTH_RESULT_DENY);
     return kIOReturnSuccess;
 }
 
