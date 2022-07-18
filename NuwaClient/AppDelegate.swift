@@ -21,6 +21,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
+        kextManager.listenRequestsForType(type: kQueueTypeNotify.rawValue)
         // Insert code here to initialize your application
     }
 

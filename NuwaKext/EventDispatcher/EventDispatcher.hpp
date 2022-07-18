@@ -28,14 +28,18 @@ public:
     // Called in client to provide the shared dataqueue memory for the auth or other queue.
     IOMemoryDescriptor *getMemoryDescriptorForQueue(UInt32 type) const;
     
-    // Called when send event to client.
+    // Called when send auth event to client.
     bool postToAuthQueue(NuwaKextEvent *eventInfo);
+    
+    // Called when send notify event to client.
+    bool postToNtifyQueue(NuwaKextEvent *eventInfo);
     
 private:
     bool init();
     void free();
     static EventDispatcher *m_sharedInstance;
     IOSharedDataQueue *m_authDataQueue;
+    IOSharedDataQueue *m_notifyDataQueue;
 };
 
 #endif /* EventDispatcher_hpp */

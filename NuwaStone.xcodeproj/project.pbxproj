@@ -41,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NuwaBridge.hpp; sourceTree = "<group>"; };
 		3A5F3313287B145400A8F76E /* KauthController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KauthController.cpp; sourceTree = "<group>"; };
 		3A5F3314287B145400A8F76E /* KauthController.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = KauthController.hpp; sourceTree = "<group>"; };
 		3AB13ABB287EC378004E1093 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -193,6 +194,7 @@
 			children = (
 				3ABAFFAC2879C47800928C22 /* NuwaLogger.swift */,
 				3AF77238287FFDEF009AC154 /* NuwaEvents.swift */,
+				3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */,
 			);
 			path = NuwaUtils;
 			sourceTree = "<group>";
@@ -498,7 +500,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NuwaKext/KextUtils/KextCommon.hpp";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NuwaUtils/NuwaBridge.hpp";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -530,7 +532,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NuwaKext/KextUtils/KextCommon.hpp";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NuwaUtils/NuwaBridge.hpp";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

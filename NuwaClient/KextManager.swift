@@ -18,6 +18,7 @@ class KextManager {
     private let notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
     private let kextID = CFStringCreateWithCString(kCFAllocatorDefault, kDriverIdentifier, kCFStringEncodingASCII)
     private let authEventQueue = DispatchQueue.global()
+    private let notifyEventQueue = DispatchQueue.global()
     var connection: io_connect_t = 0
     var isConnected: Bool = false
     var nuwaLog = NuwaLog()
@@ -88,6 +89,10 @@ class KextManager {
                     case kQueueTypeAuth.rawValue:
                         self.authEventQueue.async {
                             self.processAuthEvent(&kextEvent)
+                        }
+                    case kQueueTypeNotify.rawValue:
+                        self.notifyEventQueue.async {
+                            self.processNotifyEvent(&kextEvent)
                         }
                     default:
                         break
@@ -166,6 +171,36 @@ extension KextManager {
         Logger(.Info, "\(nuwaEvent.desc)")
         
         _ = replyAuthEvent(vnodeID: event.vnodeID, isAllowed: true)
+    }
+    
+    func processNotifyEvent(_ event: inout NuwaKextEvent) {
+        var nuwaEvent = NuwaEventInfo()
+        
+        switch event.eventType {
+        case kActionNotifyProcessCreate:
+            nuwaEvent.eventType = .ProcessCreate
+            nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
+        case kActionNotifyFileCloseModify:
+            nuwaEvent.eventType = .FileCloseModify
+            nuwaEvent.props.updateValue(String(cString: &event.fileCloseModify.path.0), forKey: "FilePath")
+        case kActionNotifyFileRename:
+            nuwaEvent.eventType = .FileRename
+            nuwaEvent.props.updateValue(String(cString: &event.fileRename.srcFile.path.0), forKey: "from")
+            nuwaEvent.props.updateValue(String(cString: &event.fileRename.newPath.0), forKey: "move to")
+        case kActionNotifyFileDelete:
+            nuwaEvent.eventType = .FileDelete
+            nuwaEvent.props.updateValue(String(cString: &event.fileDelete.path.0), forKey: "FilePath")
+        default:
+            break
+        }
+        
+        nuwaEvent.eventTime = event.eventTime
+        nuwaEvent.pid = event.mainProcess.pid
+        nuwaEvent.ppid = event.mainProcess.ppid
+        nuwaEvent.fillProcPath()
+        nuwaEvent.fillVnodeInfo()
+        nuwaEvent.fillProcArgs()
+        Logger(.Info, "\(nuwaEvent.desc)")
     }
     
     func replyAuthEvent(vnodeID: UInt64, isAllowed: Bool) -> Bool {

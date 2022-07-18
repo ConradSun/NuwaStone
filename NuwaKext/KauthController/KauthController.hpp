@@ -29,13 +29,17 @@ public:
     // Stops the kauth listeners.
     void stopListeners();
     
-    // Called when send event to client.
+    // Called when send auth event to client.
     bool postToAuthQueue(NuwaKextEvent *eventInfo);
+    
+    // Called when send notify event to client.
+    bool postToNotifyQueue(NuwaKextEvent *eventInfo);
     
     void increaseEventCount();
     void decreaseEventCount();
     
-    int vnodeCallback(const kauth_cred_t cred, const vfs_context_t ctx, const vnode_t vp, int *errno);
+    int vnodeCallback(const vfs_context_t ctx, const vnode_t vp, int *errno);
+    void fileOpCallback(kauth_action_t action, const vnode_t vp, const char *srcPath, const char *newPath);
     
 private:
     
@@ -44,6 +48,7 @@ private:
     kern_return_t fillBasicInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp);
     kern_return_t fillProcInfo(NuwaKextProc *ProctInfo, const vfs_context_t ctx);
     kern_return_t fillFileInfo(NuwaKextFile *FileInfo, const vfs_context_t ctx, const vnode_t vp);
+    kern_return_t fillEventInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp);
     
     kauth_listener_t m_vnodeListener;
     kauth_listener_t m_fileopListener;
