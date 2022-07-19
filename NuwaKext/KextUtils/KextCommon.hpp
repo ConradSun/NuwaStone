@@ -12,6 +12,7 @@
 
 static const char *kDriverIdentifier = "com.nuwastone";
 static const char *kDriverService = "DriverService";
+static const char *kDriverPath = "/Applications/NuwaClient.app/Contents/PlugIns/com.nuwastone.kext";
 
 static const UInt32 kMaxAuthWaitTime = 100; // ms
 

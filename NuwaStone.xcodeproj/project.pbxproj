@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3A5F3315287B145400A8F76E /* KauthController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A5F3313287B145400A8F76E /* KauthController.cpp */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
 		3A5F3316287B145400A8F76E /* KauthController.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A5F3314287B145400A8F76E /* KauthController.hpp */; };
+		3AAA188E2886431B00C1BDAF /* com.nuwastone.kext in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3AB13ABC287EC378004E1093 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AB13ABB287EC378004E1093 /* main.cpp */; };
 		3ABAFF832879C0D900928C22 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFF822879C0D900928C22 /* AppDelegate.swift */; };
 		3ABAFF852879C0D900928C22 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFF842879C0D900928C22 /* ViewController.swift */; };
@@ -31,6 +32,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		3AAA188F2886431B00C1BDAF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3ABAFF772879C0D900928C22 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3ABAFF952879C1BC00928C22;
+			remoteInfo = NuwaKext;
+		};
 		3ABAFFB12879C9CD00928C22 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3ABAFF772879C0D900928C22 /* Project object */;
@@ -39,6 +47,20 @@
 			remoteInfo = NuwaKext;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3AAA18912886431B00C1BDAF /* Embed PlugIns */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				3AAA188E2886431B00C1BDAF /* com.nuwastone.kext in Embed PlugIns */,
+			);
+			name = "Embed PlugIns";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NuwaBridge.hpp; sourceTree = "<group>"; };
@@ -87,6 +109,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3AAA188D2886431B00C1BDAF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		3ABAFF762879C0D900928C22 = {
 			isa = PBXGroup;
 			children = (
@@ -94,6 +123,7 @@
 				3ABAFF972879C1BC00928C22 /* NuwaKext */,
 				3ABAFF812879C0D900928C22 /* NuwaClient */,
 				3ABAFF802879C0D900928C22 /* Products */,
+				3AAA188D2886431B00C1BDAF /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -227,11 +257,13 @@
 				3ABAFF7B2879C0D900928C22 /* Sources */,
 				3ABAFF7C2879C0D900928C22 /* Frameworks */,
 				3ABAFF7D2879C0D900928C22 /* Resources */,
+				3AAA18912886431B00C1BDAF /* Embed PlugIns */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				3ABAFFB22879C9CD00928C22 /* PBXTargetDependency */,
+				3AAA18902886431B00C1BDAF /* PBXTargetDependency */,
 			);
 			name = NuwaClient;
 			productName = NuwaStone;
@@ -341,6 +373,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3AAA18902886431B00C1BDAF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3ABAFF952879C1BC00928C22 /* NuwaKext */;
+			targetProxy = 3AAA188F2886431B00C1BDAF /* PBXContainerItemProxy */;
+		};
 		3ABAFFB22879C9CD00928C22 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3ABAFF952879C1BC00928C22 /* NuwaKext */;

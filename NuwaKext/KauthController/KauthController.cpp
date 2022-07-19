@@ -335,6 +335,9 @@ int fileop_scope_callback(kauth_cred_t credential, void *idata, kauth_action_t a
             if (vnode_vtype(vp) != VREG) {
                 return KAUTH_RESULT_DEFER;
             }
+            if (action == KAUTH_FILEOP_DELETE) {
+                vp = nullptr;
+            }
             break;
             
         case KAUTH_FILEOP_RENAME:

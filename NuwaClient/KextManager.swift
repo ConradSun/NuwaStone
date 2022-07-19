@@ -16,7 +16,6 @@ class KextManager {
     }
     
     private let notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
-    private let kextID = CFStringCreateWithCString(kCFAllocatorDefault, kDriverIdentifier, kCFStringEncodingASCII)
     private let authEventQueue = DispatchQueue.global()
     private let notifyEventQueue = DispatchQueue.global()
     var connection: io_connect_t = 0
@@ -107,7 +106,8 @@ class KextManager {
             return false
         }
         
-        let result = KextManagerLoadKextWithIdentifier(kextID, nil)
+        let kextUrl = CFURLCreateWithBytes(kCFAllocatorDefault, kDriverPath, strlen(kDriverPath), kCFStringEncodingASCII, nil)
+        let result = KextManagerLoadKextWithURL(kextUrl, nil)
         if result != kIOReturnSuccess {
             Logger(.Warning, "Error occured in loading kext [\(String.init(format: "0x%x", result))].")
             return false
@@ -120,6 +120,8 @@ class KextManager {
     
     func unloadKernelExtension() -> Bool {
         IOServiceClose(connection)
+        
+        let kextID = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, kDriverIdentifier, kCFStringEncodingASCII, kCFAllocatorNull)
         let result = KextManagerUnloadKextWithIdentifier(kextID)
         if result != kIOReturnSuccess {
             Logger(.Warning, "Error occured in unloading kext [\(String.init(format: "0x%x", result))].")
@@ -168,7 +170,6 @@ extension KextManager {
         nuwaEvent.pid = event.mainProcess.pid
         nuwaEvent.ppid = event.mainProcess.ppid
         nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
-        Logger(.Info, "\(nuwaEvent.desc)")
         
         _ = replyAuthEvent(vnodeID: event.vnodeID, isAllowed: true)
     }
