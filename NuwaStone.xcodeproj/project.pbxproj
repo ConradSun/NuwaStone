@@ -10,6 +10,7 @@
 		3A5F3315287B145400A8F76E /* KauthController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A5F3313287B145400A8F76E /* KauthController.cpp */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
 		3A5F3316287B145400A8F76E /* KauthController.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A5F3314287B145400A8F76E /* KauthController.hpp */; };
 		3AAA188E2886431B00C1BDAF /* com.nuwastone.kext in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */; };
 		3AB13ABC287EC378004E1093 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AB13ABB287EC378004E1093 /* main.cpp */; };
 		3ABAFF832879C0D900928C22 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFF822879C0D900928C22 /* AppDelegate.swift */; };
 		3ABAFF852879C0D900928C22 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFF842879C0D900928C22 /* ViewController.swift */; };
@@ -66,6 +67,7 @@
 		3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NuwaBridge.hpp; sourceTree = "<group>"; };
 		3A5F3313287B145400A8F76E /* KauthController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KauthController.cpp; sourceTree = "<group>"; };
 		3A5F3314287B145400A8F76E /* KauthController.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = KauthController.hpp; sourceTree = "<group>"; };
+		3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewDelegate.swift; sourceTree = "<group>"; };
 		3AB13ABB287EC378004E1093 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3ABAFF7F2879C0D900928C22 /* NuwaClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NuwaClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3ABAFF822879C0D900928C22 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 			children = (
 				3ABAFF822879C0D900928C22 /* AppDelegate.swift */,
 				3ABAFF842879C0D900928C22 /* ViewController.swift */,
+				3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */,
 				3ABAFFAE2879C4A200928C22 /* KextManager.swift */,
 				3ABAFF862879C0DA00928C22 /* Assets.xcassets */,
 				3ABAFF882879C0DA00928C22 /* Main.storyboard */,
@@ -351,6 +354,7 @@
 			files = (
 				3ABAFF852879C0D900928C22 /* ViewController.swift in Sources */,
 				3ABAFF832879C0D900928C22 /* AppDelegate.swift in Sources */,
+				3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */,
 				3ABAFFAD2879C47800928C22 /* NuwaLogger.swift in Sources */,
 				3ABAFFAF2879C4A200928C22 /* KextManager.swift in Sources */,
 				3AF77239287FFDEF009AC154 /* NuwaEvents.swift in Sources */,

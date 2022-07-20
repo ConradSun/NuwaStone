@@ -8,15 +8,115 @@
 import Cocoa
 
 class ViewController: NSViewController {
-
+    enum DisplayMode {
+        case DisplayAll
+        case DisplayProcess
+        case DisplayFile
+        case DisplayNetwork
+    }
+    
+    @IBOutlet weak var controlButton: NSButton!
+    @IBOutlet weak var scrollButton: NSButton!
+    @IBOutlet weak var clearButton: NSButton!
+    @IBOutlet weak var InfoButton: NSButton!
+    @IBOutlet weak var controlLabel: NSTextField!
+    @IBOutlet weak var displaySegment: NSSegmentedControl!
+    @IBOutlet weak var searchBar: NSSearchField!
+    @IBOutlet weak var eventView: NSTableView!
+    @IBOutlet weak var infoLabel: NSTextField!
+    
+    let kextManager = KextManager()
+    var isStarted = false
+    var isScrollOn = true
+    var isInfoOn = true
+    var updateTimer = Date()
+    var displayMode: DisplayMode = .DisplayAll
+    
+    var reportedItems = [NuwaEventInfo]()
+    var displayedItems = [NuwaEventInfo]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        eventView.delegate = self
+        eventView.dataSource = self
+        eventView.target = self
+        kextManager.delegate = self
+        
+        let displayTimer = Timer(timeInterval: 1.0, repeats: true) { [self] timer in
+            self.reloadEventInfo()
+        }
+        RunLoop.current.add(displayTimer, forMode: .default)
+        displayTimer.fire()
     }
 
     override var representedObject: Any? {
         didSet {
         // Update the view, if already loaded.
+        }
+    }
+    
+    @IBAction func controlButtonClicked(_ sender: Any) {
+        isStarted = !isStarted
+        if isStarted {
+            if !kextManager.loadKernelExtension() {
+                Logger(.Error, "Failed to load kext.")
+                return
+            }
+            kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
+            kextManager.listenRequestsForType(type: kQueueTypeNotify.rawValue)
+            
+            controlButton.image = NSImage(named: "stop")
+            controlLabel.stringValue = "stop"
+        }
+        else {
+            if !kextManager.unloadKernelExtension() {
+                Logger(.Error, "Failed to unload kext.")
+            }
+            
+            controlButton.image = NSImage(named: "start")
+            controlLabel.stringValue = "start"
+        }
+    }
+    
+    @IBAction func scrollButtonClicked(_ sender: Any) {
+        isScrollOn = !isScrollOn
+        if isScrollOn {
+            scrollButton.image = NSImage(named: "scroll-on")
+        }
+        else {
+            scrollButton.image = NSImage(named: "scroll-off")
+        }
+    }
+    
+    @IBAction func clearButtonClicked(_ sender: Any) {
+        displayedItems.removeAll()
+        reloadEventInfo()
+        infoLabel.stringValue = ""
+    }
+    
+    @IBAction func infoButtonClicked(_ sender: Any) {
+        isInfoOn = !isInfoOn
+        if isInfoOn {
+            InfoButton.image = NSImage(named: "show-on")
+        }
+        else {
+            infoLabel.stringValue = ""
+            InfoButton.image = NSImage(named: "show-off")
+        }
+    }
+    
+    @IBAction func displaySegmentValueChanged(_ sender: Any) {
+    }
+    
+    func reloadEventInfo() {
+        if Date().timeIntervalSince(updateTimer) > 1 {
+            let index = IndexSet(integer: eventView.selectedRow)
+            eventView.reloadData()
+            eventView.selectRowIndexes(index, byExtendingSelection: false)
+            if eventView.numberOfRows > 0 && isScrollOn {
+                eventView.scrollRowToVisible(eventView.numberOfRows-1)
+            }
+            updateTimer = Date()
         }
     }
 }

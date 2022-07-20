@@ -21,6 +21,7 @@ class KextManager {
     var connection: io_connect_t = 0
     var isConnected: Bool = false
     var nuwaLog = NuwaLog()
+    var delegate: NuwaEventProtocol?
     
     private func dispatchServiceEvent(for event: Event, iterator: io_iterator_t) {
         repeat {
@@ -201,7 +202,7 @@ extension KextManager {
         nuwaEvent.fillProcPath()
         nuwaEvent.fillVnodeInfo()
         nuwaEvent.fillProcArgs()
-        Logger(.Info, "\(nuwaEvent.desc)")
+        delegate?.displayNuwaEvent(nuwaEvent)
     }
     
     func replyAuthEvent(vnodeID: UInt64, isAllowed: Bool) -> Bool {

@@ -11,11 +11,14 @@ enum NuwaEventType : String {
     case TypeNil
     case FileCreate
     case FileDelete
-    case FileOpen
     case FileCloseModify
     case FileRename
     case ProcessCreate
     case ProcessExit
+}
+
+protocol NuwaEventProtocol {
+    func displayNuwaEvent(_ event: NuwaEventInfo)
 }
 
 struct NuwaEventInfo {
