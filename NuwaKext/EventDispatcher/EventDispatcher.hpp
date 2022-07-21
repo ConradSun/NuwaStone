@@ -2,7 +2,7 @@
 //  EventDispatcher.hpp
 //  NuwaKext
 //
-//  Created by 孙康 on 2022/7/12.
+//  Created by ConradSun on 2022/7/12.
 //
 
 #ifndef EventDispatcher_hpp

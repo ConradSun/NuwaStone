@@ -2,7 +2,7 @@
 //  DriverClient.cpp
 //  NuwaKext
 //
-//  Created by 孙康 on 2022/7/7.
+//  Created by ConradSun on 2022/7/7.
 //
 
 #include "DriverClient.hpp"

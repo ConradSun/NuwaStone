@@ -2,7 +2,7 @@
 //  KauthController.hpp
 //  NuwaKext
 //
-//  Created by 孙康 on 2022/7/10.
+//  Created by ConradSun on 2022/7/10.
 //
 
 #ifndef KauthController_hpp

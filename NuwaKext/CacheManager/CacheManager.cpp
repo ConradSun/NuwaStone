@@ -2,7 +2,7 @@
 //  CacheManager.cpp
 //  NuwaKext
 //
-//  Created by 孙康 on 2022/7/14.
+//  Created by ConradSun on 2022/7/14.
 //
 
 #include "CacheManager.hpp"

@@ -2,7 +2,7 @@
 //  main.cpp
 //  NuwaKext
 //
-//  Created by 孙康 on 2022/7/13.
+//  Created by ConradSun on 2022/7/13.
 //
 
 #include <IOKit/IOService.h>

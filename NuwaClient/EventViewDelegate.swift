@@ -2,7 +2,7 @@
 //  EventViewDelegate.swift
 //  NuwaClient
 //
-//  Created by 孙康 on 2022/7/20.
+//  Created by ConradSun on 2022/7/20.
 //
 
 import Cocoa

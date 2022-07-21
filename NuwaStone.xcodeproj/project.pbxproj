@@ -156,7 +156,6 @@
 			isa = PBXGroup;
 			children = (
 				3ABAFF9E2879C23A00928C22 /* KextUtils */,
-				3ABAFFA02879C25500928C22 /* SocketFilter */,
 				3ABAFFA22879C27B00928C22 /* KauthController */,
 				3ABAFF9F2879C24900928C22 /* CacheManager */,
 				3ABAFFA12879C26C00928C22 /* EventDispatcher */,
@@ -184,13 +183,6 @@
 				3AF7723F2880308E009AC154 /* DriverCache.hpp */,
 			);
 			path = CacheManager;
-			sourceTree = "<group>";
-		};
-		3ABAFFA02879C25500928C22 /* SocketFilter */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = SocketFilter;
 			sourceTree = "<group>";
 		};
 		3ABAFFA12879C26C00928C22 /* EventDispatcher */ = {

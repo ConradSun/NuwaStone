@@ -2,7 +2,7 @@
 //  KextLogger.hpp
 //  NuwaKext
 //
-//  Created by 孙康 on 2022/7/7.
+//  Created by ConradSun on 2022/7/7.
 //
 
 #ifndef KextLogger_h

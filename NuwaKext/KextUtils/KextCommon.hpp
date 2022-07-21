@@ -2,7 +2,7 @@
 //  KextCommon.hpp
 //  NuwaStone
 //
-//  Created by 孙康 on 2022/7/11.
+//  Created by ConradSun on 2022/7/11.
 //
 
 #ifndef KextCommon_h
