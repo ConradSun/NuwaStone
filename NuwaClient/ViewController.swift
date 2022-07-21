@@ -8,7 +8,7 @@
 import Cocoa
 
 class ViewController: NSViewController {
-    enum DisplayMode {
+    enum DisplayMode : Int {
         case DisplayAll
         case DisplayProcess
         case DisplayFile
@@ -24,12 +24,12 @@ class ViewController: NSViewController {
     @IBOutlet weak var searchBar: NSSearchField!
     @IBOutlet weak var eventView: NSTableView!
     @IBOutlet weak var infoLabel: NSTextField!
+    @IBOutlet weak var splitView: NSSplitView!
     
     let kextManager = KextManager()
     var isStarted = false
     var isScrollOn = true
     var isInfoOn = true
-    var updateTimer = Date()
     var displayMode: DisplayMode = .DisplayAll
     
     var reportedItems = [NuwaEventInfo]()
@@ -89,6 +89,7 @@ class ViewController: NSViewController {
     }
     
     @IBAction func clearButtonClicked(_ sender: Any) {
+        reportedItems.removeAll()
         displayedItems.removeAll()
         reloadEventInfo()
         infoLabel.stringValue = ""
@@ -98,26 +99,57 @@ class ViewController: NSViewController {
         isInfoOn = !isInfoOn
         if isInfoOn {
             InfoButton.image = NSImage(named: "show-on")
+            splitView.arrangedSubviews[1].isHidden = false
         }
         else {
             infoLabel.stringValue = ""
             InfoButton.image = NSImage(named: "show-off")
+            splitView.arrangedSubviews[1].isHidden = true
         }
     }
     
     @IBAction func displaySegmentValueChanged(_ sender: Any) {
-    }
-    
-    func reloadEventInfo() {
-        if Date().timeIntervalSince(updateTimer) > 1 {
-            let index = IndexSet(integer: eventView.selectedRow)
-            eventView.reloadData()
-            eventView.selectRowIndexes(index, byExtendingSelection: false)
-            if eventView.numberOfRows > 0 && isScrollOn {
-                eventView.scrollRowToVisible(eventView.numberOfRows-1)
-            }
-            updateTimer = Date()
+        if displaySegment.selectedSegment != displayMode.rawValue {
+            displayedItems.removeAll()
+            displayMode = DisplayMode(rawValue: displaySegment.selectedSegment)!
+            refreshDisplayedEvents()
         }
     }
 }
 
+extension ViewController {
+    func reloadEventInfo() {
+        let index = IndexSet(integer: eventView.selectedRow)
+        eventView.reloadData()
+        eventView.selectRowIndexes(index, byExtendingSelection: false)
+        if eventView.numberOfRows > 0 && isScrollOn {
+            eventView.scrollRowToVisible(eventView.numberOfRows-1)
+        }
+    }
+    
+    func refreshDisplayedEvents() {
+        if displayMode == .DisplayAll {
+            displayedItems = reportedItems
+            return
+        }
+        
+        for event in reportedItems {
+            switch displayMode {
+            case .DisplayProcess:
+                if event.eventType == .ProcessCreate || event.eventType == .ProcessExit {
+                    displayedItems.append(event)
+                }
+            case .DisplayFile:
+                if event.eventType == .FileDelete || event.eventType == .FileRename || event.eventType == .FileCloseModify || event.eventType == .FileCreate {
+                    displayedItems.append(event)
+                }
+            case .DisplayNetwork:
+                break
+            default:
+                break
+            }
+        }
+        reloadEventInfo()
+        infoLabel.stringValue = ""
+    }
+}

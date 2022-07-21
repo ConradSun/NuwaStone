@@ -9,7 +9,22 @@ import Cocoa
 
 extension ViewController: NuwaEventProtocol {
     func displayNuwaEvent(_ event: NuwaEventInfo) {
-        displayedItems.append(event)
+        reportedItems.append(event)
+        
+        switch displayMode {
+        case .DisplayAll:
+            displayedItems.append(event)
+        case .DisplayProcess:
+            if event.eventType == .ProcessCreate || event.eventType == .ProcessExit {
+                displayedItems.append(event)
+            }
+        case .DisplayFile:
+            if event.eventType == .FileDelete || event.eventType == .FileRename || event.eventType == .FileCloseModify || event.eventType == .FileCreate {
+                displayedItems.append(event)
+            }
+        case .DisplayNetwork:
+            break
+        }
     }
 }
 
@@ -18,9 +33,7 @@ extension ViewController: NSTableViewDelegate {
         if eventView.selectedRowIndexes.count == 0 || eventView.selectedRow > displayedItems.count {
             return
         }
-        if isInfoOn {
-            infoLabel.stringValue = displayedItems[eventView.selectedRow].desc
-        }
+        infoLabel.stringValue = displayedItems[eventView.selectedRow].desc
     }
 }
 
