@@ -156,7 +156,8 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
     errCode = fillEventInfo(event, ctx, vp);
     if (action == KAUTH_FILEOP_EXEC) {
         UInt64 result = m_cacheManager->getFromAuthExecCache(event->vnodeID);
-        if (result != 0 && (result >> 32) == event->mainProcess.pid) {
+        if ((result >> 32) != event->mainProcess.pid) {
+            event->mainProcess.pid = result >> 32;
             event->mainProcess.ppid = (result << 32) >> 32;
         }
     }
