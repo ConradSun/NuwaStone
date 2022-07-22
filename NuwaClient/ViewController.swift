@@ -7,14 +7,18 @@
 
 import Cocoa
 
-class ViewController: NSViewController {
-    enum DisplayMode : Int {
-        case DisplayAll
-        case DisplayProcess
-        case DisplayFile
-        case DisplayNetwork
-    }
+enum DisplayMode : Int {
+    case DisplayAll
+    case DisplayProcess
+    case DisplayFile
+    case DisplayNetwork
     
+    static var count: Int {
+        return DisplayNetwork.rawValue + 1
+    }
+}
+
+class ViewController: NSViewController {
     @IBOutlet weak var controlButton: NSButton!
     @IBOutlet weak var scrollButton: NSButton!
     @IBOutlet weak var clearButton: NSButton!
@@ -25,13 +29,17 @@ class ViewController: NSViewController {
     @IBOutlet weak var eventView: NSTableView!
     @IBOutlet weak var infoLabel: NSTextField!
     @IBOutlet weak var splitView: NSSplitView!
+    @IBOutlet weak var graphView: GraphView!
     
     let kextManager = KextManager()
     var isStarted = false
     var isScrollOn = true
     var isInfoOn = true
     var displayMode: DisplayMode = .DisplayAll
+    var displayTimer = Timer()
     
+    var eventCount = Array<UInt32>(repeating: 0, count: DisplayMode.count)
+    var eventCountCopy = Array<UInt32>(repeating: 0, count: DisplayMode.count)
     var reportedItems = [NuwaEventInfo]()
     var displayedItems = [NuwaEventInfo]()
     
@@ -42,11 +50,18 @@ class ViewController: NSViewController {
         eventView.target = self
         kextManager.delegate = self
         
-        let displayTimer = Timer(timeInterval: 1.0, repeats: true) { [self] timer in
+        displayTimer = Timer(timeInterval: 1.0, repeats: true) { [self] timer in
+            var index = 0
             self.reloadEventInfo()
+            
+            while index < DisplayMode.count {
+                graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), type: DisplayMode(rawValue: index)!)
+                eventCountCopy[index] = eventCount[index]
+                index += 1
+            }
+            graphView.draw(graphView.frame)
+            graphView.needsDisplay = true
         }
-        RunLoop.current.add(displayTimer, forMode: .default)
-        displayTimer.fire()
     }
 
     override var representedObject: Any? {
@@ -65,10 +80,14 @@ class ViewController: NSViewController {
             kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
             kextManager.listenRequestsForType(type: kQueueTypeNotify.rawValue)
             
+            RunLoop.current.add(displayTimer, forMode: .default)
+            displayTimer.fire()
+            
             controlButton.image = NSImage(named: "stop")
             controlLabel.stringValue = "stop"
         }
         else {
+            displayTimer.invalidate()
             if !kextManager.unloadKernelExtension() {
                 Logger(.Error, "Failed to unload kext.")
             }
@@ -111,7 +130,7 @@ class ViewController: NSViewController {
     @IBAction func displaySegmentValueChanged(_ sender: Any) {
         if displaySegment.selectedSegment != displayMode.rawValue {
             displayedItems.removeAll()
-            displayMode = DisplayMode(rawValue: displaySegment.selectedSegment)!
+            displayMode = DisplayMode(rawValue: displaySegment.selectedSegment) ?? .DisplayAll
             refreshDisplayedEvents()
         }
     }

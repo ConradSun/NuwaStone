@@ -10,19 +10,29 @@ import Cocoa
 extension ViewController: NuwaEventProtocol {
     func displayNuwaEvent(_ event: NuwaEventInfo) {
         reportedItems.append(event)
-        
-        switch displayMode {
-        case .DisplayAll:
-            displayedItems.append(event)
-        case .DisplayProcess:
-            if event.eventType == .ProcessCreate || event.eventType == .ProcessExit {
+        eventCount[DisplayMode.DisplayAll.rawValue] += 1
+
+        switch event.eventType {
+        case .FileCreate:
+            fallthrough
+        case .FileDelete:
+            fallthrough
+        case .FileCloseModify:
+            fallthrough
+        case .FileRename:
+            eventCount[DisplayMode.DisplayFile.rawValue] += 1
+            if displayMode == .DisplayAll || displayMode == .DisplayFile {
                 displayedItems.append(event)
             }
-        case .DisplayFile:
-            if event.eventType == .FileDelete || event.eventType == .FileRename || event.eventType == .FileCloseModify || event.eventType == .FileCreate {
+
+        case .ProcessCreate:
+            fallthrough
+        case .ProcessExit:
+            eventCount[DisplayMode.DisplayProcess.rawValue] += 1
+            if displayMode == .DisplayAll || displayMode == .DisplayProcess {
                 displayedItems.append(event)
             }
-        case .DisplayNetwork:
+        default:
             break
         }
     }
