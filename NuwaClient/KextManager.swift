@@ -15,7 +15,7 @@ class KextManager {
         case Disconnect
     }
     
-    private let notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
+    private var notificationPort: IONotificationPortRef?
     private let authEventQueue = DispatchQueue.global()
     private let notifyEventQueue = DispatchQueue.global()
     var connection: io_connect_t = 0
@@ -67,6 +67,7 @@ class KextManager {
             selfPtr.dispatchServiceEvent(for: .Connect, iterator: iterator)
         };
         
+        notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
         IONotificationPortSetDispatchQueue(notificationPort, notificationQueue)
         IOServiceAddMatchingNotification(notificationPort, kIOMatchedNotification, matchingDict, appearedCallback, selfPointer, &iterator)
         dispatchServiceEvent(for: .Connect, iterator: iterator)
@@ -121,6 +122,9 @@ class KextManager {
     
     func unloadKernelExtension() -> Bool {
         IOServiceClose(connection)
+        IOObjectRelease(connection)
+        connection = 0
+        isConnected = false
         
         let kextID = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, kDriverIdentifier, kCFStringEncodingASCII, kCFAllocatorNull)
         let result = KextManagerUnloadKextWithIdentifier(kextID)
@@ -132,8 +136,8 @@ class KextManager {
     }
     
     func listenRequestsForType(type: UInt32) {
-        guard isConnected else {
-            return
+        while !isConnected {
+            usleep(1000000)
         }
         
         let recvPort = IODataQueueAllocateNotificationPort()
