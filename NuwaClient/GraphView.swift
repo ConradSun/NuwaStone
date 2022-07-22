@@ -31,7 +31,7 @@ class GraphView: NSView {
         point.y = yValue / 100 * frame.size.height
         
         if (freqPointsArray[type.rawValue].last!.x >= frame.size.width) {
-            freqPointsArray[type.rawValue].removeAll()
+            freqPointsArray[type.rawValue].removeAll(keepingCapacity: true)
             point.x = 0
         }
         else {
@@ -51,7 +51,6 @@ class GraphView: NSView {
                 path.addLine(to: point)
             }
             context.setLineWidth(1.0)
-            context.setFillColor(color)
             context.setStrokeColor(color)
             context.addPath(path)
             context.drawPath(using: .fillStroke)
