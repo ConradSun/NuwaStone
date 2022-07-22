@@ -55,15 +55,15 @@ struct NuwaEventInfo {
         var mib: [Int32] = [CTL_KERN, KERN_ARGMAX]
         var size = Swift.Int(MemoryLayout.size(ofValue: argmax))
         
-        guard sysctl(&mib, 2, &argmax, &size, nil, 0) > 0 else {
+        guard sysctl(&mib, 2, &argmax, &size, nil, 0) == 0 else {
             return 0
         }
         return argmax
     }
     
-    private func getSysctlProcargs(pid: Int32, args: inout [CChar], size: inout Swift.Int) -> Bool {
+    private func getProcArgs(pid: Int32, args: UnsafeMutablePointer<CChar>, size: UnsafeMutablePointer<Int>) -> Bool {
         var mib: [Int32] = [CTL_KERN, KERN_PROCARGS2, pid]
-        guard sysctl(&mib, 3, &args, &size, nil, 0) > 0 else {
+        guard sysctl(&mib, 3, args, size, nil, 0) >= 0 else {
             return false
         }
         return true
@@ -105,28 +105,27 @@ struct NuwaEventInfo {
     }
     
     mutating func fillProcArgs() {
-        var argc = 0
+        var argc: Int32 = 0
         var argmax = getSysctlArgmax()
+        let size = MemoryLayout.size(ofValue: argc)
+        var begin = size
+        
         if argmax == 0 {
             return
         }
-        
-        var args = [CChar](repeating: 0, count: Int(argmax))
-        guard getSysctlProcargs(pid: Int32(pid), args: &args, size: &argmax) else {
+        var args = [CChar](repeating: CChar.zero, count: Int(argmax))
+        guard getProcArgs(pid: Int32(pid), args: &args, size: &argmax) else {
             return
         }
+        NSData(bytes: args, length: size).getBytes(&argc, length: size)
         
-        var begin = MemoryLayout.size(ofValue: argc)
-        memcpy(&argc, &args, begin)
-        
-        begin += strlen(&args[begin]) + 1
         repeat {
-            if args[begin] != 0x0 {
+            if args[begin] == 0x0 {
+                begin += 1
                 break
             }
             begin += 1
         } while begin < argmax
-        
         if begin == argmax {
             return
         }
@@ -135,13 +134,21 @@ struct NuwaEventInfo {
         var argv = Array<String>()
         while begin < argmax && argc > 0 {
             if args[begin] == 0x0 {
-                argv.append(String(cString: &args[last]))
+                var temp = Array(args[last...begin])
+                let arg = String(cString: &temp)
+                if arg.count > 0 {
+                    argv.append(arg)
+                }
+                
                 last = begin + 1
                 argc -= 1
             }
             begin += 1
         }
         
-        props.updateValue(argv, forKey: "arguments")
+        if argv.count > 1 {
+            argv.remove(at: 0)
+            props.updateValue(argv, forKey: "arguments")
+        }
     }
 }

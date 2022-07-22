@@ -30,7 +30,7 @@ struct NuwaLog {
     }
 };
 
-func Logger<Type>(_ level: NuwaLogLevel, _ message: Type, file: String = #file, lineNumber: Int = #line) {
+func Logger<T>(_ level: NuwaLogLevel, _ message: T, file: String = #file, lineNumber: Int = #line) {
     if level.rawValue > NuwaLog().logLevel {
         return
     }
