@@ -9,32 +9,34 @@ import Cocoa
 
 extension ViewController: NuwaEventProtocol {
     func displayNuwaEvent(_ event: NuwaEventInfo) {
-        reportedItems.append(event)
-        eventCount[DisplayMode.DisplayAll.rawValue] += 1
+        eventQueue.sync {
+            reportedItems.append(event)
+            eventCount[DisplayMode.DisplayAll.rawValue] += 1
 
-        switch event.eventType {
-        case .FileCreate:
-            fallthrough
-        case .FileDelete:
-            fallthrough
-        case .FileCloseModify:
-            fallthrough
-        case .FileRename:
-            eventCount[DisplayMode.DisplayFile.rawValue] += 1
-            if displayMode == .DisplayAll || displayMode == .DisplayFile {
-                displayedItems.append(event)
-            }
+            switch event.eventType {
+            case .FileCreate:
+                fallthrough
+            case .FileDelete:
+                fallthrough
+            case .FileCloseModify:
+                fallthrough
+            case .FileRename:
+                eventCount[DisplayMode.DisplayFile.rawValue] += 1
+                if displayMode == .DisplayAll || displayMode == .DisplayFile {
+                    displayedItems.append(event)
+                }
 
-        case .ProcessCreate:
-            fallthrough
-        case .ProcessExit:
-            eventCount[DisplayMode.DisplayProcess.rawValue] += 1
-            if displayMode == .DisplayAll || displayMode == .DisplayProcess {
-                displayedItems.append(event)
+            case .ProcessCreate:
+                fallthrough
+            case .ProcessExit:
+                eventCount[DisplayMode.DisplayProcess.rawValue] += 1
+                if displayMode == .DisplayAll || displayMode == .DisplayProcess {
+                    displayedItems.append(event)
+                }
+            default:
+                Logger(.Warning, "Unknown event type occured.")
+                break
             }
-        default:
-            Logger(.Warning, "Unknown event type occured.")
-            break
         }
     }
 }

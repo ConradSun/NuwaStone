@@ -38,6 +38,7 @@ class ViewController: NSViewController {
     var displayMode: DisplayMode = .DisplayAll
     var displayTimer = Timer()
     
+    let eventQueue = DispatchQueue(label: "com.nuwastone.eventview.queue")
     var eventCount = Array<UInt32>(repeating: 0, count: DisplayMode.count)
     var eventCountCopy = Array<UInt32>(repeating: 0, count: DisplayMode.count)
     var reportedItems = Array<NuwaEventInfo>()

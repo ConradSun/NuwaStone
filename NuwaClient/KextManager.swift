@@ -16,8 +16,8 @@ class KextManager {
     }
     
     private var notificationPort: IONotificationPortRef?
-    private let authEventQueue = DispatchQueue.global()
-    private let notifyEventQueue = DispatchQueue.global()
+    private let authEventQueue = DispatchQueue(label: "com.nuwastone.auth.queue")
+    private let notifyEventQueue = DispatchQueue(label: "com.nuwastone.notify.queue")
     var connection: io_connect_t = 0
     var isConnected: Bool = false
     var nuwaLog = NuwaLog()
