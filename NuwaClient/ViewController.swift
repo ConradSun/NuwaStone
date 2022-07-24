@@ -40,8 +40,8 @@ class ViewController: NSViewController {
     
     var eventCount = Array<UInt32>(repeating: 0, count: DisplayMode.count)
     var eventCountCopy = Array<UInt32>(repeating: 0, count: DisplayMode.count)
-    var reportedItems = [NuwaEventInfo]()
-    var displayedItems = [NuwaEventInfo]()
+    var reportedItems = Array<NuwaEventInfo>()
+    var displayedItems = Array<NuwaEventInfo>()
     
     override func viewDidLoad() {
         super.viewDidLoad()

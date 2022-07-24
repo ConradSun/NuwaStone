@@ -33,6 +33,7 @@ extension ViewController: NuwaEventProtocol {
                 displayedItems.append(event)
             }
         default:
+            Logger(.Warning, "Unknown event type occured.")
             break
         }
     }
