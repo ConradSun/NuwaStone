@@ -7,6 +7,9 @@
 
 import Foundation
 
+let ProcessCWD = "current working dir"
+let ProcessArgs = "arguments"
+
 enum NuwaEventType : String {
     case TypeNil
     case FileCreate
@@ -89,7 +92,7 @@ struct NuwaEventInfo {
             return
         }
         let cwd = String(cString: &info.pvi_cdir.vip_path.0)
-        props.updateValue(cwd, forKey: "current working dir")
+        props.updateValue(cwd, forKey: ProcessCWD)
     }
     
     mutating func fillBsdInfo() {
@@ -148,7 +151,7 @@ struct NuwaEventInfo {
         
         if argv.count > 1 {
             argv.remove(at: 0)
-            props.updateValue(argv, forKey: "arguments")
+            props.updateValue(argv, forKey: ProcessArgs)
         }
     }
 }

@@ -18,6 +18,7 @@ class KextManager {
     private var notificationPort: IONotificationPortRef?
     private let authEventQueue = DispatchQueue(label: "com.nuwastone.auth.queue")
     private let notifyEventQueue = DispatchQueue(label: "com.nuwastone.notify.queue")
+    let processCache = ProcessCache.sharedInstance
     var connection: io_connect_t = 0
     var isConnected: Bool = false
     var nuwaLog = NuwaLog()
@@ -203,9 +204,17 @@ extension KextManager {
         nuwaEvent.eventTime = event.eventTime
         nuwaEvent.pid = event.mainProcess.pid
         nuwaEvent.ppid = event.mainProcess.ppid
-        nuwaEvent.fillProcPath()
-        nuwaEvent.fillVnodeInfo()
-        nuwaEvent.fillProcArgs()
+        
+        if nuwaEvent.eventType == .ProcessCreate {
+            nuwaEvent.fillProcPath()
+            nuwaEvent.fillVnodeInfo()
+            nuwaEvent.fillProcArgs()
+            processCache.updateCache(nuwaEvent)
+        }
+        else {
+            processCache.getFromCache(&nuwaEvent)
+        }
+        
         delegate?.displayNuwaEvent(nuwaEvent)
     }
     

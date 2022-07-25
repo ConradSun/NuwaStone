@@ -22,6 +22,7 @@
 		3ABAFFAD2879C47800928C22 /* NuwaLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFFAC2879C47800928C22 /* NuwaLogger.swift */; };
 		3ABAFFAF2879C4A200928C22 /* KextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFFAE2879C4A200928C22 /* KextManager.swift */; };
 		3AD5757E287C18C000C0C2BE /* KextCommon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3AD5757D287C18C000C0C2BE /* KextCommon.hpp */; };
+		3ADA61A3288D819C002C2537 /* NuwaCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADA61A2288D819C002C2537 /* NuwaCache.swift */; };
 		3ADAC529287D582C00DD8812 /* EventDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3ADAC527287D582C00DD8812 /* EventDispatcher.cpp */; };
 		3ADAC52A287D582C00DD8812 /* EventDispatcher.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3ADAC528287D582C00DD8812 /* EventDispatcher.hpp */; };
 		3ADEF952287AE55E00DF7609 /* DriverService.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3ADEF950287AE55E00DF7609 /* DriverService.cpp */; };
@@ -84,6 +85,7 @@
 		3ABAFFAC2879C47800928C22 /* NuwaLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NuwaLogger.swift; sourceTree = "<group>"; };
 		3ABAFFAE2879C4A200928C22 /* KextManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KextManager.swift; sourceTree = "<group>"; };
 		3AD5757D287C18C000C0C2BE /* KextCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = KextCommon.hpp; sourceTree = "<group>"; };
+		3ADA61A2288D819C002C2537 /* NuwaCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NuwaCache.swift; sourceTree = "<group>"; };
 		3ADAC527287D582C00DD8812 /* EventDispatcher.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EventDispatcher.cpp; sourceTree = "<group>"; };
 		3ADAC528287D582C00DD8812 /* EventDispatcher.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = EventDispatcher.hpp; sourceTree = "<group>"; };
 		3ADEF950287AE55E00DF7609 /* DriverService.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DriverService.cpp; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 			children = (
 				3ABAFFAC2879C47800928C22 /* NuwaLogger.swift */,
 				3AF77238287FFDEF009AC154 /* NuwaEvents.swift */,
+				3ADA61A2288D819C002C2537 /* NuwaCache.swift */,
 				3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */,
 			);
 			path = NuwaUtils;
@@ -348,6 +351,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ABAFF852879C0D900928C22 /* ViewController.swift in Sources */,
+				3ADA61A3288D819C002C2537 /* NuwaCache.swift in Sources */,
 				3ABAFF832879C0D900928C22 /* AppDelegate.swift in Sources */,
 				3AED3F5B288953FD00FCA79A /* GraphView.swift in Sources */,
 				3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */,
