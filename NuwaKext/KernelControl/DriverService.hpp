@@ -24,6 +24,8 @@ public:
     // Called by the kernel when the kext is unloaded
     void stop(IOService *provider) override;
     
+    KauthController *getKauthController() const;
+    
 private:
     void clearInstances();
     

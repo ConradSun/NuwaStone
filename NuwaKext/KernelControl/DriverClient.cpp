@@ -15,10 +15,8 @@ OSDefineMetaClassAndStructors(DriverClient, IOUserClient);
 
 bool DriverClient::initWithTask(task_t owningTask, void *securityID, UInt32 type) {
     if (clientHasPrivilege(owningTask, kIOClientPrivilegeAdministrator) != KERN_SUCCESS) {
-        Logger(LOG_ERROR, "Unprivileged client attempted to connect.")
-        return false;
+        Logger(LOG_INFO, "Unprivileged client attempted to connect.")
     }
-
     if (!IOUserClient::initWithTask(owningTask, securityID, type)) {
         return false;
     }
@@ -51,11 +49,13 @@ void DriverClient::stop(IOService *provider) {
 }
 
 IOReturn DriverClient::clientDied() {
+    m_driverService->getKauthController()->stopListeners();
     Logger(LOG_INFO, "Client died.")
     return terminate(0) ? kIOReturnSuccess : kIOReturnError;
 }
 
 IOReturn DriverClient::clientClose() {
+    m_driverService->getKauthController()->stopListeners();
     if (m_driverService != nullptr && m_driverService->isOpen(this)) {
         m_driverService->close(this);
     }
@@ -65,6 +65,7 @@ IOReturn DriverClient::clientClose() {
 }
 
 bool DriverClient::didTerminate(IOService *provider, IOOptionBits options, bool *defer) {
+    m_driverService->getKauthController()->stopListeners();
     if (m_driverService != nullptr && m_driverService->isOpen(this)) {
         m_driverService->close(this);
     }
@@ -121,6 +122,10 @@ IOReturn DriverClient::open(OSObject *target, void *reference, IOExternalMethodA
     if (!me->m_driverService->open(me)) {
         Logger(LOG_ERROR, "A second client tried to connect.")
         return kIOReturnExclusiveAccess;
+    }
+    if (!me->m_driverService->getKauthController()->startListeners()) {
+        Logger(LOG_ERROR, "Failed to start kauth listeners.")
+        return kIOReturnNotReady;
     }
     
     Logger(LOG_INFO, "Client connected successfully.")

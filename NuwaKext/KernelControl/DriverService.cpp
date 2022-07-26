@@ -40,7 +40,7 @@ bool DriverService::start(IOService *provider) {
         clearInstances();
         return false;
     }
-    if (!m_kauthController->init() || !m_kauthController->startListeners()) {
+    if (!m_kauthController->init()) {
         clearInstances();
         return false;
     }
@@ -55,4 +55,8 @@ void DriverService::stop(IOService *provider) {
     clearInstances();
     IOService::stop(provider);
     Logger(LOG_INFO, "Kext unloaded successfully.")
+}
+
+KauthController *DriverService::getKauthController() const {
+    return m_kauthController;
 }
