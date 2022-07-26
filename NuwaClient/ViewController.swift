@@ -52,17 +52,20 @@ class ViewController: NSViewController {
         kextManager.delegate = self
         
         displayTimer = Timer(timeInterval: 1.0, repeats: true) { [self] timer in
-            var index = 0
-            self.reloadEventInfo()
+            if (!isStarted) {
+                return
+            }
             
-            while index < DisplayMode.count {
+            self.reloadEventInfo()
+            for index in 0..<DisplayMode.count {
                 graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), type: DisplayMode(rawValue: index)!)
                 eventCountCopy[index] = eventCount[index]
-                index += 1
             }
             graphView.draw(graphView.frame)
             graphView.needsDisplay = true
         }
+        RunLoop.current.add(displayTimer, forMode: .default)
+        displayTimer.fire()
     }
 
     override var representedObject: Any? {
@@ -74,22 +77,18 @@ class ViewController: NSViewController {
     @IBAction func controlButtonClicked(_ sender: Any) {
         isStarted = !isStarted
         if isStarted {
-            if !kextManager.loadKernelExtension() {
+            if !kextManager.startMonitoring() {
                 Logger(.Error, "Failed to load kext.")
                 return
             }
             kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
             kextManager.listenRequestsForType(type: kQueueTypeNotify.rawValue)
             
-            RunLoop.current.add(displayTimer, forMode: .default)
-            displayTimer.fire()
-            
             controlButton.image = NSImage(named: "stop")
             controlLabel.stringValue = "stop"
         }
         else {
-            displayTimer.invalidate()
-            if !kextManager.unloadKernelExtension() {
+            if !kextManager.stopMonitoring() {
                 Logger(.Error, "Failed to unload kext.")
             }
             

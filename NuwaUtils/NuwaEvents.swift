@@ -87,7 +87,7 @@ struct NuwaEventInfo {
         var info = proc_vnodepathinfo()
         guard proc_pidinfo(Int32(pid), PROC_PIDVNODEPATHINFO, 0, &info, Int32(MemoryLayout.size(ofValue: info))) > 0 else {
             if errno != ESRCH {
-                Logger(.Warning, "Failed to get proc [\(pid)] vnode info for [\(String(describing: strerror(errno)))]")
+                Logger(.Debug, "Failed to get proc [\(pid)] vnode info for [\(String(describing: strerror(errno)))]")
             }
             return
         }
