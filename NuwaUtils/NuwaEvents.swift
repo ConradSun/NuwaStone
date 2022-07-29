@@ -7,9 +7,6 @@
 
 import Foundation
 
-let ProcessCWD = "current working dir"
-let ProcessArgs = "arguments"
-
 enum NuwaEventType : String {
     case TypeNil
     case FileCreate
@@ -24,7 +21,7 @@ protocol NuwaEventProtocol {
     func displayNuwaEvent(_ event: NuwaEventInfo)
 }
 
-struct NuwaEventInfo {
+class NuwaEventInfo {
     var eventType: NuwaEventType
     var eventTime: UInt64
     var pid: UInt32
@@ -53,105 +50,42 @@ struct NuwaEventInfo {
         props = Dictionary<String, Any>()
     }
     
-    private func getSysctlArgmax() -> Int {
-        var argmax: Int = 0
-        var mib: [Int32] = [CTL_KERN, KERN_ARGMAX]
-        var size = Swift.Int(MemoryLayout.size(ofValue: argmax))
-        
-        guard sysctl(&mib, 2, &argmax, &size, nil, 0) == 0 else {
-            return 0
-        }
-        return argmax
+    func fillProcPath() {
+        XPCConnection.sharedInstance.getProcPath(pid: Int32(pid), eventHandler: { path, error in
+            if error == EPERM {
+                let proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
+                proxy?.getProcPath(pid: Int32(self.pid), eventHandler: { path, error in
+                    self.procPath = path
+                })
+                return
+            }
+            self.procPath = path
+        })
     }
     
-    private func getProcArgs(pid: Int32, args: UnsafeMutablePointer<CChar>, size: UnsafeMutablePointer<Int>) -> Bool {
-        var mib: [Int32] = [CTL_KERN, KERN_PROCARGS2, pid]
-        guard sysctl(&mib, 3, args, size, nil, 0) >= 0 else {
-            return false
-        }
-        return true
+    func fillProcCurrentDir() {
+        XPCConnection.sharedInstance.getProcCurrentDir(pid: Int32(pid), eventHandler: { cwd, error in
+            if error == EPERM {
+                let proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
+                proxy?.getProcCurrentDir(pid: Int32(self.pid), eventHandler: { cwd, error in
+                    self.props.updateValue(cwd, forKey: ProcessCWD)
+                })
+                return
+            }
+            self.props.updateValue(cwd, forKey: ProcessCWD)
+        })
     }
     
-    mutating func fillProcPath() {
-        var buffer = [CChar](repeating: 0, count: Swift.Int(PROC_PIDPATHINFO_SIZE))
-        guard proc_pidpath(Int32(pid), &buffer, UInt32(buffer.count)) > 0 else {
-            if errno != ESRCH {
-                Logger(.Warning, "Failed to get proc [\(pid)] path for [\(String(describing: strerror(errno)))]")
+    func fillProcArgs() {
+        XPCConnection.sharedInstance.getProcArgs(pid: Int32(pid)) { args, error in
+            if error == EPERM {
+                let proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
+                proxy?.getProcArgs(pid: Int32(self.pid), eventHandler: { args, error in
+                    self.props.updateValue(args, forKey: ProcessArgs)
+                })
+                return
             }
-            return
-        }
-        procPath = String(cString: buffer)
-    }
-    
-    mutating func fillVnodeInfo() {
-        var info = proc_vnodepathinfo()
-        guard proc_pidinfo(Int32(pid), PROC_PIDVNODEPATHINFO, 0, &info, Int32(MemoryLayout.size(ofValue: info))) > 0 else {
-            if errno != ESRCH {
-                Logger(.Debug, "Failed to get proc [\(pid)] vnode info for [\(String(describing: strerror(errno)))]")
-            }
-            return
-        }
-        let cwd = String(cString: &info.pvi_cdir.vip_path.0)
-        props.updateValue(cwd, forKey: ProcessCWD)
-    }
-    
-    mutating func fillBsdInfo() {
-        var info = proc_bsdinfo()
-        guard proc_pidinfo(Int32(pid), PROC_PIDTBSDINFO, 0, &info, Int32(MemoryLayout.size(ofValue: info))) > 0 else {
-            if errno != ESRCH {
-                Logger(.Warning, "Failed to get proc [\(pid)] bsd info for [\(String(describing: strerror(errno)))]")
-            }
-            return
-        }
-        
-        ppid = info.pbi_ppid
-    }
-    
-    mutating func fillProcArgs() {
-        var argc: Int32 = 0
-        var argmax = getSysctlArgmax()
-        let size = MemoryLayout.size(ofValue: argc)
-        var begin = size
-        
-        if argmax == 0 {
-            return
-        }
-        var args = [CChar](repeating: CChar.zero, count: Int(argmax))
-        guard getProcArgs(pid: Int32(pid), args: &args, size: &argmax) else {
-            return
-        }
-        NSData(bytes: args, length: size).getBytes(&argc, length: size)
-        
-        repeat {
-            if args[begin] == 0x0 {
-                begin += 1
-                break
-            }
-            begin += 1
-        } while begin < argmax
-        if begin == argmax {
-            return
-        }
-        
-        var last = begin
-        var argv = Array<String>()
-        while begin < argmax && argc > 0 {
-            if args[begin] == 0x0 {
-                var temp = Array(args[last...begin])
-                let arg = String(cString: &temp)
-                if arg.count > 0 {
-                    argv.append(arg)
-                }
-                
-                last = begin + 1
-                argc -= 1
-            }
-            begin += 1
-        }
-        
-        if argv.count > 1 {
-            argv.remove(at: 0)
-            props.updateValue(argv, forKey: ProcessArgs)
+            self.props.updateValue(args, forKey: ProcessArgs)
         }
     }
 }

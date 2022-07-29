@@ -9,14 +9,24 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>NuwaKext.xcscheme_^#shared#^_</key>
+		<key>NuwaDaemon.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
+		<key>NuwaKext.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>3A1E83A32890D415003823E6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>3ABAFF7E2879C0D900928C22</key>
 		<dict>
 			<key>primary</key>

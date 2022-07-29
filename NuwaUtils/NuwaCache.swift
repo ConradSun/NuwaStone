@@ -1,6 +1,6 @@
 //
 //  NuwaCache.swift
-//  NuwaClient
+//  NuwaStone
 //
 //  Created by ConradSun on 2022/7/24.
 //
@@ -61,7 +61,7 @@ class ProcessCache {
         let info = cacheDict[event.pid]
         if info == nil {
             event.fillProcPath()
-            event.fillVnodeInfo()
+            event.fillProcCurrentDir()
             event.fillProcArgs()
             updateCache(event)
         }

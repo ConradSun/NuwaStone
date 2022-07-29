@@ -7,11 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A1E83A72890D415003823E6 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1E83A62890D415003823E6 /* main.swift */; };
 		3A5F3315287B145400A8F76E /* KauthController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A5F3313287B145400A8F76E /* KauthController.cpp */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
 		3A5F3316287B145400A8F76E /* KauthController.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A5F3314287B145400A8F76E /* KauthController.hpp */; };
 		3AAA188E2886431B00C1BDAF /* com.nuwastone.kext in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */; };
 		3AB13ABC287EC378004E1093 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AB13ABB287EC378004E1093 /* main.cpp */; };
+		3AB9B37D2892656D0078B45D /* XPCConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB9B37C2892656D0078B45D /* XPCConnection.swift */; };
+		3AB9B37F289268690078B45D /* NuwaConst.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB9B37E289268690078B45D /* NuwaConst.swift */; };
+		3AB9B3802892690A0078B45D /* NuwaLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFFAC2879C47800928C22 /* NuwaLogger.swift */; };
+		3AB9B38128926BF80078B45D /* NuwaConst.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB9B37E289268690078B45D /* NuwaConst.swift */; };
+		3AB9B382289285A60078B45D /* XPCConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB9B37C2892656D0078B45D /* XPCConnection.swift */; };
+		3AB9B395289295680078B45D /* NuwaDaemon in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 3A1E83A42890D415003823E6 /* NuwaDaemon */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		3ABAFF832879C0D900928C22 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFF822879C0D900928C22 /* AppDelegate.swift */; };
 		3ABAFF852879C0D900928C22 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFF842879C0D900928C22 /* ViewController.swift */; };
 		3ABAFF872879C0DA00928C22 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3ABAFF862879C0DA00928C22 /* Assets.xcassets */; };
@@ -35,12 +42,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3AAA188F2886431B00C1BDAF /* PBXContainerItemProxy */ = {
+		3AB9B393289295490078B45D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3ABAFF772879C0D900928C22 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 3ABAFF952879C1BC00928C22;
-			remoteInfo = NuwaKext;
+			remoteGlobalIDString = 3A1E83A32890D415003823E6;
+			remoteInfo = NuwaDaemon;
 		};
 		3ABAFFB12879C9CD00928C22 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,12 +59,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		3A1E83A22890D415003823E6 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		3AAA18912886431B00C1BDAF /* Embed PlugIns */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				3AB9B395289295680078B45D /* NuwaDaemon in Embed PlugIns */,
 				3AAA188E2886431B00C1BDAF /* com.nuwastone.kext in Embed PlugIns */,
 			);
 			name = "Embed PlugIns";
@@ -66,11 +83,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3A1E83A42890D415003823E6 /* NuwaDaemon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NuwaDaemon; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A1E83A62890D415003823E6 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NuwaBridge.hpp; sourceTree = "<group>"; };
 		3A5F3313287B145400A8F76E /* KauthController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KauthController.cpp; sourceTree = "<group>"; };
 		3A5F3314287B145400A8F76E /* KauthController.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = KauthController.hpp; sourceTree = "<group>"; };
 		3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewDelegate.swift; sourceTree = "<group>"; };
 		3AB13ABB287EC378004E1093 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		3AB9B37C2892656D0078B45D /* XPCConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCConnection.swift; sourceTree = "<group>"; };
+		3AB9B37E289268690078B45D /* NuwaConst.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NuwaConst.swift; sourceTree = "<group>"; };
+		3AB9B383289289DC0078B45D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3ABAFF7F2879C0D900928C22 /* NuwaClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NuwaClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3ABAFF822879C0D900928C22 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3ABAFF842879C0D900928C22 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -98,6 +120,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3A1E83A12890D415003823E6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3ABAFF7C2879C0D900928C22 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -115,6 +144,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3A1E83A52890D415003823E6 /* NuwaDaemon */ = {
+			isa = PBXGroup;
+			children = (
+				3AB9B37C2892656D0078B45D /* XPCConnection.swift */,
+				3A1E83A62890D415003823E6 /* main.swift */,
+			);
+			path = NuwaDaemon;
+			sourceTree = "<group>";
+		};
 		3AAA188D2886431B00C1BDAF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -128,6 +166,7 @@
 				3ABAFFA52879C32300928C22 /* NuwaUtils */,
 				3ABAFF972879C1BC00928C22 /* NuwaKext */,
 				3ABAFF812879C0D900928C22 /* NuwaClient */,
+				3A1E83A52890D415003823E6 /* NuwaDaemon */,
 				3ABAFF802879C0D900928C22 /* Products */,
 				3AAA188D2886431B00C1BDAF /* Frameworks */,
 			);
@@ -138,6 +177,7 @@
 			children = (
 				3ABAFF7F2879C0D900928C22 /* NuwaClient.app */,
 				3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */,
+				3A1E83A42890D415003823E6 /* NuwaDaemon */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -145,6 +185,7 @@
 		3ABAFF812879C0D900928C22 /* NuwaClient */ = {
 			isa = PBXGroup;
 			children = (
+				3AB9B383289289DC0078B45D /* Info.plist */,
 				3ABAFF822879C0D900928C22 /* AppDelegate.swift */,
 				3ABAFF842879C0D900928C22 /* ViewController.swift */,
 				3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */,
@@ -225,6 +266,7 @@
 				3ABAFFAC2879C47800928C22 /* NuwaLogger.swift */,
 				3AF77238287FFDEF009AC154 /* NuwaEvents.swift */,
 				3ADA61A2288D819C002C2537 /* NuwaCache.swift */,
+				3AB9B37E289268690078B45D /* NuwaConst.swift */,
 				3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */,
 			);
 			path = NuwaUtils;
@@ -251,6 +293,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		3A1E83A32890D415003823E6 /* NuwaDaemon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A1E83A82890D415003823E6 /* Build configuration list for PBXNativeTarget "NuwaDaemon" */;
+			buildPhases = (
+				3A1E83A02890D415003823E6 /* Sources */,
+				3A1E83A12890D415003823E6 /* Frameworks */,
+				3A1E83A22890D415003823E6 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NuwaDaemon;
+			productName = NuwaDaemon;
+			productReference = 3A1E83A42890D415003823E6 /* NuwaDaemon */;
+			productType = "com.apple.product-type.tool";
+		};
 		3ABAFF7E2879C0D900928C22 /* NuwaClient */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3ABAFF8E2879C0DA00928C22 /* Build configuration list for PBXNativeTarget "NuwaClient" */;
@@ -264,7 +323,7 @@
 			);
 			dependencies = (
 				3ABAFFB22879C9CD00928C22 /* PBXTargetDependency */,
-				3AAA18902886431B00C1BDAF /* PBXTargetDependency */,
+				3AB9B394289295490078B45D /* PBXTargetDependency */,
 			);
 			name = NuwaClient;
 			productName = NuwaStone;
@@ -299,6 +358,9 @@
 				LastSwiftUpdateCheck = 1340;
 				LastUpgradeCheck = 1340;
 				TargetAttributes = {
+					3A1E83A32890D415003823E6 = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
 					3ABAFF7E2879C0D900928C22 = {
 						CreatedOnToolsVersion = 13.4.1;
 					};
@@ -322,6 +384,7 @@
 			targets = (
 				3ABAFF7E2879C0D900928C22 /* NuwaClient */,
 				3ABAFF952879C1BC00928C22 /* NuwaKext */,
+				3A1E83A32890D415003823E6 /* NuwaDaemon */,
 			);
 		};
 /* End PBXProject section */
@@ -346,6 +409,17 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3A1E83A02890D415003823E6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AB9B37D2892656D0078B45D /* XPCConnection.swift in Sources */,
+				3A1E83A72890D415003823E6 /* main.swift in Sources */,
+				3AB9B3802892690A0078B45D /* NuwaLogger.swift in Sources */,
+				3AB9B37F289268690078B45D /* NuwaConst.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3ABAFF7B2879C0D900928C22 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -355,7 +429,9 @@
 				3ABAFF832879C0D900928C22 /* AppDelegate.swift in Sources */,
 				3AED3F5B288953FD00FCA79A /* GraphView.swift in Sources */,
 				3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */,
+				3AB9B38128926BF80078B45D /* NuwaConst.swift in Sources */,
 				3ABAFFAD2879C47800928C22 /* NuwaLogger.swift in Sources */,
+				3AB9B382289285A60078B45D /* XPCConnection.swift in Sources */,
 				3ABAFFAF2879C4A200928C22 /* KextManager.swift in Sources */,
 				3AF77239287FFDEF009AC154 /* NuwaEvents.swift in Sources */,
 			);
@@ -377,10 +453,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3AAA18902886431B00C1BDAF /* PBXTargetDependency */ = {
+		3AB9B394289295490078B45D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 3ABAFF952879C1BC00928C22 /* NuwaKext */;
-			targetProxy = 3AAA188F2886431B00C1BDAF /* PBXContainerItemProxy */;
+			target = 3A1E83A32890D415003823E6 /* NuwaDaemon */;
+			targetProxy = 3AB9B393289295490078B45D /* PBXContainerItemProxy */;
 		};
 		3ABAFFB22879C9CD00928C22 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -401,6 +477,37 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		3A1E83A92890D415003823E6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C48U2B38TC;
+				ENABLE_HARDENED_RUNTIME = YES;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.daemon;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NuwaUtils/NuwaBridge.hpp";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3A1E83AA2890D415003823E6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C48U2B38TC;
+				ENABLE_HARDENED_RUNTIME = YES;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.daemon;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NuwaUtils/NuwaBridge.hpp";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		3ABAFF8C2879C0DA00928C22 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -528,6 +635,7 @@
 				DEVELOPMENT_TEAM = C48U2B38TC;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NuwaClient/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -560,6 +668,7 @@
 				DEVELOPMENT_TEAM = C48U2B38TC;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NuwaClient/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -637,6 +746,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3A1E83A82890D415003823E6 /* Build configuration list for PBXNativeTarget "NuwaDaemon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A1E83A92890D415003823E6 /* Debug */,
+				3A1E83AA2890D415003823E6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3ABAFF7A2879C0D900928C22 /* Build configuration list for PBXProject "NuwaStone" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

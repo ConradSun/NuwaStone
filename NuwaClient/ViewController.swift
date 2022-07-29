@@ -66,6 +66,8 @@ class ViewController: NSViewController {
         }
         RunLoop.current.add(displayTimer, forMode: .default)
         displayTimer.fire()
+        
+        establishConnection()
     }
 
     override var representedObject: Any? {
@@ -137,6 +139,17 @@ class ViewController: NSViewController {
 }
 
 extension ViewController {
+    func establishConnection() {
+        XPCConnection.sharedInstance.connectToDaemon(bundle: Bundle.main, delegate: self) { success in
+            DispatchQueue.main.async {
+                if !success {
+                    self.controlButton.isEnabled = false
+                    self.infoLabel.stringValue = "Unable to start monitoring."
+                }
+            }
+        }
+    }
+    
     func reloadEventInfo() {
         let index = IndexSet(integer: eventView.selectedRow)
         eventView.reloadData()
@@ -171,4 +184,8 @@ extension ViewController {
         reloadEventInfo()
         infoLabel.stringValue = ""
     }
+}
+
+extension ViewController: ClientXPCProtocol {
+    
 }

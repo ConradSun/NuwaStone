@@ -155,7 +155,7 @@ class KextManager {
 
 extension KextManager {
     func processAuthEvent(_ event: inout NuwaKextEvent) {
-        var nuwaEvent = NuwaEventInfo()
+        let nuwaEvent = NuwaEventInfo()
         nuwaEvent.eventType = .ProcessCreate
         nuwaEvent.eventTime = event.eventTime
         nuwaEvent.pid = event.mainProcess.pid
@@ -192,7 +192,7 @@ extension KextManager {
         
         if nuwaEvent.eventType == .ProcessCreate {
             nuwaEvent.fillProcPath()
-            nuwaEvent.fillVnodeInfo()
+            nuwaEvent.fillProcCurrentDir()
             nuwaEvent.fillProcArgs()
             processCache.updateCache(nuwaEvent)
         }

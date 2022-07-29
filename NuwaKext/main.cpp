@@ -17,4 +17,3 @@ kern_return_t __attribute__((visibility("hidden"))) __attribute__((weak)) OSMeta
 kern_return_t __attribute__((visibility("hidden"))) __attribute__((weak)) OSObject::Dispatch(const IORPC rpc) { return KERN_SUCCESS; }
 kern_return_t __attribute__((visibility("hidden"))) __attribute__((weak)) IOService::Dispatch(const IORPC rpc) { return KERN_SUCCESS; }
 kern_return_t __attribute__((visibility("hidden"))) __attribute__((weak)) IOUserClient::Dispatch(const IORPC rpc) { return KERN_SUCCESS; }
-
