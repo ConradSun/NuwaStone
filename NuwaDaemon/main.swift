@@ -7,5 +7,8 @@
 
 import Foundation
 
-XPCConnection.sharedInstance.startListener()
-RunLoop.current.run()
+let result = KextControl.loadExtension()
+if result {
+    XPCConnection.sharedInstance.startListener()
+    RunLoop.current.run()
+}

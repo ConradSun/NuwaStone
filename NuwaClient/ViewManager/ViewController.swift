@@ -144,7 +144,7 @@ extension ViewController {
             DispatchQueue.main.async {
                 if !success {
                     self.controlButton.isEnabled = false
-                    self.infoLabel.stringValue = "Unable to start monitoring."
+                    self.infoLabel.stringValue = "Unable to start monitoring for broken connection with daemon."
                 }
             }
         }

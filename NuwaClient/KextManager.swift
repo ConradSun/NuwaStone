@@ -6,7 +6,6 @@
 //
 
 import IOKit
-import IOKit.kext
 import Foundation
 
 class KextManager {

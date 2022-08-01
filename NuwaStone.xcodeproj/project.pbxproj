@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		3A1E83A72890D415003823E6 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1E83A62890D415003823E6 /* main.swift */; };
+		3A4A95E3289773DE00220EB7 /* KextControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95E2289773DE00220EB7 /* KextControl.swift */; };
 		3A5F3315287B145400A8F76E /* KauthController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A5F3313287B145400A8F76E /* KauthController.cpp */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
 		3A5F3316287B145400A8F76E /* KauthController.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A5F3314287B145400A8F76E /* KauthController.hpp */; };
-		3AAA188E2886431B00C1BDAF /* com.nuwastone.kext in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AAA188E2886431B00C1BDAF /* NuwaStone.kext in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 3ABAFF962879C1BC00928C22 /* NuwaStone.kext */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */; };
 		3AB13ABC287EC378004E1093 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AB13ABB287EC378004E1093 /* main.cpp */; };
 		3AB9B37D2892656D0078B45D /* XPCConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB9B37C2892656D0078B45D /* XPCConnection.swift */; };
@@ -75,7 +76,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				3AB9B395289295680078B45D /* NuwaDaemon in Embed PlugIns */,
-				3AAA188E2886431B00C1BDAF /* com.nuwastone.kext in Embed PlugIns */,
+				3AAA188E2886431B00C1BDAF /* NuwaStone.kext in Embed PlugIns */,
 			);
 			name = "Embed PlugIns";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,6 +87,7 @@
 		3A1E83A42890D415003823E6 /* NuwaDaemon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NuwaDaemon; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A1E83A62890D415003823E6 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NuwaBridge.hpp; sourceTree = "<group>"; };
+		3A4A95E2289773DE00220EB7 /* KextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KextControl.swift; sourceTree = "<group>"; };
 		3A5F3313287B145400A8F76E /* KauthController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KauthController.cpp; sourceTree = "<group>"; };
 		3A5F3314287B145400A8F76E /* KauthController.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = KauthController.hpp; sourceTree = "<group>"; };
 		3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewDelegate.swift; sourceTree = "<group>"; };
@@ -99,7 +101,7 @@
 		3ABAFF862879C0DA00928C22 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3ABAFF892879C0DA00928C22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3ABAFF8B2879C0DA00928C22 /* NuwaClient.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NuwaClient.entitlements; sourceTree = "<group>"; };
-		3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = com.nuwastone.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		3ABAFF962879C1BC00928C22 /* NuwaStone.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NuwaStone.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		3ABAFF9A2879C1BC00928C22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3ABAFFA62879C3FA00928C22 /* KextLogger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = KextLogger.hpp; sourceTree = "<group>"; };
 		3ABAFFA82879C40A00928C22 /* DriverClient.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DriverClient.hpp; sourceTree = "<group>"; };
@@ -148,9 +150,20 @@
 			isa = PBXGroup;
 			children = (
 				3AB9B37C2892656D0078B45D /* XPCConnection.swift */,
+				3A4A95E2289773DE00220EB7 /* KextControl.swift */,
 				3A1E83A62890D415003823E6 /* main.swift */,
 			);
 			path = NuwaDaemon;
+			sourceTree = "<group>";
+		};
+		3A4A95E12897735500220EB7 /* ViewManager */ = {
+			isa = PBXGroup;
+			children = (
+				3AED3F5A288953FD00FCA79A /* GraphView.swift */,
+				3ABAFF842879C0D900928C22 /* ViewController.swift */,
+				3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */,
+			);
+			path = ViewManager;
 			sourceTree = "<group>";
 		};
 		3AAA188D2886431B00C1BDAF /* Frameworks */ = {
@@ -176,7 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				3ABAFF7F2879C0D900928C22 /* NuwaClient.app */,
-				3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */,
+				3ABAFF962879C1BC00928C22 /* NuwaStone.kext */,
 				3A1E83A42890D415003823E6 /* NuwaDaemon */,
 			);
 			name = Products;
@@ -185,12 +198,10 @@
 		3ABAFF812879C0D900928C22 /* NuwaClient */ = {
 			isa = PBXGroup;
 			children = (
-				3AB9B383289289DC0078B45D /* Info.plist */,
-				3ABAFF822879C0D900928C22 /* AppDelegate.swift */,
-				3ABAFF842879C0D900928C22 /* ViewController.swift */,
-				3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */,
+				3A4A95E12897735500220EB7 /* ViewManager */,
 				3ABAFFAE2879C4A200928C22 /* KextManager.swift */,
-				3AED3F5A288953FD00FCA79A /* GraphView.swift */,
+				3ABAFF822879C0D900928C22 /* AppDelegate.swift */,
+				3AB9B383289289DC0078B45D /* Info.plist */,
 				3ABAFF862879C0DA00928C22 /* Assets.xcassets */,
 				3ABAFF882879C0DA00928C22 /* Main.storyboard */,
 				3ABAFF8B2879C0DA00928C22 /* NuwaClient.entitlements */,
@@ -345,7 +356,7 @@
 			);
 			name = NuwaKext;
 			productName = NuwaKext;
-			productReference = 3ABAFF962879C1BC00928C22 /* com.nuwastone.kext */;
+			productReference = 3ABAFF962879C1BC00928C22 /* NuwaStone.kext */;
 			productType = "com.apple.product-type.kernel-extension";
 		};
 /* End PBXNativeTarget section */
@@ -417,6 +428,7 @@
 				3A1E83A72890D415003823E6 /* main.swift in Sources */,
 				3AB9B3802892690A0078B45D /* NuwaLogger.swift in Sources */,
 				3AB9B37F289268690078B45D /* NuwaConst.swift in Sources */,
+				3A4A95E3289773DE00220EB7 /* KextControl.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -705,8 +717,8 @@
 				MODULE_START = 0;
 				MODULE_STOP = 0;
 				MODULE_VERSION = 1.0.0d1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone;
-				PRODUCT_NAME = com.nuwastone;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.kext;
+				PRODUCT_NAME = NuwaStone;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
@@ -733,8 +745,8 @@
 				MODULE_START = 0;
 				MODULE_STOP = 0;
 				MODULE_VERSION = 1.0.0d1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone;
-				PRODUCT_NAME = com.nuwastone;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.kext;
+				PRODUCT_NAME = NuwaStone;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
