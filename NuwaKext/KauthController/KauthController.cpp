@@ -11,13 +11,15 @@
 #include <sys/proc.h>
 
 OSDefineMetaClassAndStructors(KauthController, OSObject);
-SInt32 KauthController::m_activeEventCount = 0;
+
+#pragma mark - Kauth Controller
 
 bool KauthController::init() {
     if (!OSObject::init()) {
         return false;
     }
     
+    m_activeEventCount = 0;
     m_cacheManager = CacheManager::getInstance();
     if (m_cacheManager == nullptr) {
         return false;
@@ -31,6 +33,7 @@ bool KauthController::init() {
 
 void KauthController::free() {
     m_eventDispatcher = nullptr;
+    m_cacheManager = nullptr;
     OSObject::free();
 }
 
@@ -48,26 +51,20 @@ bool KauthController::startListeners() {
 }
 
 void KauthController::stopListeners() {
+    static timespec wait = {
+        .tv_sec = 0,
+        .tv_nsec = 1000000
+    };
+    
     if (m_vnodeListener != nullptr) {
         kauth_unlisten_scope(m_vnodeListener);
     }
     if (m_fileopListener != nullptr) {
         kauth_unlisten_scope(m_fileopListener);
     }
-}
-
-bool KauthController::postToAuthQueue(NuwaKextEvent *eventInfo) {
-    if (eventInfo == nullptr) {
-        return false;
+    while (m_activeEventCount > 0) {
+        msleep(nullptr, nullptr, 0, "wait for kauth stopped", &wait);
     }
-    return m_eventDispatcher->postToAuthQueue(eventInfo);
-}
-
-bool KauthController::postToNotifyQueue(NuwaKextEvent *eventInfo) {
-    if (eventInfo == nullptr) {
-        return false;
-    }
-    return m_eventDispatcher->postToNtifyQueue(eventInfo);
 }
 
 void KauthController::increaseEventCount() {
@@ -79,15 +76,15 @@ void KauthController::decreaseEventCount() {
 }
 
 int KauthController::getDecisionFromClient(UInt64 vnodeID) {
-    kern_return_t errCode = KERN_SUCCESS;
+    errno_t errCode = 0;
     int decision = KAUTH_RESULT_DEFER;
-    static struct timespec time = {
+    static timespec time = {
         .tv_sec = kMaxAuthWaitTime / 1000,
         .tv_nsec = (kMaxAuthWaitTime - time.tv_sec * 1000) * 1000000
     };
     
     errCode = msleep((void *)vnodeID, nullptr, 0, "Wait for reply", &time);
-    if (errCode == KERN_SUCCESS) {
+    if (errCode == 0) {
         decision = m_cacheManager->getFromAuthResultCache(vnodeID);
     }
     else if (errCode == EWOULDBLOCK) {
@@ -99,9 +96,11 @@ int KauthController::getDecisionFromClient(UInt64 vnodeID) {
     return decision;
 }
 
+#pragma mark - Callable Methods
+
 int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, int *errno) {
+    errno_t errCode = 0;
     int response = KAUTH_RESULT_DEFER;
-    kern_return_t errCode = KERN_SUCCESS;
     NuwaKextEvent *event = (NuwaKextEvent *)IOMallocAligned(sizeof(NuwaKextEvent), 2);
     if (event == nullptr) {
         return response;
@@ -109,8 +108,7 @@ int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, in
     
     event->eventType = kActionAuthProcessCreate;
     errCode = fillEventInfo(event, ctx, vp);
-    if (errCode == KERN_SUCCESS) {
-        postToAuthQueue(event);
+    if (errCode == 0 && m_eventDispatcher->postToAuthQueue(event)) {
         response = getDecisionFromClient(event->vnodeID);
         if (response == KAUTH_RESULT_DEFER || response == KAUTH_RESULT_ALLOW) {
             UInt64 value = ((UInt64)event->mainProcess.pid << 32) | event->mainProcess.ppid;
@@ -123,7 +121,7 @@ int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, in
 }
 
 void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, const char *srcPath, const char *newPath) {
-    kern_return_t errCode = KERN_SUCCESS;
+    errno_t errCode = 0;
     NuwaKextEvent *event = (NuwaKextEvent *)IOMallocAligned(sizeof(NuwaKextEvent), 2);
     if (event == nullptr) {
         return;
@@ -161,8 +159,8 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
             event->mainProcess.ppid = (result << 32) >> 32;
         }
     }
-    if (errCode == KERN_SUCCESS) {
-        postToNotifyQueue(event);
+    if (errCode == 0) {
+        m_eventDispatcher->postToNotifyQueue(event);
     }
     
     if (ctx != NULL) {
@@ -171,10 +169,12 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
     IOFreeAligned(event, sizeof(NuwaKextEvent));
 }
 
-kern_return_t KauthController::fillBasicInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp) {
-    kern_return_t errCode = KERN_SUCCESS;
-    struct timeval time;
-    struct vnode_attr vap;
+#pragma mark - Info Filler Methods
+
+errno_t KauthController::fillBasicInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp) {
+    errno_t errCode = 0;
+    timeval time;
+    vnode_attr vap;
     
     microtime(&time);
     eventInfo->eventTime = time.tv_sec;
@@ -186,14 +186,14 @@ kern_return_t KauthController::fillBasicInfo(NuwaKextEvent *eventInfo, const vfs
     VATTR_WANTED(&vap, va_fsid);
     VATTR_WANTED(&vap, va_fileid);
     errCode = vnode_getattr(vp, &vap, ctx);
-    if (errCode == KERN_SUCCESS) {
+    if (errCode == 0) {
         eventInfo->vnodeID = ((UInt64)vap.va_fsid << 32) | vap.va_fileid;
     }
     
     return errCode;
 }
 
-kern_return_t KauthController::fillProcInfo(NuwaKextProc *ProctInfo, const vfs_context_t ctx) {
+errno_t KauthController::fillProcInfo(NuwaKextProc *ProctInfo, const vfs_context_t ctx) {
     if (ctx == nullptr) {
         return EINVAL;
     }
@@ -213,13 +213,13 @@ kern_return_t KauthController::fillProcInfo(NuwaKextProc *ProctInfo, const vfs_c
         ProctInfo->rgid = kauth_cred_getrgid(cred);
     }
     
-    return KERN_SUCCESS;
+    return 0;
 }
 
-kern_return_t KauthController::fillFileInfo(NuwaKextFile *FileInfo, const vfs_context_t ctx, const vnode_t vp) {
-    kern_return_t errCode = KERN_SUCCESS;
+errno_t KauthController::fillFileInfo(NuwaKextFile *FileInfo, const vfs_context_t ctx, const vnode_t vp) {
+    errno_t errCode = 0;
     int length = kMaxPathLength;
-    struct vnode_attr vap;
+    vnode_attr vap;
     
     if (ctx == nullptr || vp == nullptr) {
         return errCode;
@@ -234,7 +234,7 @@ kern_return_t KauthController::fillFileInfo(NuwaKextFile *FileInfo, const vfs_co
     VATTR_WANTED(&vap, va_change_time);
     errCode = vnode_getattr(vp, &vap, ctx);
     
-    if (errCode == KERN_SUCCESS) {
+    if (errCode == 0) {
         FileInfo->uid = vap.va_uid;
         FileInfo->gid = vap.va_gid;
         FileInfo->mode = vap.va_mode;
@@ -247,8 +247,8 @@ kern_return_t KauthController::fillFileInfo(NuwaKextFile *FileInfo, const vfs_co
     return errCode;
 }
 
-kern_return_t KauthController::fillEventInfo(NuwaKextEvent *event, const vfs_context_t ctx, const vnode_t vp) {
-    kern_return_t errCode = KERN_SUCCESS;
+errno_t KauthController::fillEventInfo(NuwaKextEvent *event, const vfs_context_t ctx, const vnode_t vp) {
+    errno_t errCode = 0;
     NuwaKextFile *fileInfo = nullptr;
     
     switch (event->eventType) {
@@ -268,22 +268,24 @@ kern_return_t KauthController::fillEventInfo(NuwaKextEvent *event, const vfs_con
     }
     
     errCode = fillBasicInfo(event, ctx, vp);
-    if (errCode != KERN_SUCCESS) {
+    if (errCode != 0) {
         Logger(LOG_WARN, "Failed to fill basic info [%d].", errCode)
         return errCode;
     }
     errCode = fillProcInfo(&event->mainProcess, ctx);
-    if (errCode != KERN_SUCCESS) {
+    if (errCode != 0) {
         Logger(LOG_WARN, "Failed to fill proc info [%d].", errCode)
         return errCode;
     }
     errCode = fillFileInfo(fileInfo, ctx, vp);
-    if (errCode != KERN_SUCCESS) {
+    if (errCode != 0) {
         Logger(LOG_WARN, "Failed to fill file info [%d].", errCode)
         return errCode;
     }
     return errCode;
 }
+
+#pragma mark - Callback Methods
 
 extern "C"
 int vnode_scope_callback(kauth_cred_t credential, void *idata, kauth_action_t action,

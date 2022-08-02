@@ -32,7 +32,7 @@ public:
     bool postToAuthQueue(NuwaKextEvent *eventInfo);
     
     // Called when send notify event to client.
-    bool postToNtifyQueue(NuwaKextEvent *eventInfo);
+    bool postToNotifyQueue(NuwaKextEvent *eventInfo);
     
 private:
     bool init();

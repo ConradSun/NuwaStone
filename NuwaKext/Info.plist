@@ -7,7 +7,7 @@
 		<key>DriverService</key>
 		<dict>
 			<key>CFBundleIdentifier</key>
-			<string>com.nuwastone.kext</string>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>IOClass</key>
 			<string>DriverService</string>
 			<key>IOMatchCategory</key>
@@ -22,13 +22,13 @@
 	</dict>
 	<key>OSBundleLibraries</key>
 	<dict>
-		<key>com.apple.kpi.bsd</key>
-		<string>9.0.0</string>
-		<key>com.apple.kpi.iokit</key>
-		<string>9.0.0</string>
 		<key>com.apple.kpi.libkern</key>
 		<string>9.0.0</string>
 		<key>com.apple.kpi.mach</key>
+		<string>9.0.0</string>
+		<key>com.apple.kpi.bsd</key>
+		<string>9.0.0</string>
+		<key>com.apple.kpi.iokit</key>
 		<string>9.0.0</string>
 	</dict>
 </dict>

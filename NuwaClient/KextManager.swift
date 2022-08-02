@@ -181,6 +181,10 @@ extension KextManager {
         case kActionNotifyFileDelete:
             nuwaEvent.eventType = .FileDelete
             nuwaEvent.props.updateValue(String(cString: &event.fileDelete.path.0), forKey: "FilePath")
+        case kActionNotifyNetworkAccess:
+            nuwaEvent.eventType = .NetAccess
+            nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.localAddr, isLocal: true)
+            nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.remoteAddr, isLocal: false)
         default:
             break
         }

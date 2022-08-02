@@ -10,5 +10,6 @@
 
 #include "KextCommon.hpp"
 #include <libproc.h>
+#include <arpa/inet.h>
 
 #endif /* NuwaBridge_h */

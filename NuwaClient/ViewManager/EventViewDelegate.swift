@@ -33,6 +33,15 @@ extension ViewController: NuwaEventProtocol {
                 if displayMode == .DisplayAll || displayMode == .DisplayProcess {
                     displayedItems.append(event)
                 }
+                
+            case .NetAccess:
+                fallthrough
+            case .DNSQuery:
+                eventCount[DisplayMode.DisplayNetwork.rawValue] += 1
+                if displayMode == .DisplayAll || displayMode == .DisplayNetwork {
+                    displayedItems.append(event)
+                }
+
             default:
                 Logger(.Warning, "Unknown event type occured.")
                 break

@@ -94,7 +94,7 @@ bool EventDispatcher::postToAuthQueue(NuwaKextEvent *eventInfo) {
     return result;
 }
 
-bool EventDispatcher::postToNtifyQueue(NuwaKextEvent *eventInfo) {
+bool EventDispatcher::postToNotifyQueue(NuwaKextEvent *eventInfo) {
     bool result = m_notifyDataQueue->enqueue(eventInfo, sizeof(NuwaKextEvent));
     if (!result) {
         Logger(LOG_WARN, "Failed to push back data to notify queue.")

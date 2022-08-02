@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		3A1E83A72890D415003823E6 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1E83A62890D415003823E6 /* main.swift */; };
 		3A4A95E3289773DE00220EB7 /* KextControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95E2289773DE00220EB7 /* KextControl.swift */; };
+		3A4A95E72897A8E900220EB7 /* SocketFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95E52897A8E900220EB7 /* SocketFilter.cpp */; };
+		3A4A95E82897A8E900220EB7 /* SocketFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A4A95E62897A8E900220EB7 /* SocketFilter.hpp */; };
+		3A4A95EC2897F1C600220EB7 /* SocketHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95EA2897F1C600220EB7 /* SocketHandler.cpp */; };
+		3A4A95ED2897F1C600220EB7 /* SocketHandler.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A4A95EB2897F1C600220EB7 /* SocketHandler.hpp */; };
 		3A5F3315287B145400A8F76E /* KauthController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A5F3313287B145400A8F76E /* KauthController.cpp */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
 		3A5F3316287B145400A8F76E /* KauthController.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A5F3314287B145400A8F76E /* KauthController.hpp */; };
 		3AAA188E2886431B00C1BDAF /* NuwaStone.kext in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 3ABAFF962879C1BC00928C22 /* NuwaStone.kext */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -88,6 +92,10 @@
 		3A1E83A62890D415003823E6 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NuwaBridge.hpp; sourceTree = "<group>"; };
 		3A4A95E2289773DE00220EB7 /* KextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KextControl.swift; sourceTree = "<group>"; };
+		3A4A95E52897A8E900220EB7 /* SocketFilter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SocketFilter.cpp; sourceTree = "<group>"; };
+		3A4A95E62897A8E900220EB7 /* SocketFilter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SocketFilter.hpp; sourceTree = "<group>"; };
+		3A4A95EA2897F1C600220EB7 /* SocketHandler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SocketHandler.cpp; sourceTree = "<group>"; };
+		3A4A95EB2897F1C600220EB7 /* SocketHandler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SocketHandler.hpp; sourceTree = "<group>"; };
 		3A5F3313287B145400A8F76E /* KauthController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KauthController.cpp; sourceTree = "<group>"; };
 		3A5F3314287B145400A8F76E /* KauthController.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = KauthController.hpp; sourceTree = "<group>"; };
 		3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewDelegate.swift; sourceTree = "<group>"; };
@@ -166,6 +174,17 @@
 			path = ViewManager;
 			sourceTree = "<group>";
 		};
+		3A4A95E42897A88100220EB7 /* SocketFilter */ = {
+			isa = PBXGroup;
+			children = (
+				3A4A95E52897A8E900220EB7 /* SocketFilter.cpp */,
+				3A4A95E62897A8E900220EB7 /* SocketFilter.hpp */,
+				3A4A95EA2897F1C600220EB7 /* SocketHandler.cpp */,
+				3A4A95EB2897F1C600220EB7 /* SocketHandler.hpp */,
+			);
+			path = SocketFilter;
+			sourceTree = "<group>";
+		};
 		3AAA188D2886431B00C1BDAF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -213,6 +232,7 @@
 			isa = PBXGroup;
 			children = (
 				3ABAFF9E2879C23A00928C22 /* KextUtils */,
+				3A4A95E42897A88100220EB7 /* SocketFilter */,
 				3ABAFFA22879C27B00928C22 /* KauthController */,
 				3ABAFF9F2879C24900928C22 /* CacheManager */,
 				3ABAFFA12879C26C00928C22 /* EventDispatcher */,
@@ -292,8 +312,10 @@
 			files = (
 				3ADAC52A287D582C00DD8812 /* EventDispatcher.hpp in Headers */,
 				3ABAFFA72879C3FA00928C22 /* KextLogger.hpp in Headers */,
+				3A4A95ED2897F1C600220EB7 /* SocketHandler.hpp in Headers */,
 				3AD5757E287C18C000C0C2BE /* KextCommon.hpp in Headers */,
 				3ADEF953287AE55E00DF7609 /* DriverService.hpp in Headers */,
+				3A4A95E82897A8E900220EB7 /* SocketFilter.hpp in Headers */,
 				3A5F3316287B145400A8F76E /* KauthController.hpp in Headers */,
 				3AF772412880308E009AC154 /* DriverCache.hpp in Headers */,
 				3AF7723D28801567009AC154 /* CacheManager.hpp in Headers */,
@@ -454,10 +476,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ABAFFAB2879C40A00928C22 /* DriverClient.cpp in Sources */,
+				3A4A95EC2897F1C600220EB7 /* SocketHandler.cpp in Sources */,
 				3ADAC529287D582C00DD8812 /* EventDispatcher.cpp in Sources */,
 				3AF7723C28801567009AC154 /* CacheManager.cpp in Sources */,
 				3A5F3315287B145400A8F76E /* KauthController.cpp in Sources */,
 				3AB13ABC287EC378004E1093 /* main.cpp in Sources */,
+				3A4A95E72897A8E900220EB7 /* SocketFilter.cpp in Sources */,
 				3ADEF952287AE55E00DF7609 /* DriverService.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

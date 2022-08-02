@@ -29,12 +29,6 @@ public:
     // Stops the kauth listeners.
     void stopListeners();
     
-    // Called when send auth event to client.
-    bool postToAuthQueue(NuwaKextEvent *eventInfo);
-    
-    // Called when send notify event to client.
-    bool postToNotifyQueue(NuwaKextEvent *eventInfo);
-    
     void increaseEventCount();
     void decreaseEventCount();
     
@@ -42,19 +36,18 @@ public:
     void fileOpCallback(kauth_action_t action, const vnode_t vp, const char *srcPath, const char *newPath);
     
 private:
-    
     int getDecisionFromClient(UInt64 vnodeID);
     
-    kern_return_t fillBasicInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp);
-    kern_return_t fillProcInfo(NuwaKextProc *ProctInfo, const vfs_context_t ctx);
-    kern_return_t fillFileInfo(NuwaKextFile *FileInfo, const vfs_context_t ctx, const vnode_t vp);
-    kern_return_t fillEventInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp);
+    errno_t fillBasicInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp);
+    errno_t fillProcInfo(NuwaKextProc *ProctInfo, const vfs_context_t ctx);
+    errno_t fillFileInfo(NuwaKextFile *FileInfo, const vfs_context_t ctx, const vnode_t vp);
+    errno_t fillEventInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp);
     
     kauth_listener_t m_vnodeListener;
     kauth_listener_t m_fileopListener;
     CacheManager *m_cacheManager;
     EventDispatcher *m_eventDispatcher;
-    static SInt32 m_activeEventCount;
+    SInt32 m_activeEventCount;
 };
 
 /**

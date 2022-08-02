@@ -11,3 +11,5 @@ let DaemonName = "com.nuwastone.daemon"
 let ClientName = "NuwaClient"
 let ProcessCWD = "current working dir"
 let ProcessArgs = "arguments"
+
+let MaxIPLength = 41

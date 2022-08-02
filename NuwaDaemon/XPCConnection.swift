@@ -24,7 +24,7 @@ class XPCConnection: NSObject {
     var delegate: ClientXPCProtocol?
     
     private func getMachServiceName(from bundle: Bundle) -> String {
-        let clientKeys = bundle.object(forInfoDictionaryKey: "NuwaClient") as? [String: Any]
+        let clientKeys = bundle.object(forInfoDictionaryKey: ClientName) as? [String: Any]
         let machServiceName = clientKeys?["MachServiceName"] as? String
         return machServiceName ?? ""
     }

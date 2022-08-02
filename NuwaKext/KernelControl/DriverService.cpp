@@ -26,6 +26,11 @@ void DriverService::clearInstances() {
         m_kauthController->release();
         m_kauthController = nullptr;
     }
+    
+    if (m_socketFilter != nullptr) {
+        m_socketFilter->release();
+        m_socketFilter = nullptr;
+    }
 }
 
 bool DriverService::start(IOService *provider) {
@@ -36,11 +41,12 @@ bool DriverService::start(IOService *provider) {
     m_cacheManager = CacheManager::getInstance();
     m_eventDispatcher = EventDispatcher::getInstance();
     m_kauthController = new KauthController();
-    if (m_cacheManager == nullptr || m_eventDispatcher == nullptr || m_kauthController == nullptr) {
+    m_socketFilter = new SocketFilter();
+    if (m_cacheManager == nullptr || m_eventDispatcher == nullptr || m_kauthController == nullptr || m_socketFilter == nullptr) {
         clearInstances();
         return false;
     }
-    if (!m_kauthController->init()) {
+    if (!m_kauthController->init() || !m_socketFilter->init()) {
         clearInstances();
         return false;
     }
@@ -52,6 +58,7 @@ bool DriverService::start(IOService *provider) {
 
 void DriverService::stop(IOService *provider) {
     m_kauthController->stopListeners();
+    m_socketFilter->unregisterFilters();
     clearInstances();
     IOService::stop(provider);
     Logger(LOG_INFO, "Kext unloaded successfully.")
@@ -59,4 +66,8 @@ void DriverService::stop(IOService *provider) {
 
 KauthController *DriverService::getKauthController() const {
     return m_kauthController;
+}
+
+SocketFilter *DriverService::getSocketFilter() const {
+    return m_socketFilter;
 }

@@ -35,7 +35,7 @@ class ViewController: NSViewController {
     var isStarted = false
     var isScrollOn = true
     var isInfoOn = true
-    var displayMode: DisplayMode = .DisplayAll
+    var displayMode = DisplayMode.DisplayAll
     var displayTimer = Timer()
     
     let eventQueue = DispatchQueue(label: "com.nuwastone.eventview.queue")
@@ -176,6 +176,9 @@ extension ViewController {
                     displayedItems.append(event)
                 }
             case .DisplayNetwork:
+                if event.eventType == .NetAccess || event.eventType == .DNSQuery {
+                    displayedItems.append(event)
+                }
                 break
             default:
                 break

@@ -9,20 +9,19 @@
 #define KextCommon_h
 
 #include <libkern/OSTypes.h>
+#include <netinet/in.h>
 
 static const char *kDriverIdentifier = "com.nuwastone.kext";
 static const char *kDriverService = "DriverService";
 static const char *kDriverPath = "/Applications/NuwaClient.app/Contents/PlugIns/NuwaStone.kext";
-
+static const char *kSocketFilterName = "NuwaStone.socketfilter";
+static const UInt32 kBaseFilterHandle = 0xFEEDBEEF;
 static const UInt32 kMaxAuthWaitTime = 100; // ms
-
 static const UInt32 kMaxAuthQueueEvents = 1024;
 static const UInt32 kMaxNotifyQueueEvents = 2048;
 static const UInt32 kMaxCacheItems = 1024;
-
 static const UInt32 kMaxPathLength = 1024;
 static const UInt32 kMaxNameLength = 256;
-static const UInt8 kMaxIPLength = 41;
 
 typedef enum {
     kNuwaUserClientOpen,
@@ -87,10 +86,8 @@ typedef struct {
         } fileRename;
         struct {
             UInt16 protocol;
-            char localIP[kMaxIPLength];
-            char remoteIP[kMaxIPLength];
-            UInt16 localPort;
-            UInt16 remotePort;
+            struct sockaddr localAddr;
+            struct sockaddr remoteAddr;
         } netAccess;
         struct {
             SInt queryStatus;

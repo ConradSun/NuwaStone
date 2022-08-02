@@ -12,6 +12,7 @@
 #include <libkern/OSKextLib.h>
 #include "CacheManager.hpp"
 #include "KauthController.hpp"
+#include "SocketFilter.hpp"
 #include "EventDispatcher.hpp"
 
 class DriverService : public IOService {
@@ -25,12 +26,14 @@ public:
     void stop(IOService *provider) override;
     
     KauthController *getKauthController() const;
+    SocketFilter *getSocketFilter() const;
     
 private:
     void clearInstances();
     
     CacheManager *m_cacheManager;
     KauthController *m_kauthController;
+    SocketFilter *m_socketFilter;
     EventDispatcher *m_eventDispatcher;
     bool m_kextUnloadProtect;
 };

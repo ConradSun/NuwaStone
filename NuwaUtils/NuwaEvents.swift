@@ -15,6 +15,8 @@ enum NuwaEventType : String {
     case FileRename
     case ProcessCreate
     case ProcessExit
+    case NetAccess
+    case DNSQuery
 }
 
 protocol NuwaEventProtocol {
@@ -48,6 +50,19 @@ class NuwaEventInfo {
         ppid = 0
         procPath = ""
         props = Dictionary<String, Any>()
+    }
+    
+    func convertSocketAddr(socketAddr: UnsafeMutablePointer<sockaddr>, isLocal: Bool) {
+        var ip = Array<CChar>(repeating: 0x0, count: MaxIPLength)
+        let temp = (Int16(socketAddr.pointee.sa_data.0) << 8) | Int16(socketAddr.pointee.sa_data.1)
+        let port = UInt16(bitPattern: temp)
+        inet_ntop(Int32(socketAddr.pointee.sa_family), &socketAddr.pointee.sa_data.2, &ip, socklen_t(MaxIPLength))
+        if isLocal {
+            props.updateValue("\(String(cString: ip)) : \(port)", forKey: "local")
+        }
+        else {
+            props.updateValue("\(String(cString: ip)) : \(port)", forKey: "remote")
+        }
     }
     
     func fillProcPath() {
