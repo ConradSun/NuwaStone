@@ -36,7 +36,7 @@ void SocketFilter::free() {
 
 bool SocketFilter::registerSocketFilter(sflt_filter *filter, UInt32 handle, UInt32 domain, UInt32 proto) {
     errno_t error = 0;
-    UInt32 sockType = 0;
+    UInt32 type = 0;
     bzero(filter, sizeof(sflt_filter));
     
     filter->sf_handle = handle;
@@ -45,21 +45,22 @@ bool SocketFilter::registerSocketFilter(sflt_filter *filter, UInt32 handle, UInt
     filter->sf_attach = socket_attach_callback;
     filter->sf_detach = socket_detach_callback;
     filter->sf_notify = socket_notify_callback;
+    filter->sf_bind = socket_bind_callback;
     
     switch (proto) {
         case IPPROTO_TCP:
-            sockType = SOCK_STREAM;
+            type = SOCK_STREAM;
             break;
             
         case IPPROTO_UDP:
-            sockType = SOCK_DGRAM;
+            type = SOCK_DGRAM;
             break;
             
         default:
             break;
     }
     
-    error = sflt_register(filter, domain, sockType, proto);
+    error = sflt_register(filter, domain, type, proto);
     if (error != 0) {
         filter->sf_handle = kBaseFilterHandle;
         Logger(LOG_ERROR, "Failed to register filter with error [%d].", error)
@@ -148,12 +149,21 @@ void socket_notify_callback(void *cookie, socket_t socket, sflt_event_t event, v
     }
     
     SocketHandler *handler = reinterpret_cast<SocketHandler *>(cookie);
-    NuwaKextEvent *net_event = (NuwaKextEvent *)IOMallocAligned(sizeof(NuwaKextEvent), 2);
-    if (net_event == nullptr) {
-        return;
-    }
-    
     OSIncrementAtomic(&s_activeEventCount);
     handler->notifySocketCallback(socket, event);
     OSDecrementAtomic(&s_activeEventCount);
+}
+
+extern "C"
+errno_t socket_bind_callback(void *cookie, socket_t socket, const struct sockaddr *to) {
+    if (socket == nullptr || cookie == nullptr) {
+        return EINVAL;
+    }
+    
+    SocketHandler *handler = reinterpret_cast<SocketHandler *>(cookie);
+    OSIncrementAtomic(&s_activeEventCount);
+    handler->bindSocketCallback(socket, to);
+    OSDecrementAtomic(&s_activeEventCount);
+    
+    return 0;
 }

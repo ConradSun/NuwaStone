@@ -24,6 +24,7 @@ public:
     void free() override;
     
     void notifySocketCallback(socket_t socket, sflt_event_t event);
+    void bindSocketCallback(socket_t socket, const sockaddr *to);
     
 private:
     errno_t fillBasicInfo(NuwaKextEvent *netEvent, NuwaKextAction action);

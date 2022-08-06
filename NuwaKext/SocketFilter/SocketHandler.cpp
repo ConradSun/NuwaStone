@@ -135,7 +135,33 @@ void SocketHandler::notifySocketCallback(socket_t socket, sflt_event_t event) {
     }
     
     if (fillNetEventInfo(netEvent, kActionNotifyNetworkAccess) == 0) {
+        if (netEvent->mainProcess.pid == 0) {
+            UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | netEvent->netAccess.localAddr.sa_data[1];
+            UInt64 value = m_cacheManager->getFromPortBindCache(port);
+            if (value != 0) {
+                netEvent->mainProcess.pid = value >> 32;
+                netEvent->mainProcess.ppid = (value << 32) >> 32;
+            }
+        }
         m_eventDispatcher->postToNotifyQueue(netEvent);
+    }
+    IOFreeAligned(netEvent, sizeof(NuwaKextEvent));
+}
+
+void SocketHandler::bindSocketCallback(socket_t socket, const sockaddr *to) {
+    m_socket = socket;
+    m_localAddr = *to;
+    NuwaKextEvent *netEvent = (NuwaKextEvent *)IOMallocAligned(sizeof(NuwaKextEvent), 2);
+    if (netEvent == nullptr) {
+        return;
+    }
+    
+    if (fillNetEventInfo(netEvent, kActionNotifyNetworkAccess) == 0) {
+        UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | netEvent->netAccess.localAddr.sa_data[1];
+        UInt64 value = ((UInt64)netEvent->mainProcess.pid << 32) | netEvent->mainProcess.ppid;
+        if (port != 0) {
+            m_cacheManager->setForPortBindCache(port, value);
+        }
     }
     IOFreeAligned(netEvent, sizeof(NuwaKextEvent));
 }

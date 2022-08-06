@@ -27,6 +27,14 @@ bool CacheManager::init() {
         m_authResultCache = nullptr;
         return false;
     }
+    m_portBindCache = new DriverCache<UInt16, UInt64>(kMaxCacheItems);
+    if (m_portBindCache == nullptr) {
+        delete m_authResultCache;
+        m_authResultCache = nullptr;
+        delete m_authExecCache;
+        m_authExecCache = nullptr;
+        return false;
+    }
     return true;
 }
 
@@ -35,6 +43,8 @@ void CacheManager::free() {
     m_authResultCache = nullptr;
     delete m_authExecCache;
     m_authExecCache = nullptr;
+    delete m_portBindCache;
+    m_portBindCache = nullptr;
 }
 
 CacheManager *CacheManager::getInstance() {
@@ -80,6 +90,14 @@ bool CacheManager::setForAuthExecCache(UInt64 vnodeID, UInt64 value) {
     return m_authExecCache->setObject(vnodeID, value);
 }
 
+bool CacheManager::setForPortBindCache(UInt16 port, UInt64 value) {
+    if (port == 0) {
+        return false;
+    }
+    
+    return m_portBindCache->setObject(port, value);
+}
+
 UInt8 CacheManager::getFromAuthResultCache(UInt64 vnodeID) {
     if (vnodeID == 0) {
         return 0;
@@ -93,4 +111,12 @@ UInt64 CacheManager::getFromAuthExecCache(UInt64 vnodeID) {
     }
     
     return m_authExecCache->getObject(vnodeID);
+}
+
+UInt64 CacheManager::getFromPortBindCache(UInt16 port) {
+    if (port == 0) {
+        return 0;
+    }
+    
+    return m_portBindCache->getObject(port);
 }
