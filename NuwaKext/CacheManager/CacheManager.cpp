@@ -27,6 +27,7 @@ bool CacheManager::init() {
         m_authResultCache = nullptr;
         return false;
     }
+    m_authExecCache->zero = 0;
     m_portBindCache = new DriverCache<UInt16, UInt64>(kMaxCacheItems);
     if (m_portBindCache == nullptr) {
         delete m_authResultCache;
@@ -35,6 +36,8 @@ bool CacheManager::init() {
         m_authExecCache = nullptr;
         return false;
     }
+    m_portBindCache->zero = 0;
+
     return true;
 }
 

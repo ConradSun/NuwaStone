@@ -40,6 +40,7 @@ public:
 private:
     bool init();
     void free();
+    
     static CacheManager *m_sharedInstance;
     DriverCache<UInt64, UInt8> *m_authResultCache;
     DriverCache<UInt64, UInt64> *m_authExecCache;

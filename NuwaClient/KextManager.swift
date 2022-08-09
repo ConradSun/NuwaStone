@@ -185,6 +185,15 @@ extension KextManager {
             nuwaEvent.eventType = .NetAccess
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.localAddr, isLocal: true)
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.remoteAddr, isLocal: false)
+            if event.netAccess.protocol == IPPROTO_TCP {
+                nuwaEvent.props.updateValue("tcp", forKey: "protocol")
+            }
+            else if event.netAccess.protocol == IPPROTO_UDP {
+                nuwaEvent.props.updateValue("udp", forKey: "protocol")
+            }
+            else {
+                nuwaEvent.props.updateValue("unsupport", forKey: "protocol")
+            }
         default:
             break
         }
@@ -194,7 +203,7 @@ extension KextManager {
         nuwaEvent.ppid = event.mainProcess.ppid
         
         if nuwaEvent.eventType == .ProcessCreate {
-            nuwaEvent.fillProcPath()
+            nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
             nuwaEvent.fillProcCurrentDir()
             nuwaEvent.fillProcArgs()
             processCache.updateCache(nuwaEvent)

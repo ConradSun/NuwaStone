@@ -30,6 +30,7 @@ private:
     errno_t fillBasicInfo(NuwaKextEvent *netEvent, NuwaKextAction action);
     errno_t fillConnectionInfo(NuwaKextEvent *netEvent);
     errno_t fillNetEventInfo(NuwaKextEvent *netEvent, NuwaKextAction action);
+    void fillInfoFromCache(NuwaKextEvent *netEvent);
     
     socket_t m_socket;
     sockaddr m_localAddr;

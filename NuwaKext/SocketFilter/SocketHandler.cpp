@@ -49,7 +49,6 @@ errno_t SocketHandler::fillBasicInfo(NuwaKextEvent *netEvent, NuwaKextAction act
     proc_t proc = vfs_context_proc(context);
     kauth_cred_t cred = vfs_context_ucred(context);
     
-    bzero(netEvent, sizeof(NuwaKextEvent));
     netEvent->eventType = action;
     netEvent->eventTime = time.tv_sec;
     
@@ -127,6 +126,17 @@ errno_t SocketHandler::fillNetEventInfo(NuwaKextEvent *netEvent, NuwaKextAction 
     return error;
 }
 
+void SocketHandler::fillInfoFromCache(NuwaKextEvent *netEvent) {
+    if (netEvent->mainProcess.pid == 0) {
+        UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | (UInt8)netEvent->netAccess.localAddr.sa_data[1];
+        UInt64 value = m_cacheManager->getFromPortBindCache(port);
+        if (value != 0) {
+            netEvent->mainProcess.pid = value >> 32;
+            netEvent->mainProcess.ppid = (value << 32) >> 32;
+        }
+    }
+}
+
 void SocketHandler::notifySocketCallback(socket_t socket, sflt_event_t event) {
     m_socket = socket;
     NuwaKextEvent *netEvent = (NuwaKextEvent *)IOMallocAligned(sizeof(NuwaKextEvent), 2);
@@ -134,15 +144,9 @@ void SocketHandler::notifySocketCallback(socket_t socket, sflt_event_t event) {
         return;
     }
     
+    bzero(netEvent, sizeof(NuwaKextEvent));
     if (fillNetEventInfo(netEvent, kActionNotifyNetworkAccess) == 0) {
-        if (netEvent->mainProcess.pid == 0) {
-            UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | netEvent->netAccess.localAddr.sa_data[1];
-            UInt64 value = m_cacheManager->getFromPortBindCache(port);
-            if (value != 0) {
-                netEvent->mainProcess.pid = value >> 32;
-                netEvent->mainProcess.ppid = (value << 32) >> 32;
-            }
-        }
+        fillInfoFromCache(netEvent);
         m_eventDispatcher->postToNotifyQueue(netEvent);
     }
     IOFreeAligned(netEvent, sizeof(NuwaKextEvent));
@@ -157,7 +161,7 @@ void SocketHandler::bindSocketCallback(socket_t socket, const sockaddr *to) {
     }
     
     if (fillNetEventInfo(netEvent, kActionNotifyNetworkAccess) == 0) {
-        UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | netEvent->netAccess.localAddr.sa_data[1];
+        UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | (UInt8)netEvent->netAccess.localAddr.sa_data[1];
         UInt64 value = ((UInt64)netEvent->mainProcess.pid << 32) | netEvent->mainProcess.ppid;
         if (port != 0) {
             m_cacheManager->setForPortBindCache(port, value);

@@ -185,7 +185,7 @@ IOReturn DriverClient::externalMethod(UInt32 selector, IOExternalMethodArguments
         { &DriverClient::open, 0, 0, 0, 0 },
         { &DriverClient::allowBinary, 1, 0, 0, 0 },
         { &DriverClient::denyBinary, 1, 0, 0, 0 },
-        { &DriverClient::setLogLevel, 1, 0, 0, 0},
+        { &DriverClient::setLogLevel, 1, 0, 0, 0 },
     };
 
     if (selector >= static_cast<UInt32>(kNuwaUserClientNMethods)) {

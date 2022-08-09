@@ -106,6 +106,7 @@ int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, in
         return response;
     }
     
+    bzero(event, sizeof(NuwaKextEvent));
     event->eventType = kActionAuthProcessCreate;
     errCode = fillEventInfo(event, ctx, vp);
     if (errCode == 0 && m_eventDispatcher->postToAuthQueue(event)) {
@@ -127,6 +128,7 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
         return;
     }
     
+    bzero(event, sizeof(NuwaKextEvent));
     vfs_context_t ctx = vfs_context_create(NULL);
     switch (action) {
         case KAUTH_FILEOP_CLOSE:

@@ -27,6 +27,8 @@ template <typename KeyType, typename ValueType>
 class DriverCache {
 
 public:
+    ValueType zero;
+    
     DriverCache(UInt64 capacity = 1024) {
         if (capacity < 1) {
             capacity = 1;
@@ -152,7 +154,6 @@ private:
     UInt64 m_itemCount;
     UInt64 m_bucketCount;
     Bucket *m_buckets;
-    const ValueType zero = {};
     
     lck_mtx_t *m_lock;
 };

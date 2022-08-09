@@ -54,8 +54,9 @@ class NuwaEventInfo {
     
     func convertSocketAddr(socketAddr: UnsafeMutablePointer<sockaddr>, isLocal: Bool) {
         var ip = Array<CChar>(repeating: 0x0, count: MaxIPLength)
-        let temp = (Int16(socketAddr.pointee.sa_data.0) << 8) | Int16(socketAddr.pointee.sa_data.1)
-        let port = UInt16(bitPattern: temp)
+        let data0 = UInt8(bitPattern: socketAddr.pointee.sa_data.0)
+        let data1 = UInt8(bitPattern: socketAddr.pointee.sa_data.1)
+        let port = (UInt16(data0) << 8) | UInt16(data1)
         inet_ntop(Int32(socketAddr.pointee.sa_family), &socketAddr.pointee.sa_data.2, &ip, socklen_t(MaxIPLength))
         if isLocal {
             props.updateValue("\(String(cString: ip)) : \(port)", forKey: "local")
