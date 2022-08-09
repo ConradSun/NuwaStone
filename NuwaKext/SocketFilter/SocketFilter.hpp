@@ -41,5 +41,7 @@ extern "C" errno_t socket_attach_callback(void **cookie, socket_t socket);
 extern "C" void socket_detach_callback(void *cookie, socket_t socket);
 extern "C" void socket_notify_callback(void *cookie, socket_t socket, sflt_event_t event, void *param);
 extern "C" errno_t socket_bind_callback(void *cookie, socket_t socket, const struct sockaddr *to);
+extern "C" errno_t socket_connect_in_callback(void *cookie, socket_t socket, const struct sockaddr *from);
+extern "C" errno_t socket_connect_out_callback(void *cookie, socket_t socket, const struct sockaddr *to);
 
 #endif /* SocketFilter_hpp */
