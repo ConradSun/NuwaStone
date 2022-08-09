@@ -14,37 +14,30 @@ extension ViewController: NuwaEventProtocol {
             eventCount[DisplayMode.DisplayAll.rawValue] += 1
 
             switch event.eventType {
-            case .FileCreate:
-                fallthrough
-            case .FileDelete:
-                fallthrough
-            case .FileCloseModify:
-                fallthrough
-            case .FileRename:
+            case .FileCreate, .FileDelete, .FileCloseModify, .FileRename:
                 eventCount[DisplayMode.DisplayFile.rawValue] += 1
-                if displayMode == .DisplayAll || displayMode == .DisplayFile {
-                    displayedItems.append(event)
+                if displayMode != .DisplayAll && displayMode != .DisplayFile {
+                    return
                 }
 
-            case .ProcessCreate:
-                fallthrough
-            case .ProcessExit:
+            case .ProcessCreate, .ProcessExit:
                 eventCount[DisplayMode.DisplayProcess.rawValue] += 1
-                if displayMode == .DisplayAll || displayMode == .DisplayProcess {
-                    displayedItems.append(event)
+                if displayMode != .DisplayAll && displayMode != .DisplayProcess {
+                    return
                 }
                 
-            case .NetAccess:
-                fallthrough
-            case .DNSQuery:
+            case .NetAccess, .DNSQuery:
                 eventCount[DisplayMode.DisplayNetwork.rawValue] += 1
-                if displayMode == .DisplayAll || displayMode == .DisplayNetwork {
-                    displayedItems.append(event)
+                if displayMode != .DisplayAll && displayMode != .DisplayNetwork {
+                    return
                 }
 
             default:
                 Logger(.Warning, "Unknown event type occured.")
-                break
+                return
+            }
+            if searchText.isEmpty || event.desc.contains(searchText) {
+                displayedItems.append(event)
             }
         }
     }

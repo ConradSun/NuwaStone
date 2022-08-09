@@ -35,6 +35,7 @@ class ViewController: NSViewController {
     var isStarted = false
     var isScrollOn = true
     var isInfoOn = true
+    var searchText = ""
     var displayMode = DisplayMode.DisplayAll
     var displayTimer = Timer()
     
@@ -131,10 +132,14 @@ class ViewController: NSViewController {
     
     @IBAction func displaySegmentValueChanged(_ sender: Any) {
         if displaySegment.selectedSegment != displayMode.rawValue {
-            displayedItems.removeAll()
             displayMode = DisplayMode(rawValue: displaySegment.selectedSegment) ?? .DisplayAll
             refreshDisplayedEvents()
         }
+    }
+    
+    @IBAction func searchBarTextModified(_ sender: Any) {
+        searchText = searchBar.stringValue
+        refreshDisplayedEvents()
     }
 }
 
@@ -159,34 +164,39 @@ extension ViewController {
         }
     }
     
+    
+    
     func refreshDisplayedEvents() {
-        if displayMode == .DisplayAll {
+        displayedItems.removeAll()
+        if displayMode == .DisplayAll && searchText.isEmpty {
             displayedItems = reportedItems
             return
         }
         
         for event in reportedItems {
             switch displayMode {
+            case .DisplayAll:
+                ()
             case .DisplayProcess:
-                if event.eventType == .ProcessCreate || event.eventType == .ProcessExit {
-                    displayedItems.append(event)
+                if event.eventType != .ProcessCreate && event.eventType != .ProcessExit {
+                    continue
                 }
             case .DisplayFile:
-                if event.eventType == .FileDelete || event.eventType == .FileRename || event.eventType == .FileCloseModify || event.eventType == .FileCreate {
-                    displayedItems.append(event)
+                if event.eventType != .FileDelete && event.eventType != .FileRename && event.eventType != .FileCloseModify && event.eventType != .FileCreate {
+                    continue
                 }
             case .DisplayNetwork:
-                if event.eventType == .NetAccess || event.eventType == .DNSQuery {
-                    displayedItems.append(event)
+                if event.eventType != .NetAccess && event.eventType != .DNSQuery {
+                    continue
                 }
-                break
-            default:
-                break
+            }
+            if searchText.isEmpty || event.desc.contains(searchText) {
+                displayedItems.append(event)
             }
         }
         reloadEventInfo()
         infoLabel.stringValue = ""
-    }
+    } 
 }
 
 extension ViewController: ClientXPCProtocol {
