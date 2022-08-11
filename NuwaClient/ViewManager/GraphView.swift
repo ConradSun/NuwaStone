@@ -8,7 +8,7 @@
 import Cocoa
 
 class GraphView: NSView {
-    var freqPointsArray = Array<Array>(repeating: [NSPoint(x: 0, y: 0)], count: DisplayMode.count)
+    var freqPointsArray = [[NSPoint]](repeating: [NSPoint(x: 0, y: 0)], count: DisplayMode.count)
     var colorArray = [NSColor.black.cgColor, NSColor.red.cgColor, NSColor.blue.cgColor, NSColor.green.cgColor]
     
     override func draw(_ dirtyRect: NSRect) {

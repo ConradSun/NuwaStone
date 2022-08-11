@@ -30,7 +30,7 @@ class NuwaEventInfo {
     var ppid: UInt32
     var procPath: String
     
-    var props: Dictionary<String, Any>
+    var props: [String: Any]
     var desc: String {
         let pretty = """
         Event Type: \(eventType)
@@ -49,11 +49,11 @@ class NuwaEventInfo {
         pid = 0
         ppid = 0
         procPath = ""
-        props = Dictionary<String, Any>()
+        props = [String: Any]()
     }
     
     func convertSocketAddr(socketAddr: UnsafeMutablePointer<sockaddr>, isLocal: Bool) {
-        var ip = Array<CChar>(repeating: 0x0, count: MaxIPLength)
+        var ip = [CChar](repeating: 0x0, count: MaxIPLength)
         let data0 = UInt8(bitPattern: socketAddr.pointee.sa_data.0)
         let data1 = UInt8(bitPattern: socketAddr.pointee.sa_data.1)
         let port = (UInt16(data0) << 8) | UInt16(data1)

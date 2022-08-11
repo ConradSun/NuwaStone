@@ -66,7 +66,7 @@ class KextManager {
         let queueMemory = UnsafeMutablePointer<IODataQueueMemory>.init(bitPattern: UInt(address))
         
         repeat {
-            var dataSize: UInt32 = UInt32(MemoryLayout.size(ofValue: NuwaKextEvent()))
+            var dataSize = UInt32(MemoryLayout<NuwaKextEvent>.size)
             while IODataQueueDataAvailable(queueMemory) {
                 var kextEvent = NuwaKextEvent()
                 let result = IODataQueueDequeue(queueMemory, &kextEvent, &dataSize)

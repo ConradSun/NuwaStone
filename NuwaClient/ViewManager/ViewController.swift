@@ -40,10 +40,10 @@ class ViewController: NSViewController {
     var displayTimer = Timer()
     
     let eventQueue = DispatchQueue(label: "com.nuwastone.eventview.queue")
-    var eventCount = Array<UInt32>(repeating: 0, count: DisplayMode.count)
-    var eventCountCopy = Array<UInt32>(repeating: 0, count: DisplayMode.count)
-    var reportedItems = Array<NuwaEventInfo>()
-    var displayedItems = Array<NuwaEventInfo>()
+    var eventCount = [UInt32](repeating: 0, count: DisplayMode.count)
+    var eventCountCopy = [UInt32](repeating: 0, count: DisplayMode.count)
+    var reportedItems = [NuwaEventInfo]()
+    var displayedItems = [NuwaEventInfo]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,6 +87,7 @@ class ViewController: NSViewController {
             kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
             kextManager.listenRequestsForType(type: kQueueTypeNotify.rawValue)
             
+            ProcessCache.sharedInstance.initProcCache();
             controlButton.image = NSImage(named: "stop")
             controlLabel.stringValue = "stop"
         }

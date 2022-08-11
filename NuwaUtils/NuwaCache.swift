@@ -9,20 +9,19 @@ import Foundation
 
 struct ProcessCacheInfo {
     var path: String
-    var args: Array<String>
+    var args: [String]
     var cwd: String
     
     init() {
         path = ""
-        args = Array<String>()
+        args = [String]()
         cwd = ""
     }
 }
 
 class ProcessCache {
     static let sharedInstance = ProcessCache()
-    private let cacheQueue = DispatchQueue(label: "com.nuwastone.proccache.queue")
-    private var cacheDict = Dictionary<UInt32, ProcessCacheInfo>()
+    private var cacheDict = [UInt32: ProcessCacheInfo]()
     
     private func getActivePids() -> (UnsafeMutablePointer<Int32>, Int32) {
         var count = proc_listallpids(nil, 0)
@@ -32,7 +31,29 @@ class ProcessCache {
         return (pidArray, count)
     }
     
-    private func initProcCache() {
+    init() {
+        Timer.scheduledTimer(timeInterval: 1800, target: self, selector: #selector(runloopTask), userInfo: nil, repeats: true)
+    }
+    
+    @objc func runloopTask() {
+        let (pids, count) = getActivePids()
+        defer {
+            pids.deallocate()
+        }
+
+        var pidArray = [Int32](repeating: 0, count: Int(count))
+        pidArray.withUnsafeMutableBufferPointer({ ptr -> UnsafeMutablePointer<Int32> in
+            return ptr.baseAddress!
+        }).initialize(from: pids, count: Int(count))
+        
+        for pid in self.cacheDict.keys {
+            if pidArray.contains(Int32(pid)){
+                self.cacheDict.removeValue(forKey: pid)
+            }
+        }
+    }
+    
+    func initProcCache() {
         let (pidArray, count) = getActivePids()
         defer {
             pidArray.deallocate()
@@ -48,46 +69,17 @@ class ProcessCache {
         }
     }
     
-    init() {
-        initProcCache()
-        Timer.scheduledTimer(timeInterval: 1800, target: self, selector: #selector(runloopTask), userInfo: nil, repeats: true)
-    }
-    
-    @objc func runloopTask() {
-        let (pids, count) = getActivePids()
-        defer {
-            pids.deallocate()
-        }
-
-        var pidArray = Array<Int32>(repeating: 0, count: Int(count))
-        pidArray.withUnsafeMutableBufferPointer({ ptr -> UnsafeMutablePointer<Int32> in
-            return ptr.baseAddress!
-        }).initialize(from: pids, count: Int(count))
-        
-        for pid in self.cacheDict.keys {
-            if pidArray.contains(Int32(pid)){
-                cacheQueue.sync {
-                    self.cacheDict.removeValue(forKey: pid)
-                    return
-                }
-            }
-        }
-    }
-    
     func updateCache(_ event: NuwaEventInfo) {
         var info = ProcessCacheInfo()
         info.path = event.procPath
         if event.props[ProcessArgs] != nil {
-            info.args = event.props[ProcessArgs] as! Array<String>
+            info.args = event.props[ProcessArgs] as! [String]
         }
         if event.props[ProcessCWD] != nil {
             info.cwd = event.props[ProcessCWD] as! String
         }
         
-        cacheQueue.sync {
-            cacheDict.updateValue(info, forKey: event.pid)
-            return
-        }
+        cacheDict.updateValue(info, forKey: event.pid)
     }
     
     func getFromCache(_ event: inout NuwaEventInfo) {

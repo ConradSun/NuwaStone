@@ -14,7 +14,7 @@ import Foundation
     func connectResponse(_ handler: @escaping (Bool) -> Void)
     func getProcPath(pid: Int32, eventHandler: @escaping (String, Int32) -> Void)
     func getProcCurrentDir(pid: Int32, eventHandler: @escaping (String, Int32) -> Void)
-    func getProcArgs(pid: Int32, eventHandler: @escaping (Array<String>, Int32) -> Void)
+    func getProcArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void)
 }
 
 class XPCConnection: NSObject {
@@ -69,7 +69,6 @@ class XPCConnection: NSObject {
 
 extension XPCConnection: NSXPCListenerDelegate {
     func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
-        Logger(.Info, "shouldAcceptNewConnection")
         newConnection.exportedObject = self
         newConnection.exportedInterface = NSXPCInterface(with: DaemonXPCProtocol.self)
         newConnection.remoteObjectInterface = NSXPCInterface(with: ClientXPCProtocol.self)
@@ -92,7 +91,7 @@ extension XPCConnection: DaemonXPCProtocol {
     private func getSysctlArgmax() -> Int {
         var argmax: Int = 0
         var mib: [Int32] = [CTL_KERN, KERN_ARGMAX]
-        var size = Swift.Int(MemoryLayout.size(ofValue: argmax))
+        var size = MemoryLayout<Int>.size
         
         guard sysctl(&mib, 2, &argmax, &size, nil, 0) == 0 else {
             return 0
@@ -114,7 +113,7 @@ extension XPCConnection: DaemonXPCProtocol {
     }
     
     func getProcPath(pid: Int32, eventHandler: @escaping (String, Int32) -> Void) {
-        var buffer = [CChar](repeating: 0, count: Swift.Int(PROC_PIDPATHINFO_SIZE))
+        var buffer = [CChar](repeating: 0, count: Int(PROC_PIDPATHINFO_SIZE))
         guard proc_pidpath(Int32(pid), &buffer, UInt32(buffer.count)) > 0 else {
             if errno != ESRCH {
                 Logger(.Debug, "Failed to get proc [\(pid)] path for errno [\(errno)]")
@@ -127,7 +126,7 @@ extension XPCConnection: DaemonXPCProtocol {
     
     func getProcCurrentDir(pid: Int32, eventHandler: @escaping (String, Int32) -> Void) {
         var info = proc_vnodepathinfo()
-        guard proc_pidinfo(Int32(pid), PROC_PIDVNODEPATHINFO, 0, &info, Int32(MemoryLayout.size(ofValue: info))) > 0 else {
+        guard proc_pidinfo(Int32(pid), PROC_PIDVNODEPATHINFO, 0, &info, Int32(MemoryLayout<proc_vnodepathinfo>.size)) > 0 else {
             if errno != ESRCH {
                 Logger(.Debug, "Failed to get proc [\(pid)] cwd for errno [\(errno)]")
             }
@@ -137,11 +136,11 @@ extension XPCConnection: DaemonXPCProtocol {
         eventHandler(String(cString: &info.pvi_cdir.vip_path.0), 0)
     }
     
-    func getProcArgs(pid: Int32, eventHandler: @escaping (Array<String>, Int32) -> Void) {
+    func getProcArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void) {
         var argc: Int32 = 0
-        var argv = Array<String>()
+        var argv = [String]()
         var argmax = getSysctlArgmax()
-        let size = MemoryLayout.size(ofValue: argc)
+        let size = MemoryLayout<Int32>.size
         var begin = size
         
         if argmax == 0 {
