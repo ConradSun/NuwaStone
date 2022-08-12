@@ -7,7 +7,7 @@
 
 import Cocoa
 
-enum DisplayMode : Int {
+enum DisplayMode: Int {
     case DisplayAll
     case DisplayProcess
     case DisplayFile
@@ -58,7 +58,7 @@ class ViewController: NSViewController {
             }
             
             self.reloadEventInfo()
-            for index in 0..<DisplayMode.count {
+            for index in 0 ..< DisplayMode.count {
                 graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), type: DisplayMode(rawValue: index)!)
                 eventCountCopy[index] = eventCount[index]
             }
@@ -80,20 +80,32 @@ class ViewController: NSViewController {
     @IBAction func controlButtonClicked(_ sender: Any) {
         isStarted = !isStarted
         if isStarted {
-            if !kextManager.startMonitoring() {
-                Logger(.Error, "Failed to load kext.")
-                return
+            if #available(macOS 10.16, *) {
+                
+                
+                activateExtension()
             }
-            kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
-            kextManager.listenRequestsForType(type: kQueueTypeNotify.rawValue)
+            else {
+                if !kextManager.startMonitoring() {
+                    Logger(.Error, "Failed to load kext.")
+                    return
+                }
+                kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
+                kextManager.listenRequestsForType(type: kQueueTypeNotify.rawValue)
+            }
             
             ProcessCache.sharedInstance.initProcCache();
             controlButton.image = NSImage(named: "stop")
             controlLabel.stringValue = "stop"
         }
         else {
-            if !kextManager.stopMonitoring() {
-                Logger(.Error, "Failed to unload kext.")
+            if #available(macOS 10.16, *) {
+                
+            }
+            else {
+                if !kextManager.stopMonitoring() {
+                    Logger(.Error, "Failed to unload kext.")
+                }
             }
             
             controlButton.image = NSImage(named: "start")

@@ -12,6 +12,7 @@ class KextManager {
     private var notificationPort: IONotificationPortRef?
     private let authEventQueue = DispatchQueue(label: "com.nuwastone.auth.queue")
     private let notifyEventQueue = DispatchQueue(label: "com.nuwastone.notify.queue")
+    private lazy var proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
     let processCache = ProcessCache.sharedInstance
     var connection: io_connect_t = 0
     var isConnected: Bool = false
@@ -201,11 +202,24 @@ extension KextManager {
         nuwaEvent.eventTime = event.eventTime
         nuwaEvent.pid = event.mainProcess.pid
         nuwaEvent.ppid = event.mainProcess.ppid
+        nuwaEvent.getNameFromUid(event.mainProcess.euid)
         
         if nuwaEvent.eventType == .ProcessCreate {
             nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
-            nuwaEvent.fillProcCurrentDir()
-            nuwaEvent.fillProcArgs()
+            nuwaEvent.fillProcCurrentDir { error in
+                if error == EPERM {
+                    self.proxy?.getProcessCurrentDir(pid: nuwaEvent.pid, eventHandler: { cwd, error in
+                        nuwaEvent.procCWD = cwd
+                    })
+                }
+            }
+            nuwaEvent.fillProcArgs { error in
+                if error == EPERM {
+                    self.proxy?.getProcessArgs(pid: nuwaEvent.pid, eventHandler: { args, error in
+                        nuwaEvent.procArgs = args
+                    })
+                }
+            }
             processCache.updateCache(nuwaEvent)
         }
         else {
@@ -235,7 +249,7 @@ extension KextManager {
         return true
     }
     
-    func setLogLevel(level: UInt32) -> Bool {
+    func setLogLevel(level: UInt8) -> Bool {
         nuwaLog.logLevel = level
         let scalar = [UInt64(level)]
         let result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientSetLogLevel.rawValue, scalar, 1, nil, nil)

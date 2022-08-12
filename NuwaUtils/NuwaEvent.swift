@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum NuwaEventType : String {
+enum NuwaEventType: String, Codable {
     case TypeNil
     case FileCreate
     case FileDelete
@@ -23,20 +23,26 @@ protocol NuwaEventProtocol {
     func displayNuwaEvent(_ event: NuwaEventInfo)
 }
 
-class NuwaEventInfo {
+class NuwaEventInfo: Codable {
     var eventType: NuwaEventType
     var eventTime: UInt64
-    var pid: UInt32
-    var ppid: UInt32
+    var user: String
+    var pid: Int32
+    var ppid: Int32
     var procPath: String
+    var procCWD: String
+    var procArgs: [String]
+    var props: [String: String]
     
-    var props: [String: Any]
     var desc: String {
         let pretty = """
         Event Type: \(eventType)
         Timestamp: \(eventTime)
+        user: \(user)
         Pid: \(pid) (Parent) -> \(ppid)
         ProcPath: \(procPath)
+        procCWD: \(procCWD)
+        procArgs: \(procArgs)
         Props:
         \(props as AnyObject)
         """
@@ -46,10 +52,20 @@ class NuwaEventInfo {
     init() {
         eventType = .TypeNil
         eventTime = 0
+        user = ""
         pid = 0
         ppid = 0
         procPath = ""
-        props = [String: Any]()
+        procCWD = ""
+        procArgs = [String]()
+        props = [String: String]()
+    }
+    
+    func getNameFromUid(_ uid: uid_t) {
+        guard let name = getpwuid(uid)?.pointee.pw_name else {
+            return
+        }
+        user = String(cString: name)
     }
     
     func convertSocketAddr(socketAddr: UnsafeMutablePointer<sockaddr>, isLocal: Bool) {
@@ -66,42 +82,33 @@ class NuwaEventInfo {
         }
     }
     
-    func fillProcPath() {
-        XPCConnection.sharedInstance.getProcPath(pid: Int32(pid), eventHandler: { path, error in
-            if error == EPERM {
-                let proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
-                proxy?.getProcPath(pid: Int32(self.pid), eventHandler: { path, error in
-                    self.procPath = path
-                })
+    func fillProcPath(errorHandler: @escaping (Int32) -> Void) {
+        getProcPath(pid: pid, eventHandler: { path, error in
+            if error != 0 {
+                errorHandler(error)
                 return
             }
             self.procPath = path
         })
     }
     
-    func fillProcCurrentDir() {
-        XPCConnection.sharedInstance.getProcCurrentDir(pid: Int32(pid), eventHandler: { cwd, error in
-            if error == EPERM {
-                let proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
-                proxy?.getProcCurrentDir(pid: Int32(self.pid), eventHandler: { cwd, error in
-                    self.props.updateValue(cwd, forKey: ProcessCWD)
-                })
+    func fillProcCurrentDir(errorHandler: @escaping (Int32) -> Void) {
+        getProcCurrentDir(pid: pid, eventHandler: { cwd, error in
+            if error != 0 {
+                errorHandler(error)
                 return
             }
-            self.props.updateValue(cwd, forKey: ProcessCWD)
+            self.procCWD = cwd
         })
     }
     
-    func fillProcArgs() {
-        XPCConnection.sharedInstance.getProcArgs(pid: Int32(pid)) { args, error in
-            if error == EPERM {
-                let proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
-                proxy?.getProcArgs(pid: Int32(self.pid), eventHandler: { args, error in
-                    self.props.updateValue(args, forKey: ProcessArgs)
-                })
+    func fillProcArgs(errorHandler: @escaping (Int32) -> Void) {
+        getProcArgs(pid: pid) { args, error in
+            if error != 0 {
+                errorHandler(error)
                 return
             }
-            self.props.updateValue(args, forKey: ProcessArgs)
+            self.procArgs = args
         }
     }
 }

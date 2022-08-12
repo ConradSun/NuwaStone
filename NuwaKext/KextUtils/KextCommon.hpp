@@ -11,7 +11,7 @@
 #include <libkern/OSTypes.h>
 #include <netinet/in.h>
 
-static const char *kDriverIdentifier = "com.nuwastone.kext";
+static const char *kDriverIdentifier = "com.nuwastone.client.eps";
 static const char *kDriverService = "DriverService";
 static const char *kDriverPath = "/Applications/NuwaClient.app/Contents/PlugIns/NuwaStone.kext";
 static const char *kSocketFilterName = "NuwaStone.socketfilter";
@@ -52,8 +52,8 @@ typedef enum {
 } NuwaKextAction;
 
 typedef struct {
-    UInt32 pid;
-    UInt32 ppid;
+    SInt32 pid;
+    SInt32 ppid;
     UInt32 ruid;
     UInt32 euid;
     UInt32 rgid;
@@ -90,7 +90,7 @@ typedef struct {
             struct sockaddr remoteAddr;
         } netAccess;
         struct {
-            SInt queryStatus;
+            SInt32 queryStatus;
             char domainName[kMaxNameLength];
             char queryResult[kMaxPathLength];
         } dnsQuery;

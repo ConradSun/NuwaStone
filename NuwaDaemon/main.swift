@@ -7,7 +7,14 @@
 
 import Foundation
 
-let result = KextControl.loadExtension()
+var result = true
+if #available(macOS 10.16, *) {
+    
+}
+else {
+    result = KextControl.loadExtension()
+}
+
 if result {
     XPCConnection.sharedInstance.startListener()
     RunLoop.current.run()

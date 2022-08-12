@@ -5,7 +5,7 @@
 	<key>NuwaClient</key>
 	<dict>
 		<key>MachServiceName</key>
-		<string>NuwaClient</string>
+		<string>com.nuwastone.client</string>
 	</dict>
 </dict>
 </plist>

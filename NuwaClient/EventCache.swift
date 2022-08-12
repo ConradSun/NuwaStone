@@ -21,7 +21,8 @@ struct ProcessCacheInfo {
 
 class ProcessCache {
     static let sharedInstance = ProcessCache()
-    private var cacheDict = [UInt32: ProcessCacheInfo]()
+    private var cacheDict = [Int32: ProcessCacheInfo]()
+    private lazy var proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
     
     private func getActivePids() -> (UnsafeMutablePointer<Int32>, Int32) {
         var count = proc_listallpids(nil, 0)
@@ -36,19 +37,21 @@ class ProcessCache {
     }
     
     @objc func runloopTask() {
-        let (pids, count) = getActivePids()
+        let (pidArray, count) = getActivePids()
         defer {
-            pids.deallocate()
+            pidArray.deallocate()
         }
-
-        var pidArray = [Int32](repeating: 0, count: Int(count))
-        pidArray.withUnsafeMutableBufferPointer({ ptr -> UnsafeMutablePointer<Int32> in
-            return ptr.baseAddress!
-        }).initialize(from: pids, count: Int(count))
         
-        for pid in self.cacheDict.keys {
-            if pidArray.contains(Int32(pid)){
-                self.cacheDict.removeValue(forKey: pid)
+        for pid in cacheDict.keys {
+            var isAlived = false
+            for i in 0 ..< count {
+                if pid == pidArray[Int(i)] {
+                    isAlived = true
+                    break
+                }
+            }
+            if !isAlived {
+                cacheDict.removeValue(forKey: pid)
             }
         }
     }
@@ -59,12 +62,30 @@ class ProcessCache {
             pidArray.deallocate()
         }
         
-        for i in 0..<count {
+        for i in 0 ..< count {
             let event = NuwaEventInfo()
-            event.pid = UInt32(pidArray[Int(i)])
-            event.fillProcPath()
-            event.fillProcCurrentDir()
-            event.fillProcArgs()
+            event.pid = pidArray[Int(i)]
+            event.fillProcPath { error in
+                if error == EPERM {
+                    self.proxy?.getProcessPath(pid: event.pid, eventHandler: { path, error in
+                        event.procPath = path
+                    })
+                }
+            }
+            event.fillProcCurrentDir { error in
+                if error == EPERM {
+                    self.proxy?.getProcessCurrentDir(pid: event.pid, eventHandler: { cwd, error in
+                        event.procCWD = cwd
+                    })
+                }
+            }
+            event.fillProcArgs { error in
+                if error == EPERM {
+                    self.proxy?.getProcessArgs(pid: event.pid, eventHandler: { args, error in
+                        event.procArgs = args
+                    })
+                }
+            }
             updateCache(event)
         }
     }
@@ -72,12 +93,8 @@ class ProcessCache {
     func updateCache(_ event: NuwaEventInfo) {
         var info = ProcessCacheInfo()
         info.path = event.procPath
-        if event.props[ProcessArgs] != nil {
-            info.args = event.props[ProcessArgs] as! [String]
-        }
-        if event.props[ProcessCWD] != nil {
-            info.cwd = event.props[ProcessCWD] as! String
-        }
+        info.args = event.procArgs
+        info.cwd = event.procCWD
         
         cacheDict.updateValue(info, forKey: event.pid)
     }
@@ -89,7 +106,7 @@ class ProcessCache {
             return
         }
         event.procPath = info!.path
-        event.props.updateValue(info!.cwd, forKey: ProcessCWD)
-        event.props.updateValue(info!.args, forKey: ProcessArgs)
+        event.procCWD = info!.cwd
+        event.procArgs = info!.args
     }
 }
