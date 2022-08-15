@@ -50,6 +50,11 @@ bool DriverService::start(IOService *provider) {
         clearInstances();
         return false;
     }
+    if (!m_kauthController->startListeners() || !m_socketFilter->registerFilters()) {
+        clearInstances();
+        return false;
+    }
+
     registerService();
 
     Logger(LOG_INFO, "Kext loaded with version [%s].", OSKextGetCurrentVersionString())

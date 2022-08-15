@@ -9,9 +9,9 @@ import Foundation
 import IOKit.kext
 
 class KextControl {
-    static func loadExtension() -> Bool {
-        let kextUrl = CFURLCreateWithBytes(kCFAllocatorDefault, kDriverPath, strlen(kDriverPath), kCFStringEncodingASCII, nil)
-        let result = KextManagerLoadKextWithURL(kextUrl, nil)
+    func loadExtension() -> Bool {
+        let kextUrl = URL(fileURLWithPath: "Contents/PlugIns/NuwaStone.kext", relativeTo: Bundle.main.bundleURL)
+        let result = KextManagerLoadKextWithURL(kextUrl as CFURL, nil)
         if result != kIOReturnSuccess {
             Logger(.Warning, "Error occured in loading kext [\(String.init(format: "0x%x", result))].")
             return false
@@ -20,8 +20,8 @@ class KextControl {
         return true
     }
     
-    static func unloadExtension() -> Bool {
-        let kextID = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, kDriverIdentifier, kCFStringEncodingASCII, kCFAllocatorNull)
+    func unloadExtension() -> Bool {
+        let kextID = CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, KextBundle.cString(using: .utf8), kCFStringEncodingASCII, kCFAllocatorNull)
         let result = KextManagerUnloadKextWithIdentifier(kextID)
         if result != kIOReturnSuccess {
             Logger(.Warning, "Error occured in unloading kext [\(String.init(format: "0x%x", result))].")

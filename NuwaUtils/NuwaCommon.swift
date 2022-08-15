@@ -9,12 +9,15 @@ import Foundation
 
 let DaemonName = "NuwaDaemon"
 let ClientName = "NuwaClient"
-let DaemonBundle = "com.nuwastone.daemon"
+let DaemonBundle = "com.nuwastone.service"
 let ClientBundle = "com.nuwastone.client"
-let SextBundle = "com.nuwastone.client.eps"
+
+let SextBundle = "com.nuwastone.service.eps"
+let KextBundle = "com.nuwastone.service.eps"
+let KextService = "DriverService"
+
 let MachServiceKey = "MachServiceName"
 
-let SigningID = "Signingid"
 let MaxIPLength = 41
 
 enum ESClientError: Error {

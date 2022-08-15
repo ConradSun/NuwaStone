@@ -49,15 +49,13 @@ void DriverClient::stop(IOService *provider) {
 }
 
 IOReturn DriverClient::clientDied() {
-    m_driverService->getKauthController()->stopListeners();
-    m_driverService->getSocketFilter()->unregisterFilters();
+    m_eventDispatcher->setConnectionStatus(false);
     Logger(LOG_INFO, "Client died.")
     return terminate(0) ? kIOReturnSuccess : kIOReturnError;
 }
 
 IOReturn DriverClient::clientClose() {
-    m_driverService->getKauthController()->stopListeners();
-    m_driverService->getSocketFilter()->unregisterFilters();
+    m_eventDispatcher->setConnectionStatus(false);
     if (m_driverService != nullptr && m_driverService->isOpen(this)) {
         m_driverService->close(this);
     }
@@ -67,8 +65,7 @@ IOReturn DriverClient::clientClose() {
 }
 
 bool DriverClient::didTerminate(IOService *provider, IOOptionBits options, bool *defer) {
-    m_driverService->getKauthController()->stopListeners();
-    m_driverService->getSocketFilter()->unregisterFilters();
+    m_eventDispatcher->setConnectionStatus(false);
     if (m_driverService != nullptr && m_driverService->isOpen(this)) {
         m_driverService->close(this);
     }
@@ -126,14 +123,7 @@ IOReturn DriverClient::open(OSObject *target, void *reference, IOExternalMethodA
         Logger(LOG_ERROR, "A second client tried to connect.")
         return kIOReturnExclusiveAccess;
     }
-    if (!me->m_driverService->getKauthController()->startListeners()) {
-        Logger(LOG_ERROR, "Failed to start kauth listeners.")
-        return kIOReturnNotReady;
-    }
-    if (!me->m_driverService->getSocketFilter()->registerFilters()) {
-        Logger(LOG_ERROR, "Failed to register socket filters.")
-        return kIOReturnNotReady;
-    }
+    me->m_eventDispatcher->setConnectionStatus(true);
     
     Logger(LOG_INFO, "Client connected successfully.")
     return kIOReturnSuccess;

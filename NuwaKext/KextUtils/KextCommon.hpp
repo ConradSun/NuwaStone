@@ -11,9 +11,6 @@
 #include <libkern/OSTypes.h>
 #include <netinet/in.h>
 
-static const char *kDriverIdentifier = "com.nuwastone.client.eps";
-static const char *kDriverService = "DriverService";
-static const char *kDriverPath = "/Applications/NuwaClient.app/Contents/PlugIns/NuwaStone.kext";
 static const char *kSocketFilterName = "NuwaStone.socketfilter";
 static const UInt32 kBaseFilterHandle = 0xFEEDBEEF;
 static const UInt32 kMaxAuthWaitTime = 100; // ms
@@ -37,7 +34,7 @@ typedef enum {
 } NuwaKextQueue;
 
 typedef enum {
-    kActionAuthNull     = 0,
+    kActionNull         = 0,
     
     kActionAuthBegin    = 0x100,
     kActionAuthProcessCreate,

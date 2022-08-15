@@ -89,7 +89,7 @@ extension XPCConnection: NSXPCListenerDelegate {
 
 extension XPCConnection: DaemonXPCProtocol {
     func connectResponse(_ handler: @escaping (Bool) -> Void) {
-        Logger(.Info, "Nuwa client connected.")
+        Logger(.Info, "Client connected.")
         handler(true)
     }
     

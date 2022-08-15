@@ -9,9 +9,23 @@ import Foundation
 import SystemExtensions
 
 @available(macOS 10.16, *)
-extension ViewController: OSSystemExtensionRequestDelegate {
+class SextControl: NSObject, OSSystemExtensionRequestDelegate {
+    let controlQueue = DispatchQueue(label: "com.nuwastone.sextcontrol.queue")
+    var isConnected = false
+    var isFinished = false
+    
     func activateExtension() {
-        let request = OSSystemExtensionRequest.activationRequest(forExtensionWithIdentifier: SextBundle, queue: .main)
+        isConnected = false
+        isFinished = false
+        let request = OSSystemExtensionRequest.activationRequest(forExtensionWithIdentifier: SextBundle, queue: controlQueue)
+        request.delegate = self
+        OSSystemExtensionManager.shared.submitRequest(request)
+    }
+    
+    func deactivateExtension() {
+        isConnected = false
+        isFinished = false
+        let request = OSSystemExtensionRequest.deactivationRequest(forExtensionWithIdentifier: SextBundle, queue: controlQueue)
         request.delegate = self
         OSSystemExtensionManager.shared.submitRequest(request)
     }
@@ -27,9 +41,12 @@ extension ViewController: OSSystemExtensionRequestDelegate {
     
     func request(_ request: OSSystemExtensionRequest, didFinishWithResult result: OSSystemExtensionRequest.Result) {
         Logger(.Info, "Request to control \(request.identifier) succeeded [\(result)].")
+        isConnected = true
+        isFinished = true
     }
     
     func request(_ request: OSSystemExtensionRequest, didFailWithError error: Error) {
         Logger(.Info, "Request to control \(request.identifier) failed [\(error)].")
+        isFinished = true
     }
 }

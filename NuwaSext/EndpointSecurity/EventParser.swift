@@ -36,7 +36,7 @@ extension ClientManager {
         event.ppid = process.ppid
         event.procPath = getString(token: process.executable.pointee.path)
         event.getNameFromUid(audit_token_to_euid(process.audit_token))
-        event.props.updateValue(getString(token: process.signing_id), forKey: SigningID)
+        event.props.updateValue(getString(token: process.signing_id), forKey: "SigningID")
         parseProcessProps(exec: message.pointee.event.exec, event: &event)
         
         if isAuth {
@@ -45,5 +45,38 @@ extension ClientManager {
                 Logger(.Warning, "Failed to respond auth event [\(result)].")
             }
         }
+    }
+    
+    func parseExitEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
+        event.props.updateValue(String(message.pointee.event.exit.stat), forKey: "ExitCode")
+    }
+    
+    func parseCreateEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
+        let filePath = getString(token: message.pointee.event.create.destination.existing_file.pointee.path)
+        event.props.updateValue(filePath, forKey: "FilePath")
+    }
+    
+    func parseUnlinkEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
+        let filePath = getString(token: message.pointee.event.unlink.target.pointee.path)
+        event.props.updateValue(filePath, forKey: "FilePath")
+    }
+    
+    func parseRenameEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
+        var dstPath = ""
+        let srcPath = getString(token: message.pointee.event.rename.source.pointee.path)
+        if message.pointee.event.rename.destination_type == ES_DESTINATION_TYPE_EXISTING_FILE {
+            dstPath = getString(token: message.pointee.event.rename.destination.existing_file.pointee.path)
+        }
+        else {
+            dstPath = getString(token: message.pointee.event.rename.destination.new_path.dir.pointee.path)
+            dstPath = dstPath + "/" + getString(token: message.pointee.event.rename.destination.new_path.filename)
+        }
+        event.props.updateValue(srcPath, forKey: "from")
+        event.props.updateValue(dstPath, forKey: "move to")
+    }
+    
+    func parseCloseModifiedEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
+        let filePath = getString(token: message.pointee.event.close.target.pointee.path)
+        event.props.updateValue(filePath, forKey: "FilePath")
     }
 }

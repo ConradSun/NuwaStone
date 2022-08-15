@@ -3,12 +3,12 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.nuwastone.daemon</string>
+	<string>com.nuwastone.service</string>
 	<key>Program</key>
-	<string>/Applications/NuwaClient.app/Contents/PlugIns/NuwaDaemon</string>
+	<string>/Applications/NuwaClient.app/Contents/Resources/NuwaService.app/Contents/MacOS/NuwaService</string>
 	<key>MachServices</key>
 	<dict>
-		<key>com.nuwastone.daemon</key>
+		<key>com.nuwastone.service</key>
 		<true/>
 	</dict>
 	<key>KeepAlive</key>

@@ -13,7 +13,6 @@ class KextManager {
     private let authEventQueue = DispatchQueue(label: "com.nuwastone.auth.queue")
     private let notifyEventQueue = DispatchQueue(label: "com.nuwastone.notify.queue")
     private lazy var proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
-    let processCache = ProcessCache.sharedInstance
     var connection: io_connect_t = 0
     var isConnected: Bool = false
     var nuwaLog = NuwaLog()
@@ -98,7 +97,7 @@ class KextManager {
     }
     
     func startMonitoring() -> Bool {
-        guard let service = IOServiceMatching(kDriverService) else {
+        guard let service = IOServiceMatching(KextService.cString(using: .utf8)) else {
             return false
         }
         
@@ -220,10 +219,10 @@ extension KextManager {
                     })
                 }
             }
-            processCache.updateCache(nuwaEvent)
+            ProcessCache.sharedInstance.updateCache(nuwaEvent)
         }
         else {
-            processCache.getFromCache(&nuwaEvent)
+            ProcessCache.sharedInstance.getFromCache(&nuwaEvent)
         }
         
         delegate!.displayNuwaEvent(nuwaEvent)

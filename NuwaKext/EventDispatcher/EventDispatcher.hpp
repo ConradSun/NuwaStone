@@ -34,10 +34,14 @@ public:
     // Called when send notify event to client.
     bool postToNotifyQueue(NuwaKextEvent *eventInfo);
     
+    void setConnectionStatus(bool connected);
+    
 private:
     bool init();
     void free();
+    
     static EventDispatcher *m_sharedInstance;
+    bool m_isConnected;
     IOSharedDataQueue *m_authDataQueue;
     IOSharedDataQueue *m_notifyDataQueue;
 };

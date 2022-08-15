@@ -11,6 +11,7 @@
 EventDispatcher* EventDispatcher::m_sharedInstance = nullptr;
 
 bool EventDispatcher::init() {
+    m_isConnected = false;
     m_authDataQueue = IOSharedDataQueue::withEntries(kMaxAuthQueueEvents, sizeof(NuwaKextEvent));
     if (m_authDataQueue == nullptr) {
         Logger(LOG_ERROR, "Failed to create auth data queue.")
@@ -57,6 +58,10 @@ void EventDispatcher::release() {
     m_sharedInstance = nullptr;
 }
 
+void EventDispatcher::setConnectionStatus(bool connected) {
+    m_isConnected = connected;
+}
+
 void EventDispatcher::setNotificationPortForQueue(UInt32 type, mach_port_t port) {
     switch (type) {
         case kQueueTypeAuth:
@@ -87,6 +92,9 @@ IOMemoryDescriptor *EventDispatcher::getMemoryDescriptorForQueue(UInt32 type) co
 }
 
 bool EventDispatcher::postToAuthQueue(NuwaKextEvent *eventInfo) {
+    if (!m_isConnected) {
+        return false;
+    }
     bool result = m_authDataQueue->enqueue(eventInfo, sizeof(NuwaKextEvent));
     if (!result) {
         Logger(LOG_WARN, "Failed to push back data to auth queue.")
@@ -95,6 +103,9 @@ bool EventDispatcher::postToAuthQueue(NuwaKextEvent *eventInfo) {
 }
 
 bool EventDispatcher::postToNotifyQueue(NuwaKextEvent *eventInfo) {
+    if (!m_isConnected) {
+        return false;
+    }
     bool result = m_notifyDataQueue->enqueue(eventInfo, sizeof(NuwaKextEvent));
     if (!result) {
         Logger(LOG_WARN, "Failed to push back data to notify queue.")

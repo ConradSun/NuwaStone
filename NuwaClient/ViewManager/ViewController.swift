@@ -32,6 +32,8 @@ class ViewController: NSViewController {
     @IBOutlet weak var graphView: GraphView!
     
     let kextManager = KextManager()
+    let sextManager = SextManager()
+    
     var isStarted = false
     var isScrollOn = true
     var isInfoOn = true
@@ -47,10 +49,13 @@ class ViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        kextManager.delegate = self
+        sextManager.delegate = self;
+        
         eventView.delegate = self
         eventView.dataSource = self
         eventView.target = self
-        kextManager.delegate = self
         
         displayTimer = Timer(timeInterval: 1.0, repeats: true) { [self] timer in
             if (!isStarted) {
@@ -81,13 +86,14 @@ class ViewController: NSViewController {
         isStarted = !isStarted
         if isStarted {
             if #available(macOS 10.16, *) {
-                
-                
-                activateExtension()
+                if !sextManager.startMonitoring() {
+                    Logger(.Error, "Failed to connect sext.")
+                    return
+                }
             }
             else {
                 if !kextManager.startMonitoring() {
-                    Logger(.Error, "Failed to load kext.")
+                    Logger(.Error, "Failed to connect kext.")
                     return
                 }
                 kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
@@ -100,11 +106,13 @@ class ViewController: NSViewController {
         }
         else {
             if #available(macOS 10.16, *) {
-                
+                if !sextManager.stopMonitoring() {
+                    Logger(.Error, "Failed to disconnect sext.")
+                }
             }
             else {
                 if !kextManager.stopMonitoring() {
-                    Logger(.Error, "Failed to unload kext.")
+                    Logger(.Error, "Failed to disconnect kext.")
                 }
             }
             
@@ -176,8 +184,6 @@ extension ViewController {
             eventView.scrollRowToVisible(eventView.numberOfRows-1)
         }
     }
-    
-    
     
     func refreshDisplayedEvents() {
         displayedItems.removeAll()

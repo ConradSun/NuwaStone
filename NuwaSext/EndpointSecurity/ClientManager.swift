@@ -70,7 +70,7 @@ class ClientManager {
         nuwaEvent.procPath = getString(token: process.executable.pointee.path)
         nuwaEvent.getNameFromUid(audit_token_to_euid(process.audit_token))
         nuwaEvent.eventTime = UInt64(message.pointee.time.tv_sec)
-        nuwaEvent.props.updateValue(getString(token: process.signing_id), forKey: SigningID)
+        nuwaEvent.props.updateValue(getString(token: process.signing_id), forKey: "SigningID")
         
         switch message.pointee.event_type {
         case ES_EVENT_TYPE_AUTH_EXEC:
@@ -81,19 +81,31 @@ class ClientManager {
             parseExecEvent(message: message, event: &nuwaEvent, isAuth: false)
         case ES_EVENT_TYPE_NOTIFY_EXIT:
             nuwaEvent.eventType = .ProcessExit
+            parseExitEvent(message: message, event: &nuwaEvent)
         case ES_EVENT_TYPE_NOTIFY_CREATE:
             nuwaEvent.eventType = .FileCreate
+            parseCreateEvent(message: message, event: &nuwaEvent)
         case ES_EVENT_TYPE_NOTIFY_UNLINK:
             nuwaEvent.eventType = .FileDelete
+            parseUnlinkEvent(message: message, event: &nuwaEvent)
         case ES_EVENT_TYPE_NOTIFY_RENAME:
             nuwaEvent.eventType = .FileRename
+            parseRenameEvent(message: message, event: &nuwaEvent)
         case ES_EVENT_TYPE_NOTIFY_CLOSE:
+            if !message.pointee.event.close.modified {
+                return
+            }
             nuwaEvent.eventType = .FileCloseModify
+            parseCloseModifiedEvent(message: message, event: &nuwaEvent)
         default:
-            break
+            return
         }
         
-        NSLog("%@", nuwaEvent.desc)
-//        Logger(.Info, nuwaEvent.desc)
+        if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
+            XPCServer.sharedInstance.sendAuthEvent(nuwaEvent)
+        }
+        else if message.pointee.action_type == ES_ACTION_TYPE_NOTIFY {
+            XPCServer.sharedInstance.sendNotifyEvent(nuwaEvent)
+        }
     }
 }

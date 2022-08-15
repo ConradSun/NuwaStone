@@ -12,5 +12,6 @@ manager.startMonitoring()
 if manager.initError != .success {
     exit(EXIT_FAILURE)
 }
+XPCServer.sharedInstance.startListener()
 
 dispatchMain()
