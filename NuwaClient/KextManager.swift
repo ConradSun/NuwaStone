@@ -173,26 +173,26 @@ extension KextManager {
             nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
         case kActionNotifyFileCloseModify:
             nuwaEvent.eventType = .FileCloseModify
-            nuwaEvent.props.updateValue(String(cString: &event.fileCloseModify.path.0), forKey: "FilePath")
+            nuwaEvent.props["FilePath"] = String(cString: &event.fileCloseModify.path.0)
         case kActionNotifyFileRename:
             nuwaEvent.eventType = .FileRename
-            nuwaEvent.props.updateValue(String(cString: &event.fileRename.srcFile.path.0), forKey: "from")
-            nuwaEvent.props.updateValue(String(cString: &event.fileRename.newPath.0), forKey: "move to")
+            nuwaEvent.props["from"] = String(cString: &event.fileRename.srcFile.path.0)
+            nuwaEvent.props["move to"] = String(cString: &event.fileRename.newPath.0)
         case kActionNotifyFileDelete:
             nuwaEvent.eventType = .FileDelete
-            nuwaEvent.props.updateValue(String(cString: &event.fileDelete.path.0), forKey: "FilePath")
+            nuwaEvent.props["FilePath"] = String(cString: &event.fileDelete.path.0)
         case kActionNotifyNetworkAccess:
             nuwaEvent.eventType = .NetAccess
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.localAddr, isLocal: true)
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.remoteAddr, isLocal: false)
             if event.netAccess.protocol == IPPROTO_TCP {
-                nuwaEvent.props.updateValue("tcp", forKey: "protocol")
+                nuwaEvent.props["protocol"] = "tcp"
             }
             else if event.netAccess.protocol == IPPROTO_UDP {
-                nuwaEvent.props.updateValue("udp", forKey: "protocol")
+                nuwaEvent.props["protocol"] = "udp"
             }
             else {
-                nuwaEvent.props.updateValue("unsupport", forKey: "protocol")
+                nuwaEvent.props["protocol"] = "unsupport"
             }
         default:
             break
@@ -201,7 +201,7 @@ extension KextManager {
         nuwaEvent.eventTime = event.eventTime
         nuwaEvent.pid = event.mainProcess.pid
         nuwaEvent.ppid = event.mainProcess.ppid
-        nuwaEvent.getNameFromUid(event.mainProcess.euid)
+        nuwaEvent.setUserName(uid: event.mainProcess.euid)
         
         if nuwaEvent.eventType == .ProcessCreate {
             nuwaEvent.procPath = String(cString: &event.processCreate.path.0)

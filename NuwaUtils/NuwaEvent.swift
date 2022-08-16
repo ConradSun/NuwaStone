@@ -24,11 +24,12 @@ protocol NuwaEventProtocol {
 }
 
 class NuwaEventInfo: Codable {
+    static var userName = [UInt32(0): "root"]
     var eventType: NuwaEventType
     var eventTime: UInt64
-    var user: String
     var pid: Int32
     var ppid: Int32
+    var user: String
     var procPath: String
     var procCWD: String
     var procArgs: [String]
@@ -38,8 +39,8 @@ class NuwaEventInfo: Codable {
         let pretty = """
         Event Type: \(eventType)
         Timestamp: \(eventTime)
-        user: \(user)
         Pid: \(pid) (Parent) -> \(ppid)
+        User: \(user)
         ProcPath: \(procPath)
         procCWD: \(procCWD)
         procArgs: \(procArgs)
@@ -52,20 +53,20 @@ class NuwaEventInfo: Codable {
     init() {
         eventType = .TypeNil
         eventTime = 0
-        user = ""
         pid = 0
         ppid = 0
+        user = ""
         procPath = ""
         procCWD = ""
         procArgs = [String]()
         props = [String: String]()
     }
     
-    func getNameFromUid(_ uid: uid_t) {
-        guard let name = getpwuid(uid)?.pointee.pw_name else {
-            return
+    func setUserName(uid: uid_t) {
+        if NuwaEventInfo.userName[uid] == nil {
+            NuwaEventInfo.userName[uid] = getNameFromUid(uid)
         }
-        user = String(cString: name)
+        user = NuwaEventInfo.userName[uid]!
     }
     
     func convertSocketAddr(socketAddr: UnsafeMutablePointer<sockaddr>, isLocal: Bool) {

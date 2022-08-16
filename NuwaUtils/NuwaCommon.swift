@@ -121,3 +121,10 @@ func getProcArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void) 
     }
     eventHandler(argv, 0)
 }
+
+func getNameFromUid(_ uid: uid_t) -> String {
+    guard let name = getpwuid(uid)?.pointee.pw_name else {
+        return ""
+    }
+    return String(cString: name)
+}

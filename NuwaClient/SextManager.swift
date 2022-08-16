@@ -22,7 +22,7 @@ class SextManager {
             }
         }
         
-        usleep(1000)
+        usleep(10000)
         return isConnected
     }
     

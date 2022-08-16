@@ -7,15 +7,11 @@
 
 import Cocoa
 
-enum DisplayMode: Int {
+enum DisplayMode: Int, CaseIterable {
     case DisplayAll
     case DisplayProcess
     case DisplayFile
     case DisplayNetwork
-    
-    static var count: Int {
-        return DisplayNetwork.rawValue + 1
-    }
 }
 
 class ViewController: NSViewController {
@@ -42,8 +38,8 @@ class ViewController: NSViewController {
     var displayTimer = Timer()
     
     let eventQueue = DispatchQueue(label: "com.nuwastone.eventview.queue")
-    var eventCount = [UInt32](repeating: 0, count: DisplayMode.count)
-    var eventCountCopy = [UInt32](repeating: 0, count: DisplayMode.count)
+    var eventCount = [UInt32](repeating: 0, count: DisplayMode.allCases.count)
+    var eventCountCopy = [UInt32](repeating: 0, count: DisplayMode.allCases.count)
     var reportedItems = [NuwaEventInfo]()
     var displayedItems = [NuwaEventInfo]()
     
@@ -63,8 +59,8 @@ class ViewController: NSViewController {
             }
             
             self.reloadEventInfo()
-            for index in 0 ..< DisplayMode.count {
-                graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), type: DisplayMode(rawValue: index)!)
+            for (index, _) in DisplayMode.allCases.enumerated() {
+                graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), index: index)
                 eventCountCopy[index] = eventCount[index]
             }
             graphView.draw(graphView.frame)
@@ -87,13 +83,13 @@ class ViewController: NSViewController {
         if isStarted {
             if #available(macOS 10.16, *) {
                 if !sextManager.startMonitoring() {
-                    Logger(.Error, "Failed to connect sext.")
+                    alertWithError(error: "Failed to connect sext.")
                     return
                 }
             }
             else {
                 if !kextManager.startMonitoring() {
-                    Logger(.Error, "Failed to connect kext.")
+                    alertWithError(error: "Failed to connect kext.")
                     return
                 }
                 kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
@@ -107,12 +103,12 @@ class ViewController: NSViewController {
         else {
             if #available(macOS 10.16, *) {
                 if !sextManager.stopMonitoring() {
-                    Logger(.Error, "Failed to disconnect sext.")
+                    alertWithError(error: "Failed to disconnect sext.")
                 }
             }
             else {
                 if !kextManager.stopMonitoring() {
-                    Logger(.Error, "Failed to disconnect kext.")
+                    alertWithError(error: "Failed to disconnect kext.")
                 }
             }
             
@@ -165,12 +161,21 @@ class ViewController: NSViewController {
 }
 
 extension ViewController {
+    func alertWithError(error: String) {
+        let alert = NSAlert()
+        Logger(.Error, error)
+        alert.informativeText = error
+        alert.alertStyle = .critical
+        alert.messageText = "Error"
+        alert.runModal()
+    }
+    
     func establishConnection() {
         XPCConnection.sharedInstance.connectToDaemon(bundle: Bundle.main, delegate: self) { success in
             DispatchQueue.main.async {
                 if !success {
                     self.controlButton.isEnabled = false
-                    self.infoLabel.stringValue = "Unable to start monitoring for broken connection with daemon."
+                    self.alertWithError(error: "Unable to start monitoring for broken connection with daemon.")
                 }
             }
         }

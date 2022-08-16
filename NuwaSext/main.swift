@@ -7,11 +7,12 @@
 
 import Foundation
 
-let manager = ClientManager()
-manager.startMonitoring()
-if manager.initError != .success {
-    exit(EXIT_FAILURE)
+autoreleasepool {
+    XPCServer.sharedInstance.startListener()
+    ClientManager.sharedInstance.startMonitoring()
+    if ClientManager.sharedInstance.initError != .success {
+        exit(EXIT_FAILURE)
+    }
 }
-XPCServer.sharedInstance.startListener()
 
 dispatchMain()

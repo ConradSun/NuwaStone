@@ -51,7 +51,7 @@ class ProcessCache {
                 }
             }
             if !isAlived {
-                cacheDict.removeValue(forKey: pid)
+                cacheDict[pid] = nil
             }
         }
     }
@@ -87,6 +87,7 @@ class ProcessCache {
                 }
             }
             updateCache(event)
+            Logger(.Debug, "Add process [\(event.pid): \(event.procPath)] to cache.")
         }
     }
     
@@ -96,13 +97,13 @@ class ProcessCache {
         info.args = event.procArgs
         info.cwd = event.procCWD
         
-        cacheDict.updateValue(info, forKey: event.pid)
+        cacheDict[event.pid] = info
     }
     
     func getFromCache(_ event: inout NuwaEventInfo) {
         let info = cacheDict[event.pid]
         if info == nil {
-            Logger(.Warning, "Failed to find proc [\(event.pid)] info in cache.")
+            Logger(.Debug, "Failed to find proc [\(event.pid)] info in cache.")
             return
         }
         event.procPath = info!.path
