@@ -125,3 +125,36 @@ func getNameFromUid(_ uid: uid_t) -> String {
     }
     return String(cString: name)
 }
+
+func getSignInfoFromPath(_ path: String) ->String {
+    guard FileManager.default.fileExists(atPath: path) else {
+        return ""
+    }
+    let fileUrl = URL(fileURLWithPath: path)
+    var secCode: SecStaticCode?
+    var status = SecStaticCodeCreateWithPath(fileUrl as CFURL, SecCSFlags(rawValue: 0), &secCode)
+    if status != errSecSuccess || secCode == nil {
+        Logger(.Warning, "Failed to create static signed code for [\(path)] with error [\(status)].")
+        return ""
+    }
+    
+    var secDict: CFDictionary?
+    status = SecCodeCopySigningInformation(secCode!, SecCSFlags(rawValue: kSecCSSigningInformation), &secDict)
+    if status != errSecSuccess || secDict == nil {
+        Logger(.Warning, "Failed to copy signed info for [\(path)] with error [\(status)].")
+        return ""
+    }
+    let signedDict = secDict! as NSDictionary
+    guard let certChain = signedDict[kSecCodeInfoCertificates as NSString] as? NSArray else {
+        return ""
+    }
+    
+    let cert = certChain.object(at: 0) as! SecCertificate
+    var name: CFString?
+    status = SecCertificateCopyCommonName(cert, &name)
+    if status != errSecSuccess || name == nil {
+        return ""
+    }
+    
+    return name! as String
+}

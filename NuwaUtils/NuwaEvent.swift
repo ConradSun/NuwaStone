@@ -69,6 +69,10 @@ class NuwaEventInfo: Codable {
         user = NuwaEventInfo.userName[uid]!
     }
     
+    func fillCodeSign() {
+        props["CodeSign"] = getSignInfoFromPath(procPath)
+    }
+    
     func convertSocketAddr(socketAddr: UnsafeMutablePointer<sockaddr>, isLocal: Bool) {
         var ip = [CChar](repeating: 0x0, count: MaxIPLength)
         let data0 = UInt8(bitPattern: socketAddr.pointee.sa_data.0)

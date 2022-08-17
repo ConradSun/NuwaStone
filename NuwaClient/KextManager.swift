@@ -219,6 +219,7 @@ extension KextManager {
                     })
                 }
             }
+            nuwaEvent.fillCodeSign()
             ProcessCache.sharedInstance.updateCache(nuwaEvent)
         }
         else {

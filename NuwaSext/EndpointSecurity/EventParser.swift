@@ -37,6 +37,7 @@ extension ClientManager {
         event.procPath = getString(token: process.executable.pointee.path)
         event.props["SigningID"] = getString(token: process.signing_id)
         event.setUserName(uid: audit_token_to_euid(process.audit_token))
+        event.fillCodeSign()
         parseProcessProps(exec: message.pointee.event.exec, event: &event)
     }
     
