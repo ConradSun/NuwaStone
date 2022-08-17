@@ -116,9 +116,6 @@ func getProcArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void) 
         begin += 1
     }
     
-    if argv.count >= 1 {
-        argv.remove(at: 0)
-    }
     eventHandler(argv, 0)
 }
 
