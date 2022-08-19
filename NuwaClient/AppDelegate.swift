@@ -9,8 +9,12 @@ import Cocoa
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
+    @IBOutlet weak var startMenuItem: NSMenuItem!
+    @IBOutlet weak var stopMenuItem: NSMenuItem!
+    @IBOutlet weak var clearMenuItem: NSMenuItem!
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // Insert code here to initialize your application
+        setMenuStatus(start: true, stop: false)
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -33,5 +37,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         return true
+    }
+    
+    func setMenuStatus(start: Bool, stop: Bool) {
+        startMenuItem.isEnabled = start
+        stopMenuItem.isEnabled = stop
     }
 }

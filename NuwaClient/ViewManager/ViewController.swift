@@ -104,6 +104,7 @@ class ViewController: NSViewController {
             controlButton.image = NSImage(named: "start")
             controlLabel.stringValue = "start"
         }
+        configMenuStatus()
     }
     
     @IBAction func scrollButtonClicked(_ sender: NSButton) {
@@ -139,6 +140,7 @@ class ViewController: NSViewController {
     @IBAction func displaySegmentValueChanged(_ sender: NSSegmentedControl) {
         if displaySegment.selectedSegment != displayMode.rawValue {
             displayMode = DisplayMode(rawValue: displaySegment.selectedSegment) ?? .DisplayAll
+            graphView.displayMode = displayMode
             refreshDisplayedEvents()
         }
     }
@@ -146,6 +148,18 @@ class ViewController: NSViewController {
     @IBAction func searchBarTextModified(_ sender: NSSearchField) {
         searchText = searchBar.stringValue
         refreshDisplayedEvents()
+    }
+    
+    @IBAction func startMenuItemSelected(_ sender: NSMenuItem) {
+        controlButtonClicked(controlButton)
+    }
+    
+    @IBAction func stopMenuItemSelected(_ sender: NSMenuItem) {
+        controlButtonClicked(controlButton)
+    }
+    
+    @IBAction func clearMenuItemSelected(_ sender: NSMenuItem) {
+        clearButtonClicked(clearButton)
     }
 }
 
@@ -209,7 +223,14 @@ extension ViewController {
         }
         reloadEventInfo()
         infoLabel.stringValue = ""
-    } 
+    }
+    
+    func configMenuStatus() {
+        guard let app = NSApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        app.setMenuStatus(start: !isStarted, stop: isStarted)
+    }
 }
 
 extension ViewController: ClientXPCProtocol {

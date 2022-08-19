@@ -8,8 +8,9 @@
 import Cocoa
 
 class GraphView: NSView {
-    var freqPointsArray = [[NSPoint]](repeating: [NSPoint(x: 0, y: 0)], count: DisplayMode.allCases.count)
-    var colorArray = [NSColor.black.cgColor, NSColor.red.cgColor, NSColor.blue.cgColor, NSColor.green.cgColor]
+    var displayMode = DisplayMode.DisplayAll
+    private var freqPointsArray = [[NSPoint]](repeating: [NSPoint(x: 0, y: 0)], count: DisplayMode.allCases.count)
+    private var colorArray = [NSColor.black.cgColor, NSColor.red.cgColor, NSColor.blue.cgColor, NSColor.green.cgColor]
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
@@ -43,6 +44,13 @@ class GraphView: NSView {
     
     func drawFrepLines(_ context: CGContext) {
         for (index, array) in freqPointsArray.enumerated() {
+            if displayMode != .DisplayAll && displayMode.rawValue != index {
+                continue
+            }
+            if index == DisplayMode.DisplayAll.rawValue {
+                continue
+            }
+            
             let path = CGMutablePath()
             let color = colorArray[index]
             
