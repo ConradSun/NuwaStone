@@ -33,7 +33,7 @@ class AlertWindowController: NSWindowController {
         let icon = NSWorkspace.shared.icon(forFile: authEvent!.procPath)
         icon.size = NSMakeSize(96, 96)
         procIconView.image = icon
-        procInfoText.stringValue = authEvent!.props[PropBundleID]!
+        procInfoText.stringValue = authEvent!.props[PropBundleID] ?? authEvent!.procPath
         eventDescLabel.stringValue = authEvent!.desc
         decisionCheckbox.title = "Only this time (pid: \(authEvent!.pid))"
     }

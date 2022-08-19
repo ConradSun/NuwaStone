@@ -138,6 +138,7 @@ extension KextManager {
         nuwaEvent.pid = event.mainProcess.pid
         nuwaEvent.ppid = event.mainProcess.ppid
         nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
+        nuwaEvent.fillBundleIdentifier()
         nuwaEvent.fillCodeSign()
         
         if nuwaEvent.eventType == .ProcessCreate {
@@ -204,6 +205,8 @@ extension KextManager {
                     })
                 }
             }
+            nuwaEvent.fillBundleIdentifier()
+            nuwaEvent.fillCodeSign()
             ProcessCache.shared.updateCache(nuwaEvent)
         }
         else {

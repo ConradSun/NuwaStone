@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AppKit
 
 enum NuwaEventType: String, Codable {
     case TypeNil
@@ -85,6 +86,10 @@ class NuwaEventInfo: Codable {
         if signInfo.count > 0 {
             props[PropCodeSign] = signInfo[0]
         }
+    }
+    
+    func fillBundleIdentifier() {
+        props[PropBundleID] = NSRunningApplication.init(processIdentifier: pid)?.bundleIdentifier
     }
     
     func convertSocketAddr(socketAddr: UnsafeMutablePointer<sockaddr>, isLocal: Bool) {

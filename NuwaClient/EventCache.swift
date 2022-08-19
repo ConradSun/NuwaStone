@@ -11,11 +11,15 @@ struct ProcessCacheInfo {
     var path: String
     var args: [String]
     var cwd: String
+    var bundleID: String?
+    var codeSign: String?
     
     init() {
         path = ""
         args = [String]()
         cwd = ""
+        bundleID = nil
+        codeSign = nil
     }
 }
 
@@ -86,6 +90,8 @@ class ProcessCache {
                     })
                 }
             }
+            event.fillBundleIdentifier()
+            event.fillCodeSign()
             updateCache(event)
             Logger(.Debug, "Add process [\(event.pid): \(event.procPath)] to cache.")
         }
@@ -96,6 +102,8 @@ class ProcessCache {
         info.path = event.procPath
         info.args = event.procArgs
         info.cwd = event.procCWD
+        info.bundleID = event.props[PropBundleID]
+        info.codeSign = event.props[PropCodeSign]
         
         cacheDict[event.pid] = info
     }
@@ -109,5 +117,7 @@ class ProcessCache {
         event.procPath = info!.path
         event.procCWD = info!.cwd
         event.procArgs = info!.args
+        event.props[PropBundleID] = info!.bundleID
+        event.props[PropCodeSign] = info!.codeSign
     }
 }
