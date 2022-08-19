@@ -38,7 +38,7 @@ class AlertWindowController: NSWindowController {
         decisionCheckbox.title = "Only this time (pid: \(authEvent!.pid))"
     }
     
-    @IBAction func submitButtonClicked(_ sender: Any) {
+    @IBAction func submitButtonClicked(_ sender: NSButton) {
         isAllowed = decisionPopUP.selectedItem?.title == "Allow"
         shouldAddToList = decisionCheckbox.state == .on
         _ = eventProvider?.replyAuthEvent(eventID: authEvent!.eventID, isAllowed: isAllowed)

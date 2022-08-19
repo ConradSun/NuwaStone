@@ -51,6 +51,13 @@ extension ViewController: NuwaEventProcessProtocol {
             }
         }
     }
+    
+    func handleBrokenConnection() {
+        DispatchQueue.main.sync {
+            controlButtonClicked(controlButton)
+            alertWithError(error: "Connection with extension is broken.")
+        }
+    }
 }
 
 extension ViewController: NSTableViewDelegate {

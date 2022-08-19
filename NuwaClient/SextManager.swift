@@ -73,6 +73,9 @@ extension SextManager: NuwaEventProviderProtocol {
         XPCServer.shared.connectToSext(bundle: Bundle.main, delegate: self) { success in
             DispatchQueue.global().sync {
                 isConnected = success
+                if !success {
+                    self.delegate?.handleBrokenConnection()
+                }
             }
         }
         

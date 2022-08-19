@@ -83,7 +83,7 @@ class ViewController: NSViewController {
         }
     }
     
-    @IBAction func controlButtonClicked(_ sender: Any) {
+    @IBAction func controlButtonClicked(_ sender: NSButton) {
         isStarted = !isStarted
         if isStarted {
             if !eventProvider!.startProvider() {
@@ -106,7 +106,7 @@ class ViewController: NSViewController {
         }
     }
     
-    @IBAction func scrollButtonClicked(_ sender: Any) {
+    @IBAction func scrollButtonClicked(_ sender: NSButton) {
         isScrollOn = !isScrollOn
         if isScrollOn {
             scrollButton.image = NSImage(named: "scroll-on")
@@ -116,14 +116,14 @@ class ViewController: NSViewController {
         }
     }
     
-    @IBAction func clearButtonClicked(_ sender: Any) {
+    @IBAction func clearButtonClicked(_ sender: NSButton) {
         reportedItems.removeAll()
         displayedItems.removeAll()
         reloadEventInfo()
         infoLabel.stringValue = ""
     }
     
-    @IBAction func infoButtonClicked(_ sender: Any) {
+    @IBAction func infoButtonClicked(_ sender: NSButton) {
         isInfoOn = !isInfoOn
         if isInfoOn {
             InfoButton.image = NSImage(named: "show-on")
@@ -136,14 +136,14 @@ class ViewController: NSViewController {
         }
     }
     
-    @IBAction func displaySegmentValueChanged(_ sender: Any) {
+    @IBAction func displaySegmentValueChanged(_ sender: NSSegmentedControl) {
         if displaySegment.selectedSegment != displayMode.rawValue {
             displayMode = DisplayMode(rawValue: displaySegment.selectedSegment) ?? .DisplayAll
             refreshDisplayedEvents()
         }
     }
     
-    @IBAction func searchBarTextModified(_ sender: Any) {
+    @IBAction func searchBarTextModified(_ sender: NSSearchField) {
         searchText = searchBar.stringValue
         refreshDisplayedEvents()
     }

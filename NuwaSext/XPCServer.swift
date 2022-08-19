@@ -54,6 +54,16 @@ class XPCServer: NSObject {
         newConnection.exportedObject = delegate
         newConnection.exportedInterface = NSXPCInterface(with: ManagerXPCProtocol.self)
         newConnection.remoteObjectInterface = NSXPCInterface(with: SextXPCProtocol.self)
+        newConnection.invalidationHandler = {
+            self.connection = nil
+            Logger(.Info, "Sext disconnected.")
+            handler(false)
+        }
+        newConnection.interruptionHandler = {
+            self.connection = nil
+            Logger(.Error, "Sext interrupted.")
+            handler(false)
+        }
         connection = newConnection
         newConnection.resume()
         
@@ -79,7 +89,7 @@ extension XPCServer: NSXPCListenerDelegate {
         }
         newConnection.interruptionHandler = {
             self.connection = nil
-            Logger(.Info, "Manager interrupted.")
+            Logger(.Error, "Manager interrupted.")
         }
         
         connection = newConnection

@@ -23,6 +23,7 @@ enum NuwaEventType: String, Codable {
 protocol NuwaEventProcessProtocol {
     func displayNotifyEvent(_ event: NuwaEventInfo)
     func processAuthEvent(_ event: NuwaEventInfo)
+    func handleBrokenConnection()
 }
 
 protocol NuwaEventProviderProtocol {
