@@ -8,15 +8,69 @@
 import Foundation
 
 class SextManager {
-    private let authEventQueue = DispatchQueue(label: "com.nuwastone.auth.queue")
-    private let notifyEventQueue = DispatchQueue(label: "com.nuwastone.notify.queue")
-    private lazy var sextProxy = XPCServer.sharedInstance.connection?.remoteObjectProxy() as? SextXPCProtocol
+    private lazy var sextProxy = XPCServer.shared.connection?.remoteObjectProxy() as? SextXPCProtocol
     var nuwaLog = NuwaLog()
-    var delegate: NuwaEventProtocol?
+    var delegate: NuwaEventProcessProtocol?
+}
+
+extension SextManager: ManagerXPCProtocol {
+    private func decodeEventInfo(event: String, isAuth: Bool) -> NuwaEventInfo? {
+        let decoder = JSONDecoder()
+        guard let data = event.data(using: .utf8) else {
+            Logger(.Warning, "Failed to seralize event.")
+            return nil
+        }
+        guard var event = try? decoder.decode(NuwaEventInfo.self, from: data) else {
+            Logger(.Warning, "Failed to decode event.")
+            return nil
+        }
+        if !isAuth {
+            if event.eventType == .ProcessCreate {
+                ProcessCache.shared.updateCache(event)
+            }
+            else {
+                ProcessCache.shared.getFromCache(&event)
+            }
+        }
+        
+        return event
+    }
     
-    func startMonitoring() -> Bool {
+    func reportNotifyEvent(notifyEvent: String) {
+        guard let event = decodeEventInfo(event: notifyEvent, isAuth: false) else {
+            return
+        }
+        delegate?.displayNotifyEvent(event)
+    }
+    
+    func reportAuthEvent(authEvent: String) {
+        guard let event = decodeEventInfo(event: authEvent, isAuth: true) else {
+            return
+        }
+        
+        if event.eventType == .ProcessCreate {
+            if event.props[PropCodeSign] != nil {
+                _ = replyAuthEvent(eventID: event.eventID, isAllowed: true)
+                return
+            }
+        }
+        delegate?.processAuthEvent(event)
+    }
+}
+
+extension SextManager: NuwaEventProviderProtocol {
+    var processDelegate: NuwaEventProcessProtocol? {
+        get {
+            return delegate
+        }
+        set {
+            delegate = newValue
+        }
+    }
+    
+    func startProvider() -> Bool {
         var isConnected = false
-        XPCServer.sharedInstance.connectToSext(bundle: Bundle.main, delegate: self) { success in
+        XPCServer.shared.connectToSext(bundle: Bundle.main, delegate: self) { success in
             DispatchQueue.global().sync {
                 isConnected = success
             }
@@ -26,47 +80,26 @@ class SextManager {
         return isConnected
     }
     
-    func stopMonitoring() -> Bool {
-        let conn = XPCServer.sharedInstance.connection
-        XPCServer.sharedInstance.connection = nil
+    func stopProvider() -> Bool {
+        let conn = XPCServer.shared.connection
+        XPCServer.shared.connection = nil
         conn?.interruptionHandler = nil
         conn?.invalidationHandler = nil
         conn?.invalidate()
         
         return true
     }
-}
-
-extension SextManager: ManagerXPCProtocol {
-    func decodeEventInfo(event: String, isAuth: Bool, handler: (NuwaEventInfo) -> Void) {
-        let decoder = JSONDecoder()
-        guard let data = event.data(using: .utf8) else {
-            Logger(.Warning, "Failed to seralize event.")
-            return
-        }
-        guard var event = try? decoder.decode(NuwaEventInfo.self, from: data) else {
-            Logger(.Warning, "Failed to decode event.")
-            return
-        }
-        if !isAuth {
-            if event.eventType == .ProcessCreate {
-                ProcessCache.sharedInstance.updateCache(event)
-            }
-            else {
-                ProcessCache.sharedInstance.getFromCache(&event)
-            }
-        }
-        
-        handler(event)
+    
+    func setLogLevel(level: UInt8) -> Bool {
+        nuwaLog.logLevel = level
+        return true
     }
     
-    func reportNotifyEvent(notifyEvent: String) {
-        decodeEventInfo(event: notifyEvent, isAuth: false) { event in
-            delegate?.displayNuwaEvent(event)
+    func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool {
+        if eventID == 0 {
+            return false
         }
-    }
-    
-    func reportAuthEvent(authEvent: String) {
-        return
+        sextProxy?.replyAuthEvent(pointer: UInt(eventID), isAllowed: isAllowed)
+        return true
     }
 }

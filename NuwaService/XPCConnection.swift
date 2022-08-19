@@ -18,7 +18,7 @@ import Foundation
 }
 
 class XPCConnection: NSObject {
-    static let sharedInstance = XPCConnection()
+    static let shared = XPCConnection()
     var listener: NSXPCListener?
     var connection: NSXPCConnection?
     var delegate: ClientXPCProtocol?

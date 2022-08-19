@@ -14,10 +14,11 @@ import Foundation
 
 @objc protocol SextXPCProtocol {
     func connectResponse(_ handler: @escaping (Bool) -> Void)
+    func replyAuthEvent(pointer: UInt, isAllowed: Bool)
 }
 
 class XPCServer: NSObject {
-    static let sharedInstance = XPCServer()
+    static let shared = XPCServer()
     var listener: NSXPCListener?
     var connection: NSXPCConnection?
     var delegate: ManagerXPCProtocol?
@@ -84,46 +85,5 @@ extension XPCServer: NSXPCListenerDelegate {
         connection = newConnection
         newConnection.resume()
         return true
-    }
-}
-
-extension XPCServer: SextXPCProtocol {
-    func connectResponse(_ handler: @escaping (Bool) -> Void) {
-        Logger(.Info, "Manager connected.")
-        handler(true)
-    }
-}
-
-extension XPCServer {
-    func encodeEventInfo(_ event: NuwaEventInfo) -> String {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        
-        guard let data = try? encoder.encode(event) else {
-            Logger(.Warning, "Failed to seralize event.")
-            return ""
-        }
-        guard let json = String(data: data, encoding: .utf8) else {
-            Logger(.Warning, "Failed to encode event json.")
-            return ""
-        }
-        
-        return json
-    }
-    
-    func sendAuthEvent(_ event: NuwaEventInfo) {
-        let proxy = connection?.remoteObjectProxy as? ManagerXPCProtocol
-        let json = encodeEventInfo(event)
-        if !json.isEmpty {
-            proxy?.reportAuthEvent(authEvent: json)
-        }
-    }
-    
-    func sendNotifyEvent(_ event: NuwaEventInfo) {
-        let proxy = connection?.remoteObjectProxy as? ManagerXPCProtocol
-        let json = encodeEventInfo(event)
-        if !json.isEmpty {
-            proxy?.reportNotifyEvent(notifyEvent: json)
-        }
     }
 }

@@ -7,18 +7,25 @@
 
 import Foundation
 
-let DaemonName = "NuwaDaemon"
-let ClientName = "NuwaClient"
-let DaemonBundle = "com.nuwastone.service"
-let ClientBundle = "com.nuwastone.client"
+let DaemonName      = "NuwaDaemon"
+let ClientName      = "NuwaClient"
+let DaemonBundle    = "com.nuwastone.service"
+let ClientBundle    = "com.nuwastone.client"
 
-let SextBundle = "com.nuwastone.service.eps"
-let KextBundle = "com.nuwastone.service.eps"
-let KextService = "DriverService"
+let SextBundle      = "com.nuwastone.service.eps"
+let KextBundle      = "com.nuwastone.service.eps"
+let KextService     = "DriverService"
 
-let MachServiceKey = "MachServiceName"
+let MachServiceKey  = "MachServiceName"
 
-let MaxIPLength = 41
+let PropBundleID    = "Bundle ID"
+let PropCodeSign    = "Code Sign"
+let PropExitCode    = "Exit Code"
+let PropFilePath    = "File Path"
+let PropSrcPath     = "From"
+let PropDstPath     = "Move to"
+let PropProtocol    = "Protocol"
+let MaxIPLength     = 41
 
 enum ESClientError: Error {
     case success
@@ -126,35 +133,35 @@ func getNameFromUid(_ uid: uid_t) -> String {
     return String(cString: name)
 }
 
-func getSignInfoFromPath(_ path: String) ->String {
-    guard FileManager.default.fileExists(atPath: path) else {
-        return ""
-    }
+func getSignInfoFromPath(_ path: String) ->[String] {
     let fileUrl = URL(fileURLWithPath: path)
     var secCode: SecStaticCode?
     var status = SecStaticCodeCreateWithPath(fileUrl as CFURL, SecCSFlags(rawValue: 0), &secCode)
     if status != errSecSuccess || secCode == nil {
         Logger(.Warning, "Failed to create static signed code for [\(path)] with error [\(status)].")
-        return ""
+        return []
     }
     
     var secDict: CFDictionary?
     status = SecCodeCopySigningInformation(secCode!, SecCSFlags(rawValue: kSecCSSigningInformation), &secDict)
     if status != errSecSuccess || secDict == nil {
         Logger(.Warning, "Failed to copy signed info for [\(path)] with error [\(status)].")
-        return ""
+        return []
     }
     let signedDict = secDict! as NSDictionary
     guard let certChain = signedDict[kSecCodeInfoCertificates as NSString] as? NSArray else {
-        return ""
+        return []
     }
     
-    let cert = certChain.object(at: 0) as! SecCertificate
-    var name: CFString?
-    status = SecCertificateCopyCommonName(cert, &name)
-    if status != errSecSuccess || name == nil {
-        return ""
+    var signInfo = [String]()
+    for cert in certChain {
+        var name: CFString?
+        status = SecCertificateCopyCommonName(cert as! SecCertificate, &name)
+        if status != errSecSuccess || name == nil {
+            continue
+        }
+        signInfo.append((name! as String))
     }
     
-    return name! as String
+    return signInfo
 }

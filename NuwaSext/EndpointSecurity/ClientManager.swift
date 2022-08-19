@@ -9,7 +9,7 @@ import Foundation
 import EndpointSecurity
 
 class ClientManager {
-    static let sharedInstance = ClientManager()
+    static let shared = ClientManager()
     var esClient: OpaquePointer?
     var initError = ESClientError.newClientError
     let authQueue = DispatchQueue(label: "com.nuwastone.sext.authqueue", attributes: .concurrent)
@@ -74,7 +74,7 @@ class ClientManager {
         nuwaEvent.ppid = process.ppid
         nuwaEvent.procPath = getString(token: process.executable.pointee.path)
         nuwaEvent.eventTime = UInt64(message.pointee.time.tv_sec)
-        nuwaEvent.props["SigningID"] = getString(token: process.signing_id)
+        nuwaEvent.props[PropBundleID] = getString(token: process.signing_id)
         nuwaEvent.setUserName(uid: audit_token_to_euid(process.audit_token))
         
         switch message.pointee.event_type {
@@ -108,16 +108,21 @@ class ClientManager {
         
         if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
             authQueue.async {
-                let result = es_respond_auth_result(self.esClient!, message, ES_AUTH_RESULT_ALLOW, false)
-                if result != ES_RESPOND_RESULT_SUCCESS {
-                    Logger(.Warning, "Failed to respond auth event [\(result)].")
+                nuwaEvent.eventID = UInt64(UInt(bitPattern: message))
+                if XPCServer.shared.connection == nil {
+                    let result = es_respond_auth_result(self.esClient!, message, ES_AUTH_RESULT_ALLOW, false)
+                    if result != ES_RESPOND_RESULT_SUCCESS {
+                        Logger(.Warning, "Failed to respond auth event [\(result)].")
+                    }
                 }
-                XPCServer.sharedInstance.sendAuthEvent(nuwaEvent)
+                else {
+                    XPCServer.shared.sendAuthEvent(nuwaEvent)
+                }
             }
         }
         else if message.pointee.action_type == ES_ACTION_TYPE_NOTIFY {
             notifyQueue.sync {
-                XPCServer.sharedInstance.sendNotifyEvent(nuwaEvent)
+                XPCServer.shared.sendNotifyEvent(nuwaEvent)
             }
         }
     }

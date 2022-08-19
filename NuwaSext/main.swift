@@ -8,9 +8,9 @@
 import Foundation
 
 autoreleasepool {
-    XPCServer.sharedInstance.startListener()
-    ClientManager.sharedInstance.startMonitoring()
-    if ClientManager.sharedInstance.initError != .success {
+    XPCServer.shared.startListener()
+    ClientManager.shared.startMonitoring()
+    if ClientManager.shared.initError != .success {
         exit(EXIT_FAILURE)
     }
 }

@@ -12,11 +12,11 @@ class KextManager {
     private var notificationPort: IONotificationPortRef?
     private let authEventQueue = DispatchQueue(label: "com.nuwastone.auth.queue")
     private let notifyEventQueue = DispatchQueue(label: "com.nuwastone.notify.queue")
-    private lazy var proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
+    private lazy var proxy = XPCConnection.shared.connection?.remoteObjectProxy as? DaemonXPCProtocol
     var connection: io_connect_t = 0
     var isConnected: Bool = false
     var nuwaLog = NuwaLog()
-    var delegate: NuwaEventProtocol?
+    var delegate: NuwaEventProcessProtocol?
     
     private func processConnectionRequest(iterator: io_iterator_t) {
         repeat {
@@ -96,28 +96,6 @@ class KextManager {
         } while isConnected
     }
     
-    func startMonitoring() -> Bool {
-        guard let service = IOServiceMatching(KextService.cString(using: .utf8)) else {
-            return false
-        }
-        
-        Logger(.Info, "Wait for kext to be connected.")
-        waitForDriver(matchingDict: service)
-        return true
-    }
-    
-    func stopMonitoring() -> Bool {
-        let result = IOServiceClose(connection)
-        if result != KERN_SUCCESS {
-            Logger(.Error, "Failed to close IOService [\(String.init(format: "0x%x", result))].")
-            return false
-        }
-        
-        connection = IO_OBJECT_NULL
-        isConnected = false
-        return true
-    }
-    
     func listenRequestsForType(type: UInt32) {
         while !isConnected {
             usleep(1000000)
@@ -160,8 +138,15 @@ extension KextManager {
         nuwaEvent.pid = event.mainProcess.pid
         nuwaEvent.ppid = event.mainProcess.ppid
         nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
+        nuwaEvent.fillCodeSign()
         
-        _ = replyAuthEvent(vnodeID: event.vnodeID, isAllowed: true)
+        if nuwaEvent.eventType == .ProcessCreate {
+            if nuwaEvent.props[PropCodeSign] != nil {
+                _ = replyAuthEvent(eventID: event.vnodeID, isAllowed: true)
+                return
+            }
+        }
+        delegate?.processAuthEvent(nuwaEvent)
     }
     
     func processNotifyEvent(_ event: inout NuwaKextEvent) {
@@ -173,26 +158,26 @@ extension KextManager {
             nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
         case kActionNotifyFileCloseModify:
             nuwaEvent.eventType = .FileCloseModify
-            nuwaEvent.props["FilePath"] = String(cString: &event.fileCloseModify.path.0)
+            nuwaEvent.props[PropFilePath] = String(cString: &event.fileCloseModify.path.0)
         case kActionNotifyFileRename:
             nuwaEvent.eventType = .FileRename
-            nuwaEvent.props["from"] = String(cString: &event.fileRename.srcFile.path.0)
-            nuwaEvent.props["move to"] = String(cString: &event.fileRename.newPath.0)
+            nuwaEvent.props[PropSrcPath] = String(cString: &event.fileRename.srcFile.path.0)
+            nuwaEvent.props[PropDstPath] = String(cString: &event.fileRename.newPath.0)
         case kActionNotifyFileDelete:
             nuwaEvent.eventType = .FileDelete
-            nuwaEvent.props["FilePath"] = String(cString: &event.fileDelete.path.0)
+            nuwaEvent.props[PropFilePath] = String(cString: &event.fileDelete.path.0)
         case kActionNotifyNetworkAccess:
             nuwaEvent.eventType = .NetAccess
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.localAddr, isLocal: true)
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.remoteAddr, isLocal: false)
             if event.netAccess.protocol == IPPROTO_TCP {
-                nuwaEvent.props["protocol"] = "tcp"
+                nuwaEvent.props[PropProtocol] = "tcp"
             }
             else if event.netAccess.protocol == IPPROTO_UDP {
-                nuwaEvent.props["protocol"] = "udp"
+                nuwaEvent.props[PropProtocol] = "udp"
             }
             else {
-                nuwaEvent.props["protocol"] = "unsupport"
+                nuwaEvent.props[PropProtocol] = "unsupport"
             }
         default:
             break
@@ -219,33 +204,48 @@ extension KextManager {
                     })
                 }
             }
-            nuwaEvent.fillCodeSign()
-            ProcessCache.sharedInstance.updateCache(nuwaEvent)
+            ProcessCache.shared.updateCache(nuwaEvent)
         }
         else {
-            ProcessCache.sharedInstance.getFromCache(&nuwaEvent)
+            ProcessCache.shared.getFromCache(&nuwaEvent)
         }
         
-        delegate!.displayNuwaEvent(nuwaEvent)
+        delegate?.displayNotifyEvent(nuwaEvent)
+    }
+}
+
+extension KextManager: NuwaEventProviderProtocol {
+    var processDelegate: NuwaEventProcessProtocol? {
+        get {
+            return delegate
+        }
+        set {
+            delegate = newValue
+        }
     }
     
-    func replyAuthEvent(vnodeID: UInt64, isAllowed: Bool) -> Bool {
-        guard vnodeID != 0 else {
+    func startProvider() -> Bool {
+        guard let service = IOServiceMatching(KextService.cString(using: .utf8)) else {
             return false
         }
         
-        let scalar = [vnodeID]
-        var result = KERN_SUCCESS
-        if isAllowed {
-            result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientAllowBinary.rawValue, scalar, 1, nil, nil)
-        }
-        else {
-            result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientDenyBinary.rawValue, scalar, 1, nil, nil)
-        }
+        Logger(.Info, "Wait for kext to be connected.")
+        waitForDriver(matchingDict: service)
+        
+        listenRequestsForType(type: kQueueTypeAuth.rawValue)
+        listenRequestsForType(type: kQueueTypeNotify.rawValue)
+        return true
+    }
+    
+    func stopProvider() -> Bool {
+        let result = IOServiceClose(connection)
         if result != KERN_SUCCESS {
-            Logger(.Error, "Failed to reply auth event [\(String.init(format: "0x%x", result))].")
+            Logger(.Error, "Failed to close IOService [\(String.init(format: "0x%x", result))].")
             return false
         }
+        
+        connection = IO_OBJECT_NULL
+        isConnected = false
         return true
     }
     
@@ -255,6 +255,26 @@ extension KextManager {
         let result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientSetLogLevel.rawValue, scalar, 1, nil, nil)
         if result != KERN_SUCCESS {
             Logger(.Error, "Failed to set log level for kext [\(String.init(format: "0x%x", result))].")
+            return false
+        }
+        return true
+    }
+    
+    func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool {
+        guard eventID != 0 else {
+            return false
+        }
+        
+        let scalar = [eventID]
+        var result = KERN_SUCCESS
+        if isAllowed {
+            result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientAllowBinary.rawValue, scalar, 1, nil, nil)
+        }
+        else {
+            result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientDenyBinary.rawValue, scalar, 1, nil, nil)
+        }
+        if result != KERN_SUCCESS {
+            Logger(.Error, "Failed to reply auth event [\(String.init(format: "0x%x", result))].")
             return false
         }
         return true

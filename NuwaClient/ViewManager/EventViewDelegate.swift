@@ -7,8 +7,8 @@
 
 import Cocoa
 
-extension ViewController: NuwaEventProtocol {
-    func displayNuwaEvent(_ event: NuwaEventInfo) {
+extension ViewController: NuwaEventProcessProtocol {
+    func displayNotifyEvent(_ event: NuwaEventInfo) {
         eventQueue.sync {
             reportedItems.append(event)
             eventCount[DisplayMode.DisplayAll.rawValue] += 1
@@ -38,6 +38,16 @@ extension ViewController: NuwaEventProtocol {
             }
             if searchText.isEmpty || event.desc.contains(searchText) {
                 displayedItems.append(event)
+            }
+        }
+    }
+    
+    func processAuthEvent(_ event: NuwaEventInfo) {
+        if event.eventType == .ProcessCreate {
+            DispatchQueue.main.sync {
+                alertWindow = AlertWindowController(windowNibName: "Alert")
+                alertWindow!.authEvent = event
+                alertWindow!.showWindow(self)
             }
         }
     }

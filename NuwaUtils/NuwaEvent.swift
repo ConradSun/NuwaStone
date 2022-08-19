@@ -19,12 +19,22 @@ enum NuwaEventType: String, Codable {
     case DNSQuery
 }
 
-protocol NuwaEventProtocol {
-    func displayNuwaEvent(_ event: NuwaEventInfo)
+protocol NuwaEventProcessProtocol {
+    func displayNotifyEvent(_ event: NuwaEventInfo)
+    func processAuthEvent(_ event: NuwaEventInfo)
+}
+
+protocol NuwaEventProviderProtocol {
+    var processDelegate: NuwaEventProcessProtocol? { get set }
+    func startProvider() -> Bool
+    func stopProvider() -> Bool
+    func setLogLevel(level: UInt8) -> Bool
+    func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool
 }
 
 class NuwaEventInfo: Codable {
     static var userName = [UInt32(0): "root"]
+    var eventID: UInt64
     var eventType: NuwaEventType
     var eventTime: UInt64
     var pid: Int32
@@ -37,20 +47,21 @@ class NuwaEventInfo: Codable {
     
     var desc: String {
         let pretty = """
-        Event Type: \(eventType)
-        Timestamp: \(eventTime)
-        Pid: \(pid) (Parent) -> \(ppid)
         User: \(user)
-        ProcPath: \(procPath)
-        procCWD: \(procCWD)
-        procArgs: \(procArgs)
-        Props:
+        Timestamp: \(eventTime)
+        Event Type: \(eventType)
+        Pid: \(pid) (Parent) -> \(ppid)
+        Process Path: \(procPath)
+        Current Directory: \(procCWD)
+        Process Arguments: \(procArgs)
+        Properties:
         \(props as AnyObject)
         """
         return pretty
     }
     
     init() {
+        eventID = 0
         eventType = .TypeNil
         eventTime = 0
         pid = 0
@@ -70,7 +81,10 @@ class NuwaEventInfo: Codable {
     }
     
     func fillCodeSign() {
-        props["CodeSign"] = getSignInfoFromPath(procPath)
+        let signInfo = getSignInfoFromPath(procPath)
+        if signInfo.count > 0 {
+            props[PropCodeSign] = signInfo[0]
+        }
     }
     
     func convertSocketAddr(socketAddr: UnsafeMutablePointer<sockaddr>, isLocal: Bool) {

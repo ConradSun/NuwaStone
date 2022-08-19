@@ -25,7 +25,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if result {
-            XPCConnection.sharedInstance.startListener()
+            XPCConnection.shared.startListener()
         }
         else {
             Logger(.Error, "Failed to load extension.")

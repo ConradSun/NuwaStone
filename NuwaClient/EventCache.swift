@@ -20,9 +20,9 @@ struct ProcessCacheInfo {
 }
 
 class ProcessCache {
-    static let sharedInstance = ProcessCache()
+    static let shared = ProcessCache()
     private var cacheDict = [Int32: ProcessCacheInfo]()
-    private lazy var proxy = XPCConnection.sharedInstance.connection?.remoteObjectProxy as? DaemonXPCProtocol
+    private lazy var proxy = XPCConnection.shared.connection?.remoteObjectProxy as? DaemonXPCProtocol
     
     private func getActivePids() -> (UnsafeMutablePointer<Int32>, Int32) {
         var count = proc_listallpids(nil, 0)

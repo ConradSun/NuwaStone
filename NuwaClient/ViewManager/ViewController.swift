@@ -27,9 +27,6 @@ class ViewController: NSViewController {
     @IBOutlet weak var splitView: NSSplitView!
     @IBOutlet weak var graphView: GraphView!
     
-    let kextManager = KextManager()
-    let sextManager = SextManager()
-    
     var isStarted = false
     var isScrollOn = true
     var isInfoOn = true
@@ -43,11 +40,19 @@ class ViewController: NSViewController {
     var reportedItems = [NuwaEventInfo]()
     var displayedItems = [NuwaEventInfo]()
     
+    var eventProvider: NuwaEventProviderProtocol?
+    var alertWindow: AlertWindowController?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        kextManager.delegate = self
-        sextManager.delegate = self;
+        if #available(macOS 10.16, *) {
+            eventProvider = SextManager()
+        }
+        else {
+            eventProvider = KextManager()
+        }
+        eventProvider?.processDelegate = self
         
         eventView.delegate = self
         eventView.dataSource = self
@@ -81,35 +86,19 @@ class ViewController: NSViewController {
     @IBAction func controlButtonClicked(_ sender: Any) {
         isStarted = !isStarted
         if isStarted {
-            if #available(macOS 10.16, *) {
-                if !sextManager.startMonitoring() {
-                    alertWithError(error: "Failed to connect sext.")
-                    return
-                }
-            }
-            else {
-                if !kextManager.startMonitoring() {
-                    alertWithError(error: "Failed to connect kext.")
-                    return
-                }
-                kextManager.listenRequestsForType(type: kQueueTypeAuth.rawValue)
-                kextManager.listenRequestsForType(type: kQueueTypeNotify.rawValue)
+            if !eventProvider!.startProvider() {
+                alertWithError(error: "Failed to connect extension.")
+                return
             }
             
-            ProcessCache.sharedInstance.initProcCache();
+            ProcessCache.shared.initProcCache();
             controlButton.image = NSImage(named: "stop")
             controlLabel.stringValue = "stop"
         }
         else {
-            if #available(macOS 10.16, *) {
-                if !sextManager.stopMonitoring() {
-                    alertWithError(error: "Failed to disconnect sext.")
-                }
-            }
-            else {
-                if !kextManager.stopMonitoring() {
-                    alertWithError(error: "Failed to disconnect kext.")
-                }
+            if !eventProvider!.stopProvider() {
+                alertWithError(error: "Failed to disconnect extension.")
+                return
             }
             
             controlButton.image = NSImage(named: "start")
@@ -171,7 +160,7 @@ extension ViewController {
     }
     
     func establishConnection() {
-        XPCConnection.sharedInstance.connectToDaemon(bundle: Bundle.main, delegate: self) { success in
+        XPCConnection.shared.connectToDaemon(bundle: Bundle.main, delegate: self) { success in
             DispatchQueue.main.async {
                 if !success {
                     self.controlButton.isEnabled = false

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A2305CB28ADD96E00F85A82 /* AlertWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2305C928ADD96E00F85A82 /* AlertWindowController.swift */; };
+		3A2305CC28ADD96E00F85A82 /* Alert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A2305CA28ADD96E00F85A82 /* Alert.xib */; };
+		3A2305CE28AE257F00F85A82 /* XPCServerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */; };
 		3A4A95E72897A8E900220EB7 /* SocketFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95E52897A8E900220EB7 /* SocketFilter.cpp */; };
 		3A4A95E82897A8E900220EB7 /* SocketFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A4A95E62897A8E900220EB7 /* SocketFilter.hpp */; };
 		3A4A95EC2897F1C600220EB7 /* SocketHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95EA2897F1C600220EB7 /* SocketHandler.cpp */; };
@@ -111,6 +114,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3A2305C928ADD96E00F85A82 /* AlertWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertWindowController.swift; sourceTree = "<group>"; };
+		3A2305CA28ADD96E00F85A82 /* Alert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Alert.xib; sourceTree = "<group>"; };
+		3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCServerDelegate.swift; sourceTree = "<group>"; };
 		3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NuwaBridge.hpp; sourceTree = "<group>"; };
 		3A4A95E2289773DE00220EB7 /* KextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KextControl.swift; sourceTree = "<group>"; };
 		3A4A95E52897A8E900220EB7 /* SocketFilter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SocketFilter.cpp; sourceTree = "<group>"; };
@@ -207,6 +213,7 @@
 				3AED3F5A288953FD00FCA79A /* GraphView.swift */,
 				3ABAFF842879C0D900928C22 /* ViewController.swift */,
 				3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */,
+				3A2305C928ADD96E00F85A82 /* AlertWindowController.swift */,
 			);
 			path = ViewManager;
 			sourceTree = "<group>";
@@ -227,6 +234,7 @@
 			children = (
 				3A6088ED28A49E0F00061A42 /* EndpointSecurity */,
 				3A6088F228A4A84500061A42 /* XPCServer.swift */,
+				3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */,
 				3A6088E028A49B0D00061A42 /* main.swift */,
 				3A6088E228A49B0D00061A42 /* Info.plist */,
 				3A6088E328A49B0D00061A42 /* NuwaSext.entitlements */,
@@ -302,6 +310,7 @@
 				3AB9B383289289DC0078B45D /* Info.plist */,
 				3ABAFF862879C0DA00928C22 /* Assets.xcassets */,
 				3ABAFF882879C0DA00928C22 /* Main.storyboard */,
+				3A2305CA28ADD96E00F85A82 /* Alert.xib */,
 				3ABAFF8B2879C0DA00928C22 /* NuwaClient.entitlements */,
 			);
 			path = NuwaClient;
@@ -545,6 +554,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3ABAFF872879C0DA00928C22 /* Assets.xcassets in Resources */,
+				3A2305CC28ADD96E00F85A82 /* Alert.xib in Resources */,
 				3ABAFF8A2879C0DA00928C22 /* Main.storyboard in Resources */,
 				3A60898328A6565000061A42 /* NuwaService.app in Resources */,
 			);
@@ -571,6 +581,7 @@
 				3A6088F428A4AA6800061A42 /* NuwaLogger.swift in Sources */,
 				3A6088E128A49B0D00061A42 /* main.swift in Sources */,
 				3A6088F028A4A72300061A42 /* NuwaEvent.swift in Sources */,
+				3A2305CE28AE257F00F85A82 /* XPCServerDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -593,6 +604,7 @@
 			files = (
 				3ABAFF852879C0D900928C22 /* ViewController.swift in Sources */,
 				3ADA61A3288D819C002C2537 /* EventCache.swift in Sources */,
+				3A2305CB28ADD96E00F85A82 /* AlertWindowController.swift in Sources */,
 				3ABAFF832879C0D900928C22 /* AppDelegate.swift in Sources */,
 				3AED3F5B288953FD00FCA79A /* GraphView.swift in Sources */,
 				3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */,
