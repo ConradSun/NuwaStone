@@ -28,11 +28,11 @@ let PropProtocol    = "Protocol"
 let MaxIPLength     = 41
 
 enum ESClientError: Error {
-    case success
-    case missingEntitlements
-    case alreadyEnabled
-    case newClientError
-    case failedSubscription
+    case Success
+    case MissingEntitlements
+    case AlreadyEnabled
+    case NewClientError
+    case FailedSubscription
 }
 
 fileprivate func getSysctlArgmax() -> Int {

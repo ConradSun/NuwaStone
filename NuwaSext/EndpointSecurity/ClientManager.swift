@@ -11,7 +11,7 @@ import EndpointSecurity
 class ClientManager {
     static let shared = ClientManager()
     var esClient: OpaquePointer?
-    var initError = ESClientError.newClientError
+    var initError = ESClientError.NewClientError
     let authQueue = DispatchQueue(label: "com.nuwastone.sext.authqueue", attributes: .concurrent)
     let notifyQueue = DispatchQueue(label: "com.nuwastone.sext.notifyqueue")
     let subTypes = [ES_EVENT_TYPE_AUTH_EXEC,
@@ -34,7 +34,7 @@ class ClientManager {
         if result != ES_NEW_CLIENT_RESULT_SUCCESS {
             if result == ES_NEW_CLIENT_RESULT_ERR_NOT_ENTITLED {
                 Logger(.Error, "Failed to find Endpoint Security entitlement.")
-                initError = .missingEntitlements
+                initError = .MissingEntitlements
             }
             
             Logger(.Error, "Failed to create ES client [\(result)].")
@@ -42,18 +42,18 @@ class ClientManager {
         }
         if es_subscribe(client!, subTypes, UInt32(subTypes.count)) != ES_RETURN_SUCCESS {
             es_delete_client(client)
-            initError = .failedSubscription
+            initError = .FailedSubscription
             Logger(.Error, "Failed to subscribe event source.")
             return
         }
         es_clear_cache(client!)
         
         esClient = client
-        initError = .success
+        initError = .Success
     }
     
     func stopMonitoring() {
-        if initError != .success || esClient == nil {
+        if initError != .Success || esClient == nil {
             return
         }
         
