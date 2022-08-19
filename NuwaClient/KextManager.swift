@@ -13,6 +13,7 @@ class KextManager {
     private let authEventQueue = DispatchQueue(label: "com.nuwastone.auth.queue")
     private let notifyEventQueue = DispatchQueue(label: "com.nuwastone.notify.queue")
     private lazy var proxy = XPCConnection.shared.connection?.remoteObjectProxy as? DaemonXPCProtocol
+    static let shared = KextManager()
     var connection: io_connect_t = 0
     var isConnected: Bool = false
     var nuwaLog = NuwaLog()
@@ -133,6 +134,7 @@ class KextManager {
 extension KextManager {
     func processAuthEvent(_ event: inout NuwaKextEvent) {
         let nuwaEvent = NuwaEventInfo()
+        nuwaEvent.eventID = event.vnodeID
         nuwaEvent.eventType = .ProcessCreate
         nuwaEvent.eventTime = event.eventTime
         nuwaEvent.pid = event.mainProcess.pid
@@ -265,6 +267,7 @@ extension KextManager: NuwaEventProviderProtocol {
     
     func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool {
         guard eventID != 0 else {
+            Logger(.Warning, "Invalid ID for auth event.")
             return false
         }
         

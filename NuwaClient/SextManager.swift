@@ -9,6 +9,7 @@ import Foundation
 
 class SextManager {
     private lazy var sextProxy = XPCServer.shared.connection?.remoteObjectProxy() as? SextXPCProtocol
+    static let shared = SextManager()
     var nuwaLog = NuwaLog()
     var delegate: NuwaEventProcessProtocol?
 }

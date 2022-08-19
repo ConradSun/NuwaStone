@@ -47,12 +47,12 @@ class ViewController: NSViewController {
         super.viewDidLoad()
         
         if #available(macOS 10.16, *) {
-            eventProvider = SextManager()
+            eventProvider = SextManager.shared
         }
         else {
-            eventProvider = KextManager()
+            eventProvider = KextManager.shared
         }
-        eventProvider?.processDelegate = self
+        eventProvider!.processDelegate = self
         
         eventView.delegate = self
         eventView.dataSource = self
@@ -74,7 +74,7 @@ class ViewController: NSViewController {
         RunLoop.current.add(displayTimer, forMode: .default)
         displayTimer.fire()
         
-        establishConnection()
+//        establishConnection()
     }
 
     override var representedObject: Any? {

@@ -24,10 +24,10 @@ class AlertWindowController: NSWindowController {
         super.windowDidLoad()
         
         if #available(macOS 10.16, *) {
-            eventProvider = SextManager()
+            eventProvider = SextManager.shared
         }
         else {
-            eventProvider = KextManager()
+            eventProvider = KextManager.shared
         }
         
         let icon = NSWorkspace.shared.icon(forFile: authEvent!.procPath)
@@ -41,7 +41,7 @@ class AlertWindowController: NSWindowController {
     @IBAction func submitButtonClicked(_ sender: NSButton) {
         isAllowed = decisionPopUP.selectedItem?.title == "Allow"
         shouldAddToList = decisionCheckbox.state == .on
-        _ = eventProvider?.replyAuthEvent(eventID: authEvent!.eventID, isAllowed: isAllowed)
+        _ = eventProvider!.replyAuthEvent(eventID: authEvent!.eventID, isAllowed: isAllowed)
         window?.close()
     }
 }
