@@ -36,11 +36,16 @@ class AlertWindowController: NSWindowController {
         procInfoText.stringValue = authEvent!.props[PropBundleID] ?? authEvent!.procPath
         eventDescLabel.stringValue = authEvent!.desc
         decisionCheckbox.title = "Only this time (pid: \(authEvent!.pid))"
+        
+        let waitTime = DispatchTime.now() + .milliseconds(MaxWaitTime)
+        DispatchQueue.main.asyncAfter(deadline: waitTime) {
+            self.submitButtonClicked(self.submitButton)
+        }
     }
     
     @IBAction func submitButtonClicked(_ sender: NSButton) {
         isAllowed = decisionPopUP.selectedItem?.title == "Allow"
-        shouldAddToList = decisionCheckbox.state == .on
+        shouldAddToList = decisionCheckbox.state == .off
         _ = eventProvider!.replyAuthEvent(eventID: authEvent!.eventID, isAllowed: isAllowed)
         window?.close()
     }

@@ -10,6 +10,7 @@
 		3A2305CB28ADD96E00F85A82 /* AlertWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2305C928ADD96E00F85A82 /* AlertWindowController.swift */; };
 		3A2305CC28ADD96E00F85A82 /* Alert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A2305CA28ADD96E00F85A82 /* Alert.xib */; };
 		3A2305CE28AE257F00F85A82 /* XPCServerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */; };
+		3A2305D128AF929100F85A82 /* ResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2305D028AF929100F85A82 /* ResponseManager.swift */; };
 		3A4A95E72897A8E900220EB7 /* SocketFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95E52897A8E900220EB7 /* SocketFilter.cpp */; };
 		3A4A95E82897A8E900220EB7 /* SocketFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A4A95E62897A8E900220EB7 /* SocketFilter.hpp */; };
 		3A4A95EC2897F1C600220EB7 /* SocketHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95EA2897F1C600220EB7 /* SocketHandler.cpp */; };
@@ -117,6 +118,7 @@
 		3A2305C928ADD96E00F85A82 /* AlertWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertWindowController.swift; sourceTree = "<group>"; };
 		3A2305CA28ADD96E00F85A82 /* Alert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Alert.xib; sourceTree = "<group>"; };
 		3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCServerDelegate.swift; sourceTree = "<group>"; };
+		3A2305D028AF929100F85A82 /* ResponseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseManager.swift; sourceTree = "<group>"; };
 		3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NuwaBridge.hpp; sourceTree = "<group>"; };
 		3A4A95E2289773DE00220EB7 /* KextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KextControl.swift; sourceTree = "<group>"; };
 		3A4A95E52897A8E900220EB7 /* SocketFilter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SocketFilter.cpp; sourceTree = "<group>"; };
@@ -235,6 +237,7 @@
 				3A6088ED28A49E0F00061A42 /* EndpointSecurity */,
 				3A6088F228A4A84500061A42 /* XPCServer.swift */,
 				3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */,
+				3A2305D028AF929100F85A82 /* ResponseManager.swift */,
 				3A6088E028A49B0D00061A42 /* main.swift */,
 				3A6088E228A49B0D00061A42 /* Info.plist */,
 				3A6088E328A49B0D00061A42 /* NuwaSext.entitlements */,
@@ -581,6 +584,7 @@
 				3A6088F428A4AA6800061A42 /* NuwaLogger.swift in Sources */,
 				3A6088E128A49B0D00061A42 /* main.swift in Sources */,
 				3A6088F028A4A72300061A42 /* NuwaEvent.swift in Sources */,
+				3A2305D128AF929100F85A82 /* ResponseManager.swift in Sources */,
 				3A2305CE28AE257F00F85A82 /* XPCServerDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

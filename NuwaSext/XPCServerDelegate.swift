@@ -55,5 +55,6 @@ extension XPCServer: SextXPCProtocol {
         if result != ES_RESPOND_RESULT_SUCCESS {
             Logger(.Warning, "Failed to respond auth event [\(result)].")
         }
+        ResponseManager.shared.underwayEvent.remove(UInt64(pointer))
     }
 }

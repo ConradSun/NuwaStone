@@ -117,6 +117,7 @@ class ClientManager {
                 }
                 else {
                     XPCServer.shared.sendAuthEvent(nuwaEvent)
+                    ResponseManager.shared.addESAuthEvent(eventID: nuwaEvent.eventID)
                 }
             }
         }
