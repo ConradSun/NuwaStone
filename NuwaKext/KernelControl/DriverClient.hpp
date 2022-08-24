@@ -9,6 +9,7 @@
 #define DriverClient_hpp
 
 #include "CacheManager.hpp"
+#include "ProcListManager.hpp"
 #include "DriverService.hpp"
 #include "EventDispatcher.hpp"
 #include <sys/kauth.h>
@@ -57,8 +58,15 @@ public:
     // Called when the kext log level is setted.
     static IOReturn setLogLevel(OSObject* target, void* reference, IOExternalMethodArguments* arguments);
     
+    // Called to add process to the white list.
+    static IOReturn addWhiteProcess(OSObject* target, void* reference, IOExternalMethodArguments* arguments);
+    
+    // Called to add process to the black list.
+    static IOReturn addBlackProcess(OSObject* target, void* reference, IOExternalMethodArguments* arguments);
+    
 private:
     CacheManager *m_cacheManager;
+    ProcListManager *m_procListManager;
     EventDispatcher *m_eventDispatcher;
     DriverService *m_driverService;
 };

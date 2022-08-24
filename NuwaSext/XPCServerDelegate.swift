@@ -57,4 +57,8 @@ extension XPCServer: SextXPCProtocol {
         }
         ResponseManager.shared.underwayEvent.remove(UInt64(pointer))
     }
+    
+    func addProcessPath(path: String, isWhite: Bool) {
+        ListManager.shared.addProcessPath(path: path, isWhite: isWhite)
+    }
 }

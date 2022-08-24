@@ -25,6 +25,8 @@ typedef enum {
     kNuwaUserClientAllowBinary,
     kNuwaUserClientDenyBinary,
     kNuwaUserClientSetLogLevel,
+    kNuwaUserClientWhiteProcess,
+    kNuwaUserClientBlackProcess,
     kNuwaUserClientNMethods
 } NuwaKextMethods;
 

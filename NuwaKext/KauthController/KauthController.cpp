@@ -28,10 +28,15 @@ bool KauthController::init() {
     if (m_eventDispatcher == nullptr) {
         return false;
     }
+    m_procListManager = ProcListManager::getInstance();
+    if (m_procListManager == nullptr) {
+        return false;
+    }
     return true;
 }
 
 void KauthController::free() {
+    m_procListManager = nullptr;
     m_eventDispatcher = nullptr;
     m_cacheManager = nullptr;
     OSObject::free();
@@ -99,7 +104,6 @@ int KauthController::getDecisionFromClient(UInt64 vnodeID) {
 #pragma mark - Callable Methods
 
 int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, int *errno) {
-    errno_t errCode = 0;
     int response = KAUTH_RESULT_DEFER;
     NuwaKextEvent *event = (NuwaKextEvent *)IOMallocAligned(sizeof(NuwaKextEvent), 2);
     if (event == nullptr) {
@@ -108,13 +112,26 @@ int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, in
     
     bzero(event, sizeof(NuwaKextEvent));
     event->eventType = kActionAuthProcessCreate;
-    errCode = fillEventInfo(event, ctx, vp);
-    if (errCode == 0 && m_eventDispatcher->postToAuthQueue(event)) {
-        response = getDecisionFromClient(event->vnodeID);
-        if (response == KAUTH_RESULT_DEFER || response == KAUTH_RESULT_ALLOW) {
-            UInt64 value = ((UInt64)event->mainProcess.pid << 32) | event->mainProcess.ppid;
-            m_cacheManager->setForAuthExecCache(event->vnodeID, value);
+    if (fillEventInfo(event, ctx, vp) == 0) {
+        NuwaKextProcType type = m_procListManager->containProcess(event->vnodeID);
+        switch (type) {
+            case kProcPlainType:
+                if (m_eventDispatcher->postToAuthQueue(event)) {
+                    response = getDecisionFromClient(event->vnodeID);
+                }
+                break;
+            case kProcWhiteType:
+                response = KAUTH_RESULT_ALLOW;
+                break;
+            case kProcBlackType:
+                response = KAUTH_RESULT_DENY;
+                break;
         }
+    }
+    
+    if (response == KAUTH_RESULT_DEFER || response == KAUTH_RESULT_ALLOW) {
+        UInt64 value = ((UInt64)event->mainProcess.pid << 32) | event->mainProcess.ppid;
+        m_cacheManager->setForAuthExecCache(event->vnodeID, value);
     }
     
     IOFreeAligned(event, sizeof(NuwaKextEvent));

@@ -32,6 +32,7 @@ protocol NuwaEventProviderProtocol {
     func stopProvider() -> Bool
     func setLogLevel(level: UInt8) -> Bool
     func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool
+    func addProcessToList(path: String?, vnodeID: UInt64, isWhite: Bool) -> Bool
 }
 
 class NuwaEventInfo: Codable {

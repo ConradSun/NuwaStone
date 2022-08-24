@@ -15,6 +15,7 @@ import Foundation
 @objc protocol SextXPCProtocol {
     func connectResponse(_ handler: @escaping (Bool) -> Void)
     func replyAuthEvent(pointer: UInt, isAllowed: Bool)
+    func addProcessPath(path: String, isWhite: Bool)
 }
 
 class XPCServer: NSObject {

@@ -18,6 +18,7 @@ class AlertWindowController: NSWindowController {
     var authEvent: NuwaEventInfo?
     var isAllowed = false
     var shouldAddToList = false
+    var isSubmitted = false
     var eventProvider: NuwaEventProviderProtocol?
     
     override func windowDidLoad() {
@@ -44,9 +45,18 @@ class AlertWindowController: NSWindowController {
     }
     
     @IBAction func submitButtonClicked(_ sender: NSButton) {
+        if isSubmitted {
+            return
+        }
+        
+        isSubmitted = true
         isAllowed = decisionPopUP.selectedItem?.title == "Allow"
         shouldAddToList = decisionCheckbox.state == .off
-        _ = eventProvider!.replyAuthEvent(eventID: authEvent!.eventID, isAllowed: isAllowed)
+        _ = eventProvider?.replyAuthEvent(eventID: authEvent!.eventID, isAllowed: isAllowed)
+        if shouldAddToList {
+            _ = eventProvider?.addProcessToList(path: authEvent!.procPath, vnodeID: authEvent!.eventID, isWhite: isAllowed)
+        }
         window?.close()
+        authEvent = nil
     }
 }

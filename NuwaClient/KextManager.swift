@@ -26,14 +26,14 @@ class KextManager {
                 break
             }
             
-            var result = IOServiceOpen(nextService, mach_task_self_, 0, &self.connection)
+            var result = IOServiceOpen(nextService, mach_task_self_, 0, &connection)
             if result != kIOReturnSuccess {
                 Logger(.Error, "Failed to open kext service [\(String.init(format: "0x%x", result))].")
                 IOObjectRelease(nextService)
                 break
             }
             
-            result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientOpen.rawValue, nil, 0, nil, nil)
+            result = IOConnectCallScalarMethod(connection, kNuwaUserClientOpen.rawValue, nil, 0, nil, nil)
             if result != kIOReturnSuccess {
                 Logger(.Error, "An error occurred while opening the connection [\(result)].")
                 IOObjectRelease(nextService)
@@ -42,7 +42,7 @@ class KextManager {
             
             IOObjectRelease(nextService)
             IONotificationPortDestroy(notificationPort)
-            self.isConnected = true
+            isConnected = true
             Logger(.Info, "Connected with kext successfully.")
         } while true
     }
@@ -257,7 +257,7 @@ extension KextManager: NuwaEventProviderProtocol {
     func setLogLevel(level: UInt8) -> Bool {
         nuwaLog.logLevel = level
         let scalar = [UInt64(level)]
-        let result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientSetLogLevel.rawValue, scalar, 1, nil, nil)
+        let result = IOConnectCallScalarMethod(connection, kNuwaUserClientSetLogLevel.rawValue, scalar, 1, nil, nil)
         if result != KERN_SUCCESS {
             Logger(.Error, "Failed to set log level for kext [\(String.init(format: "0x%x", result))].")
             return false
@@ -274,13 +274,33 @@ extension KextManager: NuwaEventProviderProtocol {
         let scalar = [eventID]
         var result = KERN_SUCCESS
         if isAllowed {
-            result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientAllowBinary.rawValue, scalar, 1, nil, nil)
+            result = IOConnectCallScalarMethod(connection, kNuwaUserClientAllowBinary.rawValue, scalar, 1, nil, nil)
         }
         else {
-            result = IOConnectCallScalarMethod(self.connection, kNuwaUserClientDenyBinary.rawValue, scalar, 1, nil, nil)
+            result = IOConnectCallScalarMethod(connection, kNuwaUserClientDenyBinary.rawValue, scalar, 1, nil, nil)
         }
         if result != KERN_SUCCESS {
             Logger(.Error, "Failed to reply auth event [\(String.init(format: "0x%x", result))].")
+            return false
+        }
+        return true
+    }
+    
+    func addProcessToList(path: String?, vnodeID: UInt64, isWhite: Bool) -> Bool {
+        if vnodeID == 0 {
+            return false
+        }
+        
+        let scalar = [vnodeID]
+        var result = KERN_SUCCESS
+        if isWhite {
+            result = IOConnectCallScalarMethod(connection, kNuwaUserClientWhiteProcess.rawValue, scalar, 1, nil, nil)
+        }
+        else {
+            result = IOConnectCallScalarMethod(connection, kNuwaUserClientBlackProcess.rawValue, scalar, 1, nil, nil)
+        }
+        if result != KERN_SUCCESS {
+            Logger(.Error, "Failed to add process to list [\(String.init(format: "0x%x", result))].")
             return false
         }
         return true

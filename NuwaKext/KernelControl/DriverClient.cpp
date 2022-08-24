@@ -34,6 +34,10 @@ bool DriverClient::start(IOService *provider) {
     if (m_cacheManager == nullptr) {
         return false;
     }
+    m_procListManager = ProcListManager::getInstance();
+    if (m_procListManager == nullptr) {
+        return false;
+    }
     m_eventDispatcher = EventDispatcher::getInstance();
     if (m_eventDispatcher == nullptr) {
         return false;
@@ -44,6 +48,7 @@ bool DriverClient::start(IOService *provider) {
 void DriverClient::stop(IOService *provider) {
     m_eventDispatcher = nullptr;
     m_cacheManager = nullptr;
+    m_procListManager = nullptr;
     m_driverService = nullptr;
     IOUserClient::stop(provider);
 }
@@ -165,6 +170,28 @@ IOReturn DriverClient::setLogLevel(OSObject* target, void* reference, IOExternal
     return kIOReturnSuccess;
 }
 
+IOReturn DriverClient::addWhiteProcess(OSObject* target, void* reference, IOExternalMethodArguments* arguments) {
+    DriverClient *me = OSDynamicCast(DriverClient, target);
+    if (me == nullptr) {
+        return kIOReturnBadArgument;
+    }
+    
+    UInt64 vnodeID = arguments->scalarInput[0];
+    me->m_procListManager->addProcess(vnodeID, true);
+    return kIOReturnSuccess;
+}
+
+IOReturn DriverClient::addBlackProcess(OSObject* target, void* reference, IOExternalMethodArguments* arguments) {
+    DriverClient *me = OSDynamicCast(DriverClient, target);
+    if (me == nullptr) {
+        return kIOReturnBadArgument;
+    }
+    
+    UInt64 vnodeID = arguments->scalarInput[0];
+    me->m_procListManager->addProcess(vnodeID, false);
+    return kIOReturnSuccess;
+}
+
 #pragma mark Method Resolution
 
 IOReturn DriverClient::externalMethod(UInt32 selector, IOExternalMethodArguments *arguments,
@@ -176,6 +203,8 @@ IOReturn DriverClient::externalMethod(UInt32 selector, IOExternalMethodArguments
         { &DriverClient::allowBinary, 1, 0, 0, 0 },
         { &DriverClient::denyBinary, 1, 0, 0, 0 },
         { &DriverClient::setLogLevel, 1, 0, 0, 0 },
+        { &DriverClient::addWhiteProcess, 1, 0, 0, 0 },
+        { &DriverClient::addBlackProcess, 1, 0, 0, 0 },
     };
 
     if (selector >= static_cast<UInt32>(kNuwaUserClientNMethods)) {

@@ -74,7 +74,7 @@ class ViewController: NSViewController {
         RunLoop.current.add(displayTimer, forMode: .default)
         displayTimer.fire()
         
-//        establishConnection()
+        establishConnection()
     }
 
     override var representedObject: Any? {

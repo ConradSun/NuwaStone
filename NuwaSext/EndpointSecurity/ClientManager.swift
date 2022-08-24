@@ -27,7 +27,7 @@ class ClientManager {
         let eventQueue = DispatchQueue(label: "com.nuwastone.sext.eventqueue")
         let result = es_new_client(&client) { _, message in
             eventQueue.sync {
-                self.dispatchMessage(message)
+                self.processMessage(message)
             }
         }
         
@@ -66,7 +66,7 @@ class ClientManager {
         esClient = nil
     }
     
-    func dispatchMessage(_ message: UnsafePointer<es_message_t>) {
+    func processMessage(_ message: UnsafePointer<es_message_t>) {
         let process = message.pointee.process.pointee
         var nuwaEvent = NuwaEventInfo()
         
@@ -106,25 +106,39 @@ class ClientManager {
             return
         }
         
+        dispatchEvent(event: nuwaEvent, message: message)
+    }
+    
+    func dispatchEvent(event: NuwaEventInfo, message: UnsafePointer<es_message_t>) {
         if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
             authQueue.async {
-                nuwaEvent.eventID = UInt64(UInt(bitPattern: message))
+                event.eventID = UInt64(UInt(bitPattern: message))
                 if XPCServer.shared.connection == nil {
-                    let result = es_respond_auth_result(self.esClient!, message, ES_AUTH_RESULT_ALLOW, false)
-                    if result != ES_RESPOND_RESULT_SUCCESS {
-                        Logger(.Warning, "Failed to respond auth event [\(result)].")
-                    }
+                    self.replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW)
+                    return
                 }
-                else {
-                    XPCServer.shared.sendAuthEvent(nuwaEvent)
-                    ResponseManager.shared.addESAuthEvent(eventID: nuwaEvent.eventID)
+                var isWhite = true
+                if ListManager.shared.containProcPath(path: event.procPath, isWhite: &isWhite) {
+                    let result = isWhite ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
+                    self.replyAuthEvent(message: message, result: result)
+                    Logger(.Info, "Process [\(event.procPath)] is contained in process list.")
+                    return
                 }
+                XPCServer.shared.sendAuthEvent(event)
+                ResponseManager.shared.addESAuthEvent(eventID: event.eventID)
             }
         }
         else if message.pointee.action_type == ES_ACTION_TYPE_NOTIFY {
             notifyQueue.sync {
-                XPCServer.shared.sendNotifyEvent(nuwaEvent)
+                XPCServer.shared.sendNotifyEvent(event)
             }
+        }
+    }
+    
+    func replyAuthEvent(message: UnsafePointer<es_message_t>, result: es_auth_result_t) {
+        let ret = es_respond_auth_result(self.esClient!, message, result, false)
+        if ret != ES_RESPOND_RESULT_SUCCESS {
+            Logger(.Warning, "Failed to respond auth event [\(ret)].")
         }
     }
 }

@@ -11,6 +11,9 @@
 		3A2305CC28ADD96E00F85A82 /* Alert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A2305CA28ADD96E00F85A82 /* Alert.xib */; };
 		3A2305CE28AE257F00F85A82 /* XPCServerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */; };
 		3A2305D128AF929100F85A82 /* ResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2305D028AF929100F85A82 /* ResponseManager.swift */; };
+		3A2C0D8728B35E41000D6B00 /* ListManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2C0D8628B35E41000D6B00 /* ListManager.swift */; };
+		3A2C0D8B28B39C55000D6B00 /* ProcListManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A2C0D8928B39C55000D6B00 /* ProcListManager.cpp */; };
+		3A2C0D8C28B39C55000D6B00 /* ProcListManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A2C0D8A28B39C55000D6B00 /* ProcListManager.hpp */; };
 		3A4A95E72897A8E900220EB7 /* SocketFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95E52897A8E900220EB7 /* SocketFilter.cpp */; };
 		3A4A95E82897A8E900220EB7 /* SocketFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A4A95E62897A8E900220EB7 /* SocketFilter.hpp */; };
 		3A4A95EC2897F1C600220EB7 /* SocketHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95EA2897F1C600220EB7 /* SocketHandler.cpp */; };
@@ -119,6 +122,9 @@
 		3A2305CA28ADD96E00F85A82 /* Alert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Alert.xib; sourceTree = "<group>"; };
 		3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCServerDelegate.swift; sourceTree = "<group>"; };
 		3A2305D028AF929100F85A82 /* ResponseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseManager.swift; sourceTree = "<group>"; };
+		3A2C0D8628B35E41000D6B00 /* ListManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListManager.swift; sourceTree = "<group>"; };
+		3A2C0D8928B39C55000D6B00 /* ProcListManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ProcListManager.cpp; sourceTree = "<group>"; };
+		3A2C0D8A28B39C55000D6B00 /* ProcListManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ProcListManager.hpp; sourceTree = "<group>"; };
 		3A3D921F28851DC6008F6E94 /* NuwaBridge.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NuwaBridge.hpp; sourceTree = "<group>"; };
 		3A4A95E2289773DE00220EB7 /* KextControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KextControl.swift; sourceTree = "<group>"; };
 		3A4A95E52897A8E900220EB7 /* SocketFilter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SocketFilter.cpp; sourceTree = "<group>"; };
@@ -209,6 +215,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3A2C0D8828B39C05000D6B00 /* ListManager */ = {
+			isa = PBXGroup;
+			children = (
+				3A2C0D8928B39C55000D6B00 /* ProcListManager.cpp */,
+				3A2C0D8A28B39C55000D6B00 /* ProcListManager.hpp */,
+			);
+			path = ListManager;
+			sourceTree = "<group>";
+		};
 		3A4A95E12897735500220EB7 /* ViewManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -238,6 +253,7 @@
 				3A6088F228A4A84500061A42 /* XPCServer.swift */,
 				3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */,
 				3A2305D028AF929100F85A82 /* ResponseManager.swift */,
+				3A2C0D8628B35E41000D6B00 /* ListManager.swift */,
 				3A6088E028A49B0D00061A42 /* main.swift */,
 				3A6088E228A49B0D00061A42 /* Info.plist */,
 				3A6088E328A49B0D00061A42 /* NuwaSext.entitlements */,
@@ -326,6 +342,7 @@
 				3A4A95E42897A88100220EB7 /* SocketFilter */,
 				3ABAFFA22879C27B00928C22 /* KauthController */,
 				3ABAFF9F2879C24900928C22 /* CacheManager */,
+				3A2C0D8828B39C05000D6B00 /* ListManager */,
 				3ABAFFA12879C26C00928C22 /* EventDispatcher */,
 				3ABAFFA32879C28600928C22 /* KernelControl */,
 				3AB13ABB287EC378004E1093 /* main.cpp */,
@@ -339,6 +356,7 @@
 			children = (
 				3ABAFFA62879C3FA00928C22 /* KextLogger.hpp */,
 				3AD5757D287C18C000C0C2BE /* KextCommon.hpp */,
+				3AF7723F2880308E009AC154 /* DriverCache.hpp */,
 			);
 			path = KextUtils;
 			sourceTree = "<group>";
@@ -348,7 +366,6 @@
 			children = (
 				3AF7723A28801567009AC154 /* CacheManager.cpp */,
 				3AF7723B28801567009AC154 /* CacheManager.hpp */,
-				3AF7723F2880308E009AC154 /* DriverCache.hpp */,
 			);
 			path = CacheManager;
 			sourceTree = "<group>";
@@ -404,6 +421,7 @@
 				3ABAFFA72879C3FA00928C22 /* KextLogger.hpp in Headers */,
 				3A4A95ED2897F1C600220EB7 /* SocketHandler.hpp in Headers */,
 				3AD5757E287C18C000C0C2BE /* KextCommon.hpp in Headers */,
+				3A2C0D8C28B39C55000D6B00 /* ProcListManager.hpp in Headers */,
 				3ADEF953287AE55E00DF7609 /* DriverService.hpp in Headers */,
 				3A4A95E82897A8E900220EB7 /* SocketFilter.hpp in Headers */,
 				3A5F3316287B145400A8F76E /* KauthController.hpp in Headers */,
@@ -586,6 +604,7 @@
 				3A6088F028A4A72300061A42 /* NuwaEvent.swift in Sources */,
 				3A2305D128AF929100F85A82 /* ResponseManager.swift in Sources */,
 				3A2305CE28AE257F00F85A82 /* XPCServerDelegate.swift in Sources */,
+				3A2C0D8728B35E41000D6B00 /* ListManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -629,6 +648,7 @@
 				3ABAFFAB2879C40A00928C22 /* DriverClient.cpp in Sources */,
 				3A4A95EC2897F1C600220EB7 /* SocketHandler.cpp in Sources */,
 				3ADAC529287D582C00DD8812 /* EventDispatcher.cpp in Sources */,
+				3A2C0D8B28B39C55000D6B00 /* ProcListManager.cpp in Sources */,
 				3AF7723C28801567009AC154 /* CacheManager.cpp in Sources */,
 				3A5F3315287B145400A8F76E /* KauthController.cpp in Sources */,
 				3AB13ABC287EC378004E1093 /* main.cpp in Sources */,

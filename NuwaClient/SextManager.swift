@@ -106,4 +106,12 @@ extension SextManager: NuwaEventProviderProtocol {
         sextProxy?.replyAuthEvent(pointer: UInt(eventID), isAllowed: isAllowed)
         return true
     }
+    
+    func addProcessToList(path: String?, vnodeID: UInt64, isWhite: Bool) -> Bool {
+        if path == nil {
+            return false
+        }
+        sextProxy?.addProcessPath(path: path!, isWhite: isWhite)
+        return true
+    }
 }
