@@ -10,15 +10,19 @@ import EndpointSecurity
 
 class ResponseManager {
     static let shared = ResponseManager()
-    var replyQueue = DispatchQueue(label: "com.nuwastone.sext.replyqueue", attributes: .concurrent)
+    let replyQueue = DispatchQueue(label: "com.nuwastone.sext.replyqueue", attributes: .concurrent)
+    let replyLock = NSLock()
     var underwayEvent = Set<UInt64>()
     
     func replyAuthEvent(pointer: UInt, isAllowed: Bool) {
+        replyLock.lock()
         guard underwayEvent.contains(UInt64(pointer)) else {
+            replyLock.unlock()
             return
         }
-        
         underwayEvent.remove(UInt64(pointer))
+        replyLock.unlock()
+        
         let message = UnsafePointer<es_message_t>.init(bitPattern: pointer)
         let decision = isAllowed ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
         let result = es_respond_auth_result(ClientManager.shared.esClient!, message!, decision, false)
@@ -37,13 +41,13 @@ class ResponseManager {
     }
     
     func addAuthEvent(eventID: UInt64) {
+        replyLock.lock()
         underwayEvent.update(with: eventID)
+        replyLock.unlock()
+        
         let waitTime = DispatchTime.now() + .milliseconds(MaxWaitTime)
         replyQueue.asyncAfter(deadline: waitTime) {
-            if self.underwayEvent.contains(eventID) {
-                Logger(.Warning, "Auto allow event [\(eventID)] for timeout.")
-                self.replyAuthEvent(pointer: UInt(eventID), isAllowed: true)
-            }
+            self.replyAuthEvent(pointer: UInt(eventID), isAllowed: true)
         }
     }
 }
