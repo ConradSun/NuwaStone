@@ -26,7 +26,7 @@ let PropSrcPath     = "From"
 let PropDstPath     = "Move to"
 let PropProtocol    = "Protocol"
 let MaxIPLength     = 41
-let MaxWaitTime     = 60000 //   ms
+let MaxWaitTime     = 30000 //   ms
 
 enum ESClientError: Error {
     case Success

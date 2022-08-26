@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import EndpointSecurity
+
 
 extension XPCServer {
     func encodeEventInfo(_ event: NuwaEventInfo) -> String {
@@ -48,14 +48,13 @@ extension XPCServer: SextXPCProtocol {
         handler(true)
     }
     
+    func setLogLevel(_ level: UInt8) {
+        nuwaLog.logLevel = level
+        Logger(.Info, "Log level is setted to \(nuwaLog)")
+    }
+    
     func replyAuthEvent(pointer: UInt, isAllowed: Bool) {
-        let message = UnsafePointer<es_message_t>.init(bitPattern: pointer)
-        let decision = isAllowed ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
-        let result = es_respond_auth_result(ClientManager.shared.esClient!, message!, decision, false)
-        if result != ES_RESPOND_RESULT_SUCCESS {
-            Logger(.Warning, "Failed to respond auth event [\(result)].")
-        }
-        ResponseManager.shared.underwayEvent.remove(UInt64(pointer))
+        ResponseManager.shared.replyAuthEvent(pointer: pointer, isAllowed: isAllowed)
     }
     
     func addProcessPath(path: String, isWhite: Bool) {

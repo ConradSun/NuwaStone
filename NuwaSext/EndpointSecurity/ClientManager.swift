@@ -14,13 +14,15 @@ class ClientManager {
     var initError = ESClientError.NewClientError
     let authQueue = DispatchQueue(label: "com.nuwastone.sext.authqueue", attributes: .concurrent)
     let notifyQueue = DispatchQueue(label: "com.nuwastone.sext.notifyqueue")
-    let subTypes = [ES_EVENT_TYPE_AUTH_EXEC,
-                              ES_EVENT_TYPE_NOTIFY_EXEC,
-                              ES_EVENT_TYPE_NOTIFY_EXIT,
-                              ES_EVENT_TYPE_NOTIFY_CREATE,
-                              ES_EVENT_TYPE_NOTIFY_UNLINK,
-                              ES_EVENT_TYPE_NOTIFY_RENAME,
-                              ES_EVENT_TYPE_NOTIFY_CLOSE]
+    let subTypes = [
+        ES_EVENT_TYPE_AUTH_EXEC,
+        ES_EVENT_TYPE_NOTIFY_EXEC,
+        ES_EVENT_TYPE_NOTIFY_EXIT,
+        ES_EVENT_TYPE_NOTIFY_CREATE,
+        ES_EVENT_TYPE_NOTIFY_UNLINK,
+        ES_EVENT_TYPE_NOTIFY_RENAME,
+        ES_EVENT_TYPE_NOTIFY_CLOSE
+    ]
     
     func startMonitoring() {
         var client: OpaquePointer?
@@ -50,6 +52,7 @@ class ClientManager {
         
         esClient = client
         initError = .Success
+        Logger(.Debug, "Create esclient successfully.")
     }
     
     func stopMonitoring() {
@@ -64,6 +67,7 @@ class ClientManager {
             Logger(.Error, "Failed to delete ES client.")
         }
         esClient = nil
+        Logger(.Debug, "Delete esclient successfully.")
     }
     
     func processMessage(_ message: UnsafePointer<es_message_t>) {
@@ -125,7 +129,7 @@ class ClientManager {
                     return
                 }
                 XPCServer.shared.sendAuthEvent(event)
-                ResponseManager.shared.addESAuthEvent(eventID: event.eventID)
+                ResponseManager.shared.addAuthEvent(eventID: event.eventID)
             }
         }
         else if message.pointee.action_type == ES_ACTION_TYPE_NOTIFY {

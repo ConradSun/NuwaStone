@@ -14,12 +14,14 @@ import Foundation
 
 @objc protocol SextXPCProtocol {
     func connectResponse(_ handler: @escaping (Bool) -> Void)
+    func setLogLevel(_ level: UInt8)
     func replyAuthEvent(pointer: UInt, isAllowed: Bool)
     func addProcessPath(path: String, isWhite: Bool)
 }
 
 class XPCServer: NSObject {
     static let shared = XPCServer()
+    var nuwaLog = NuwaLog()
     var listener: NSXPCListener?
     var connection: NSXPCConnection?
     var delegate: ManagerXPCProtocol?
@@ -36,7 +38,6 @@ class XPCServer: NSObject {
         newListener.resume()
         listener = newListener
         Logger(.Info, "Start XPC listener successfully.")
-        NSLog("Start XPC listener successfully.")
     }
     
     func connectToSext(bundle: Bundle, delegate: ManagerXPCProtocol, handler: @escaping (Bool) -> Void) {

@@ -96,6 +96,8 @@ extension SextManager: NuwaEventProviderProtocol {
     
     func setLogLevel(level: UInt8) -> Bool {
         nuwaLog.logLevel = level
+        sextProxy?.setLogLevel(level)
+        Logger(.Info, "Log level is setted to \(nuwaLog)")
         return true
     }
     

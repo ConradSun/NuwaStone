@@ -35,5 +35,5 @@ func Logger<T>(_ level: NuwaLogLevel, _ message: T, file: String = #file, lineNu
         return
     }
     let fileName = (file as NSString).lastPathComponent
-    print("\(level) \(fileName): \(lineNumber) [-] \(message)")
+    NSLog("[\(level)] \(fileName): \(lineNumber) [-] \(message)")
 }
