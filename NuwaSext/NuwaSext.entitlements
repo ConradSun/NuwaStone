@@ -4,5 +4,9 @@
 <dict>
 	<key>com.apple.developer.endpoint-security.client</key>
 	<true/>
+	<key>com.apple.developer.networking.networkextension</key>
+	<array>
+		<string>content-filter-provider-systemextension</string>
+	</array>
 </dict>
 </plist>

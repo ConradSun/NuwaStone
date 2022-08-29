@@ -9,6 +9,8 @@ import Foundation
 import IOKit.kext
 
 class KextControl {
+    static let shared = KextControl()
+
     func loadExtension() -> Bool {
         let kextUrl = URL(fileURLWithPath: "Contents/PlugIns/NuwaStone.kext", relativeTo: Bundle.main.bundleURL)
         let result = KextManagerLoadKextWithURL(kextUrl as CFURL, nil)

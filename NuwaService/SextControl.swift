@@ -7,24 +7,23 @@
 
 import Foundation
 import SystemExtensions
+import NetworkExtension
 
 @available(macOS 10.16, *)
 class SextControl: NSObject, OSSystemExtensionRequestDelegate {
+    static let shared = SextControl()
     let controlQueue = DispatchQueue(label: "com.nuwastone.sextcontrol.queue")
-    var isConnected = false
-    var isFinished = false
+    var toActivate = false
     
     func activateExtension() {
-        isConnected = false
-        isFinished = false
+        toActivate = true
         let request = OSSystemExtensionRequest.activationRequest(forExtensionWithIdentifier: SextBundle, queue: controlQueue)
         request.delegate = self
         OSSystemExtensionManager.shared.submitRequest(request)
     }
     
     func deactivateExtension() {
-        isConnected = false
-        isFinished = false
+        toActivate = false
         let request = OSSystemExtensionRequest.deactivationRequest(forExtensionWithIdentifier: SextBundle, queue: controlQueue)
         request.delegate = self
         OSSystemExtensionManager.shared.submitRequest(request)
@@ -41,12 +40,70 @@ class SextControl: NSObject, OSSystemExtensionRequestDelegate {
     
     func request(_ request: OSSystemExtensionRequest, didFinishWithResult result: OSSystemExtensionRequest.Result) {
         Logger(.Info, "Request to control \(request.identifier) succeeded [\(result)].")
-        isConnected = true
-        isFinished = true
+        controlQueue.async {
+            if !self.switchNEStatus(self.toActivate) {
+                Logger(.Error, "Failed to activate network extension.")
+                exit(EXIT_FAILURE)
+            }
+            else {
+                Logger(.Info, "Activate network extension successfully.")
+            }
+        }
     }
     
     func request(_ request: OSSystemExtensionRequest, didFailWithError error: Error) {
         Logger(.Info, "Request to control \(request.identifier) failed [\(error)].")
-        isFinished = true
+        exit(EXIT_FAILURE)
+    }
+}
+
+@available(macOS 10.16, *)
+extension SextControl {
+    func switchNEStatus(_ enable: Bool) -> Bool {
+        let manager = NEFilterManager.shared()
+        let semaphore = DispatchSemaphore(value: 0)
+        var isError = false
+        
+        manager.loadFromPreferences { error in
+            if error != nil {
+                isError = true
+                Logger(.Error, "Failed to load preferences for network extension [\(error!)]")
+            }
+            semaphore.signal()
+        }
+        if semaphore.wait(timeout: .distantFuture) == .timedOut || isError {
+            return false
+        }
+        
+        if enable {
+            Logger(.Info, "Activate network extension now...")
+            if manager.providerConfiguration == nil {
+                let config = NEFilterProviderConfiguration()
+                config.username = "NuwaService"
+                config.organization = "NuwaStone"
+                config.filterPackets = false
+                config.filterSockets = true
+                manager.providerConfiguration = config
+            }
+            manager.isEnabled = true
+        }
+        else {
+            Logger(.Info, "Deactivate network extension now...")
+            manager.isEnabled = false
+        }
+        
+        isError = false
+        manager.saveToPreferences { error in
+            if error != nil {
+                isError = true
+                Logger(.Error, "Failed to save preferences for network extension [\(error!)]")
+            }
+            semaphore.signal()
+        }
+        if semaphore.wait(timeout: .distantFuture) == .timedOut || isError {
+            return false
+        }
+        
+        return true
     }
 }

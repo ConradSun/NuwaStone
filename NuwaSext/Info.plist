@@ -4,5 +4,13 @@
 <dict>
 	<key>NSEndpointSecurityMachServiceName</key>
 	<string>$(PRODUCT_NAME)</string>
+	<key>NetworkExtension</key>
+	<dict>
+		<key>NEProviderClasses</key>
+		<dict>
+			<key>com.apple.networkextension.filter-data</key>
+			<string>$(PRODUCT_MODULE_NAME).ContentFilter</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

@@ -10,26 +10,16 @@ import Cocoa
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        var result = true
+        XPCConnection.shared.startListener()
+        
         if #available(macOS 10.16, *) {
-            let control = SextControl()
-            control.activateExtension()
-            while !control.isFinished {
-                usleep(1000)
+            SextControl.shared.activateExtension()
+        }
+        else {
+            if !KextControl.shared.loadExtension() {
+                Logger(.Error, "Failed to load kernel extension.")
+                exit(EXIT_FAILURE)
             }
-            result = control.isConnected
-        }
-        else {
-            let control = KextControl()
-            result = control.loadExtension()
-        }
-
-        if result {
-            XPCConnection.shared.startListener()
-        }
-        else {
-            Logger(.Error, "Failed to load extension.")
-            exit(EXIT_FAILURE)
         }
     }
 

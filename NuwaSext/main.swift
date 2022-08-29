@@ -6,13 +6,16 @@
 //
 
 import Foundation
+import NetworkExtension
 
 autoreleasepool {
-    XPCServer.shared.startListener()
+    NEProvider.startSystemExtensionMode()
+    
     ClientManager.shared.startMonitoring()
     if ClientManager.shared.initError != .Success {
         exit(EXIT_FAILURE)
     }
+    XPCServer.shared.startListener()
 }
 
 dispatchMain()
