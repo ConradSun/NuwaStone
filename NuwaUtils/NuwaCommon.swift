@@ -25,6 +25,8 @@ let PropFilePath    = "File Path"
 let PropSrcPath     = "From"
 let PropDstPath     = "Move to"
 let PropProtocol    = "Protocol"
+let PropLocalAddr   = "Local"
+let PropRemoteAddr  = "Remote"
 let MaxIPLength     = 41
 let MaxWaitTime     = 30000 //   ms
 
@@ -53,6 +55,18 @@ fileprivate func getProcArgs(pid: Int32, args: UnsafeMutablePointer<CChar>, size
         return false
     }
     return true
+}
+
+func getProcPpid(pid: Int32, eventHandler: @escaping (Int32, Int32) -> Void) {
+    var info = proc_bsdinfo()
+    guard proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &info, Int32(MemoryLayout<proc_bsdinfo>.size)) > 0 else {
+        if errno != ESRCH {
+            Logger(.Debug, "Failed to get proc [\(pid)] ppid for errno [\(errno)]")
+        }
+        eventHandler(0, errno)
+        return
+    }
+    eventHandler(Int32(info.pbi_ppid), 0)
 }
 
 func getProcPath(pid: Int32, eventHandler: @escaping (String, Int32) -> Void) {

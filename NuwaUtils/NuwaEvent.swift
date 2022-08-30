@@ -8,6 +8,12 @@
 import Foundation
 import AppKit
 
+enum NuwaProtocolType: String {
+    case Unsupport
+    case Tcp
+    case Udp
+}
+
 enum NuwaEventType: String, Codable {
     case TypeNil
     case FileCreate
@@ -101,10 +107,20 @@ class NuwaEventInfo: Codable {
         let port = (UInt16(data0) << 8) | UInt16(data1)
         inet_ntop(Int32(socketAddr.pointee.sa_family), &socketAddr.pointee.sa_data.2, &ip, socklen_t(MaxIPLength))
         if isLocal {
-            props.updateValue("\(String(cString: ip)) : \(port)", forKey: "local")
+            props.updateValue("\(String(cString: ip)) : \(port)", forKey: PropLocalAddr)
         }
         else {
-            props.updateValue("\(String(cString: ip)) : \(port)", forKey: "remote")
+            props.updateValue("\(String(cString: ip)) : \(port)", forKey: PropRemoteAddr)
+        }
+    }
+    
+    func fillProcPpid(errorHandler: @escaping (Int32) -> Void) {
+        getProcPpid(pid: pid) { ppid, error in
+            if error != 0 {
+                errorHandler(error)
+                return
+            }
+            self.ppid = ppid
         }
     }
     

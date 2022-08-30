@@ -86,12 +86,12 @@ class ViewController: NSViewController {
     @IBAction func controlButtonClicked(_ sender: NSButton) {
         isStarted = !isStarted
         if isStarted {
+            ProcessCache.shared.initProcCache();
             if !eventProvider!.startProvider() {
                 alertWithError(error: "Failed to connect extension.")
                 return
             }
             
-            ProcessCache.shared.initProcCache();
             controlButton.image = NSImage(named: "stop")
             controlLabel.stringValue = "stop"
         }

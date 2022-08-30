@@ -10,8 +10,8 @@ import Foundation
 
 class KextManager {
     private var notificationPort: IONotificationPortRef?
-    private let authEventQueue = DispatchQueue(label: "com.nuwastone.auth.queue")
-    private let notifyEventQueue = DispatchQueue(label: "com.nuwastone.notify.queue")
+    private let authEventQueue = DispatchQueue(label: "com.nuwastone.client.authqueue")
+    private let notifyEventQueue = DispatchQueue(label: "com.nuwastone.client.notifyqueue")
     private lazy var proxy = XPCConnection.shared.connection?.remoteObjectProxy as? DaemonXPCProtocol
     static let shared = KextManager()
     var connection: io_connect_t = 0
@@ -174,13 +174,13 @@ extension KextManager {
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.localAddr, isLocal: true)
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.remoteAddr, isLocal: false)
             if event.netAccess.protocol == IPPROTO_TCP {
-                nuwaEvent.props[PropProtocol] = "tcp"
+                nuwaEvent.props[PropProtocol] = NuwaProtocolType.Tcp.rawValue
             }
             else if event.netAccess.protocol == IPPROTO_UDP {
-                nuwaEvent.props[PropProtocol] = "udp"
+                nuwaEvent.props[PropProtocol] = NuwaProtocolType.Udp.rawValue
             }
             else {
-                nuwaEvent.props[PropProtocol] = "unsupport"
+                nuwaEvent.props[PropProtocol] = NuwaProtocolType.Unsupport.rawValue
             }
         default:
             break

@@ -8,6 +8,7 @@
 import Foundation
 
 struct ProcessCacheInfo {
+    var ppid: Int32
     var path: String
     var args: [String]
     var cwd: String
@@ -15,6 +16,7 @@ struct ProcessCacheInfo {
     var codeSign: String?
     
     init() {
+        ppid = 0
         path = ""
         args = [String]()
         cwd = ""
@@ -69,6 +71,9 @@ class ProcessCache {
         for i in 0 ..< count {
             let event = NuwaEventInfo()
             event.pid = pidArray[Int(i)]
+            event.fillProcPpid { error in
+                return
+            }
             event.fillProcPath { error in
                 if error == EPERM {
                     self.proxy?.getProcessPath(pid: event.pid, eventHandler: { path, error in
@@ -93,12 +98,12 @@ class ProcessCache {
             event.fillBundleIdentifier()
             event.fillCodeSign()
             updateCache(event)
-            Logger(.Debug, "Add process [\(event.pid): \(event.procPath)] to cache.")
         }
     }
     
     func updateCache(_ event: NuwaEventInfo) {
         var info = ProcessCacheInfo()
+        info.ppid = event.ppid
         info.path = event.procPath
         info.args = event.procArgs
         info.cwd = event.procCWD
@@ -106,14 +111,17 @@ class ProcessCache {
         info.codeSign = event.props[PropCodeSign]
         
         cacheDict[event.pid] = info
+        Logger(.Debug, "Add process [\(event.pid): \(event.procPath)] to cache.")
     }
     
     func getFromCache(_ event: inout NuwaEventInfo) {
         let info = cacheDict[event.pid]
         if info == nil {
-            Logger(.Debug, "Failed to find proc [\(event.pid)] info in cache.")
+            Logger(.Warning, "Failed to find proc [\(event.pid)] info in cache.")
             return
         }
+        
+        event.ppid = info!.ppid
         event.procPath = info!.path
         event.procCWD = info!.cwd
         event.procArgs = info!.args

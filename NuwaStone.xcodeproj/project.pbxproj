@@ -44,6 +44,7 @@
 		3A60897F28A6562200061A42 /* com.nuwastone.service.eps.systemextension in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 3A6088DC28A49B0D00061A42 /* com.nuwastone.service.eps.systemextension */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3A60898328A6565000061A42 /* NuwaService.app in Resources */ = {isa = PBXBuildFile; fileRef = 3A60896528A64C1B00061A42 /* NuwaService.app */; };
 		3A6EAD8F28B8CA0400174980 /* ContentFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6EAD8E28B8CA0400174980 /* ContentFilter.swift */; };
+		3A82D2C228BCDD86006E30DA /* FlowParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A82D2C128BCDD86006E30DA /* FlowParser.swift */; };
 		3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */; };
 		3AB13ABC287EC378004E1093 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AB13ABB287EC378004E1093 /* main.cpp */; };
 		3AB9B38128926BF80078B45D /* NuwaCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB9B37E289268690078B45D /* NuwaCommon.swift */; };
@@ -152,6 +153,7 @@
 		3A60897028A64C1C00061A42 /* NuwaService.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NuwaService.entitlements; sourceTree = "<group>"; };
 		3A60897428A64D0B00061A42 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3A6EAD8E28B8CA0400174980 /* ContentFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentFilter.swift; sourceTree = "<group>"; };
+		3A82D2C128BCDD86006E30DA /* FlowParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowParser.swift; sourceTree = "<group>"; };
 		3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewDelegate.swift; sourceTree = "<group>"; };
 		3AB13ABB287EC378004E1093 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3AB9B37C2892656D0078B45D /* XPCConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCConnection.swift; sourceTree = "<group>"; };
@@ -292,6 +294,7 @@
 			isa = PBXGroup;
 			children = (
 				3A6EAD8E28B8CA0400174980 /* ContentFilter.swift */,
+				3A82D2C128BCDD86006E30DA /* FlowParser.swift */,
 			);
 			path = NetworkExtension;
 			sourceTree = "<group>";
@@ -610,6 +613,7 @@
 				3A6EAD8F28B8CA0400174980 /* ContentFilter.swift in Sources */,
 				3A6088FF28A520BD00061A42 /* EventParser.swift in Sources */,
 				3A60890028A520C100061A42 /* ClientManager.swift in Sources */,
+				3A82D2C228BCDD86006E30DA /* FlowParser.swift in Sources */,
 				3A6088F128A4A75100061A42 /* NuwaCommon.swift in Sources */,
 				3A6088F428A4AA6800061A42 /* NuwaLogger.swift in Sources */,
 				3A6088E128A49B0D00061A42 /* main.swift in Sources */,
