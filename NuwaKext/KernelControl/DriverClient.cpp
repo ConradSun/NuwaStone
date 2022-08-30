@@ -34,10 +34,6 @@ bool DriverClient::start(IOService *provider) {
     if (m_cacheManager == nullptr) {
         return false;
     }
-    m_procListManager = ProcListManager::getInstance();
-    if (m_procListManager == nullptr) {
-        return false;
-    }
     m_eventDispatcher = EventDispatcher::getInstance();
     if (m_eventDispatcher == nullptr) {
         return false;
@@ -48,7 +44,6 @@ bool DriverClient::start(IOService *provider) {
 void DriverClient::stop(IOService *provider) {
     m_eventDispatcher = nullptr;
     m_cacheManager = nullptr;
-    m_procListManager = nullptr;
     m_driverService = nullptr;
     IOUserClient::stop(provider);
 }
@@ -141,7 +136,7 @@ IOReturn DriverClient::allowBinary(OSObject *target, void *reference, IOExternal
     }
     
     UInt64 vnodeID = arguments->scalarInput[0];
-    me->m_cacheManager->setForAuthResultCache(vnodeID, KAUTH_RESULT_DEFER);
+    me->m_cacheManager->updateAuthResultCache(vnodeID, KAUTH_RESULT_DEFER);
     return kIOReturnSuccess;
 }
 
@@ -152,7 +147,7 @@ IOReturn DriverClient::denyBinary(OSObject *target, void *reference, IOExternalM
     }
     
     UInt64 vnodeID = arguments->scalarInput[0];
-    me->m_cacheManager->setForAuthResultCache(vnodeID, KAUTH_RESULT_DENY);
+    me->m_cacheManager->updateAuthResultCache(vnodeID, KAUTH_RESULT_DENY);
     return kIOReturnSuccess;
 }
 
@@ -177,7 +172,7 @@ IOReturn DriverClient::addWhiteProcess(OSObject* target, void* reference, IOExte
     }
     
     UInt64 vnodeID = arguments->scalarInput[0];
-    me->m_procListManager->addProcess(vnodeID, true);
+    me->m_cacheManager->updateProcAuthList(vnodeID, true);
     return kIOReturnSuccess;
 }
 
@@ -188,7 +183,7 @@ IOReturn DriverClient::addBlackProcess(OSObject* target, void* reference, IOExte
     }
     
     UInt64 vnodeID = arguments->scalarInput[0];
-    me->m_procListManager->addProcess(vnodeID, false);
+    me->m_cacheManager->updateProcAuthList(vnodeID, false);;
     return kIOReturnSuccess;
 }
 

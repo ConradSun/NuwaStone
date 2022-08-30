@@ -9,7 +9,6 @@
 #define DriverClient_hpp
 
 #include "CacheManager.hpp"
-#include "ProcListManager.hpp"
 #include "DriverService.hpp"
 #include "EventDispatcher.hpp"
 #include <sys/kauth.h>
@@ -66,7 +65,6 @@ public:
     
 private:
     CacheManager *m_cacheManager;
-    ProcListManager *m_procListManager;
     EventDispatcher *m_eventDispatcher;
     DriverService *m_driverService;
 };

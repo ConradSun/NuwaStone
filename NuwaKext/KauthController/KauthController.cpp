@@ -28,15 +28,11 @@ bool KauthController::init() {
     if (m_eventDispatcher == nullptr) {
         return false;
     }
-    m_procListManager = ProcListManager::getInstance();
-    if (m_procListManager == nullptr) {
-        return false;
-    }
+    
     return true;
 }
 
 void KauthController::free() {
-    m_procListManager = nullptr;
     m_eventDispatcher = nullptr;
     m_cacheManager = nullptr;
     OSObject::free();
@@ -90,7 +86,7 @@ int KauthController::getDecisionFromClient(UInt64 vnodeID) {
     
     errCode = msleep((void *)vnodeID, nullptr, 0, "Wait for reply", &time);
     if (errCode == 0) {
-        decision = m_cacheManager->getFromAuthResultCache(vnodeID);
+        decision = m_cacheManager->obtainAuthResultCache(vnodeID);
     }
     else if (errCode == EWOULDBLOCK) {
         decision = KAUTH_RESULT_DEFER;
@@ -113,7 +109,7 @@ int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, in
     bzero(event, sizeof(NuwaKextEvent));
     event->eventType = kActionAuthProcessCreate;
     if (fillEventInfo(event, ctx, vp) == 0) {
-        NuwaKextProcType type = m_procListManager->containProcess(event->vnodeID);
+        NuwaKextProcType type = (NuwaKextProcType)m_cacheManager->obtainProcAuthList(event->vnodeID);
         switch (type) {
             case kProcPlainType:
                 if (m_eventDispatcher->postToAuthQueue(event)) {
@@ -131,7 +127,7 @@ int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, in
     
     if (response == KAUTH_RESULT_DEFER || response == KAUTH_RESULT_ALLOW) {
         UInt64 value = ((UInt64)event->mainProcess.pid << 32) | event->mainProcess.ppid;
-        m_cacheManager->setForAuthExecCache(event->vnodeID, value);
+        m_cacheManager->updateAuthExecCache(event->vnodeID, value);
     }
     
     IOFreeAligned(event, sizeof(NuwaKextEvent));
@@ -172,7 +168,7 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
     
     errCode = fillEventInfo(event, ctx, vp);
     if (action == KAUTH_FILEOP_EXEC) {
-        UInt64 result = m_cacheManager->getFromAuthExecCache(event->vnodeID);
+        UInt64 result = m_cacheManager->obtainAuthExecCache(event->vnodeID);
         if ((result >> 32) != event->mainProcess.pid) {
             event->mainProcess.pid = result >> 32;
             event->mainProcess.ppid = (result << 32) >> 32;

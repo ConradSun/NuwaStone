@@ -129,7 +129,7 @@ errno_t SocketHandler::fillNetEventInfo(NuwaKextEvent *netEvent, NuwaKextAction 
 void SocketHandler::fillInfoFromCache(NuwaKextEvent *netEvent) {
     if (netEvent->mainProcess.pid == 0) {
         UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | (UInt8)netEvent->netAccess.localAddr.sa_data[1];
-        UInt64 value = m_cacheManager->getFromPortBindCache(port);
+        UInt64 value = m_cacheManager->obtainPortBindCache(port);
         if (value != 0) {
             netEvent->mainProcess.pid = value >> 32;
             netEvent->mainProcess.ppid = (value << 32) >> 32;
@@ -149,7 +149,7 @@ void SocketHandler::bindSocketCallback(socket_t socket, const sockaddr *to) {
         UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | (UInt8)netEvent->netAccess.localAddr.sa_data[1];
         UInt64 value = ((UInt64)netEvent->mainProcess.pid << 32) | netEvent->mainProcess.ppid;
         if (port != 0) {
-            m_cacheManager->setForPortBindCache(port, value);
+            m_cacheManager->updatePortBindCache(port, value);
         }
     }
     IOFreeAligned(netEvent, sizeof(NuwaKextEvent));

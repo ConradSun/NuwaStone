@@ -10,7 +10,6 @@
 
 #include "CacheManager.hpp"
 #include "EventDispatcher.hpp"
-#include "ProcListManager.hpp"
 #include <sys/vnode.h>
 #include <sys/kauth.h>
 
@@ -47,7 +46,6 @@ private:
     kauth_listener_t m_vnodeListener;
     kauth_listener_t m_fileopListener;
     CacheManager *m_cacheManager;
-    ProcListManager *m_procListManager;
     EventDispatcher *m_eventDispatcher;
     SInt32 m_activeEventCount;
 };

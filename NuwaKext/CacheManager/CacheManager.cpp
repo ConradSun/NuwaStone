@@ -21,6 +21,8 @@ bool CacheManager::init() {
     if (m_authResultCache == nullptr) {
         return false;
     }
+    m_authResultCache->zero = 0;
+    
     m_authExecCache = new DriverCache<UInt64, UInt64>(kMaxCacheItems);
     if (m_authExecCache == nullptr) {
         delete m_authResultCache;
@@ -28,6 +30,7 @@ bool CacheManager::init() {
         return false;
     }
     m_authExecCache->zero = 0;
+    
     m_portBindCache = new DriverCache<UInt16, UInt64>(kMaxCacheItems);
     if (m_portBindCache == nullptr) {
         delete m_authResultCache;
@@ -37,6 +40,18 @@ bool CacheManager::init() {
         return false;
     }
     m_portBindCache->zero = 0;
+    
+    m_procAuthList = new DriverCache<UInt64, UInt8>(kMaxCacheItems);
+    if (m_procAuthList == nullptr) {
+        delete m_authResultCache;
+        m_authResultCache = nullptr;
+        delete m_authExecCache;
+        m_authExecCache = nullptr;
+        delete m_portBindCache;
+        m_portBindCache = nullptr;
+        return false;
+    }
+    m_procAuthList->zero = 0;
 
     return true;
 }
@@ -48,6 +63,8 @@ void CacheManager::free() {
     m_authExecCache = nullptr;
     delete m_portBindCache;
     m_portBindCache = nullptr;
+    delete m_procAuthList;
+    m_procAuthList = nullptr;
 }
 
 CacheManager *CacheManager::getInstance() {
@@ -73,7 +90,7 @@ void CacheManager::release() {
     m_sharedInstance = nullptr;
 }
 
-bool CacheManager::setForAuthResultCache(UInt64 vnodeID, UInt8 result) {
+bool CacheManager::updateAuthResultCache(UInt64 vnodeID, UInt8 result) {
     if (vnodeID == 0) {
         return false;
     }
@@ -85,7 +102,7 @@ bool CacheManager::setForAuthResultCache(UInt64 vnodeID, UInt8 result) {
     return false;
 }
 
-bool CacheManager::setForAuthExecCache(UInt64 vnodeID, UInt64 value) {
+bool CacheManager::updateAuthExecCache(UInt64 vnodeID, UInt64 value) {
     if (vnodeID == 0) {
         return false;
     }
@@ -93,7 +110,7 @@ bool CacheManager::setForAuthExecCache(UInt64 vnodeID, UInt64 value) {
     return m_authExecCache->setObject(vnodeID, value);
 }
 
-bool CacheManager::setForPortBindCache(UInt16 port, UInt64 value) {
+bool CacheManager::updatePortBindCache(UInt16 port, UInt64 value) {
     if (port == 0) {
         return false;
     }
@@ -101,14 +118,23 @@ bool CacheManager::setForPortBindCache(UInt16 port, UInt64 value) {
     return m_portBindCache->setObject(port, value);
 }
 
-UInt8 CacheManager::getFromAuthResultCache(UInt64 vnodeID) {
+bool CacheManager::updateProcAuthList(UInt64 vnodeID, bool isWhite) {
+    if (vnodeID == 0) {
+        return false;
+    }
+    
+    UInt8 procType = isWhite ? kProcWhiteType : kProcBlackType;
+    return m_procAuthList->setObject(vnodeID, procType);
+}
+
+UInt8 CacheManager::obtainAuthResultCache(UInt64 vnodeID) {
     if (vnodeID == 0) {
         return 0;
     }
     return m_authResultCache->getObject(vnodeID);
 }
 
-UInt64 CacheManager::getFromAuthExecCache(UInt64 vnodeID) {
+UInt64 CacheManager::obtainAuthExecCache(UInt64 vnodeID) {
     if (vnodeID == 0) {
         return 0;
     }
@@ -116,10 +142,20 @@ UInt64 CacheManager::getFromAuthExecCache(UInt64 vnodeID) {
     return m_authExecCache->getObject(vnodeID);
 }
 
-UInt64 CacheManager::getFromPortBindCache(UInt16 port) {
+UInt64 CacheManager::obtainPortBindCache(UInt16 port) {
     if (port == 0) {
         return 0;
     }
     
     return m_portBindCache->getObject(port);
+}
+
+UInt8 CacheManager::obtainProcAuthList(UInt64 vnodeID) {
+    UInt8 type = kProcPlainType;
+    if (vnodeID == 0) {
+        return type;
+    }
+    
+    type = m_procAuthList->getObject(vnodeID);
+    return type;
 }
