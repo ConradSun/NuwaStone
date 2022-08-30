@@ -38,6 +38,35 @@ class ProcessCache {
         return (pidArray, count)
     }
     
+    private func fillCacheInfo(_ pointer: UnsafeMutablePointer<NuwaEventInfo>) {
+        pointer.pointee.fillProcPpid { error in
+            return
+        }
+        pointer.pointee.fillProcPath { error in
+            if error == EPERM {
+                self.proxy?.getProcessPath(pid: pointer.pointee.pid, eventHandler: { path, error in
+                    pointer.pointee.procPath = path
+                })
+            }
+        }
+        pointer.pointee.fillProcCurrentDir { error in
+            if error == EPERM {
+                self.proxy?.getProcessCurrentDir(pid: pointer.pointee.pid, eventHandler: { cwd, error in
+                    pointer.pointee.procCWD = cwd
+                })
+            }
+        }
+        pointer.pointee.fillProcArgs { error in
+            if error == EPERM {
+                self.proxy?.getProcessArgs(pid: pointer.pointee.pid, eventHandler: { args, error in
+                    pointer.pointee.procArgs = args
+                })
+            }
+        }
+        pointer.pointee.fillBundleIdentifier()
+        pointer.pointee.fillCodeSign()
+    }
+    
     init() {
         Timer.scheduledTimer(timeInterval: 1800, target: self, selector: #selector(runloopTask), userInfo: nil, repeats: true)
     }
@@ -69,34 +98,9 @@ class ProcessCache {
         }
         
         for i in 0 ..< count {
-            let event = NuwaEventInfo()
+            var event = NuwaEventInfo()
             event.pid = pidArray[Int(i)]
-            event.fillProcPpid { error in
-                return
-            }
-            event.fillProcPath { error in
-                if error == EPERM {
-                    self.proxy?.getProcessPath(pid: event.pid, eventHandler: { path, error in
-                        event.procPath = path
-                    })
-                }
-            }
-            event.fillProcCurrentDir { error in
-                if error == EPERM {
-                    self.proxy?.getProcessCurrentDir(pid: event.pid, eventHandler: { cwd, error in
-                        event.procCWD = cwd
-                    })
-                }
-            }
-            event.fillProcArgs { error in
-                if error == EPERM {
-                    self.proxy?.getProcessArgs(pid: event.pid, eventHandler: { args, error in
-                        event.procArgs = args
-                    })
-                }
-            }
-            event.fillBundleIdentifier()
-            event.fillCodeSign()
+            fillCacheInfo(&event)
             updateCache(event)
         }
     }
@@ -118,6 +122,7 @@ class ProcessCache {
         let info = cacheDict[event.pid]
         if info == nil {
             Logger(.Warning, "Failed to find proc [\(event.pid)] info in cache.")
+            fillCacheInfo(&event)
             return
         }
         
