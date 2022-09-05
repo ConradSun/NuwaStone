@@ -1,14 +1,28 @@
-#!/bin/zsh
+#！/bin/zsh
 
-cd .
-codesign -f -s "-" ./NuwaClient.app/Contents/Resources/NuwaService.app/
-codesign -f -s "-" ./NuwaClient.app
 cp -r ./NuwaClient.app /Applications
-
 sudo cp ./com.nuwastone.service.plist /Library/LaunchDaemons
 
-sudo chown -R root:wheel /Applications/NuwaClient.app/Contents/Resources/NuwaService.app/Contents/PlugIns/NuwaStone.kext
-sudo chmod -R 755 /Applications/NuwaClient.app/Contents/Resources/NuwaService.app/Contents/PlugIns/NuwaStone.kext
+version=$(uname -r)
+version=${version:0:2}
+version=$(($version-4))
 
-sudo kextload /Applications/NuwaClient.app/Contents/Resources/NuwaService.app/Contents/PlugIns/NuwaStone.kext
+if (($version < 12))
+then
+    echo "Unsupport OS."
+    exit -1
+else
+    if (($version < 16))
+    then
+        echo "Using kext as backend."
+        codesign -f -s "-" /Applications/NuwaClient.app/Contents/Resources/NuwaService.app/
+        codesign -f -s "-" /Applications/NuwaClient.app
+        sudo chown -R root:wheel /Applications/NuwaClient.app/Contents/Resources/NuwaService.app/Contents/PlugIns/NuwaStone.kext
+        sudo chmod -R 755 /Applications/NuwaClient.app/Contents/Resources/NuwaService.app/Contents/PlugIns/NuwaStone.kext
+        sudo kextload /Applications/NuwaClient.app/Contents/Resources/NuwaService.app/Contents/PlugIns/NuwaStone.kext
+    else
+        echo "Using sext as backend."
+    fi
+fi
+
 sudo launchctl load /Library/LaunchDaemons/com.nuwastone.service.plist
