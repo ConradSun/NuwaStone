@@ -11,7 +11,6 @@
 #include "KextLogger.hpp"
 #include <sys/proc.h>
 #include <sys/errno.h>
-#include <netinet/in.h>
 
 OSDefineMetaClassAndStructors(SocketFilter, OSObject);
 
@@ -45,19 +44,17 @@ bool SocketFilter::registerSocketFilter(sflt_filter *filter, UInt32 handle, UInt
     filter->sf_attach = socket_attach_callback;
     filter->sf_detach = socket_detach_callback;
     filter->sf_bind = socket_bind_callback;
+    filter->sf_notify = socket_notify_callback;
+    filter->sf_data_in = socket_data_in_callback;
     
     switch (proto) {
         case IPPROTO_TCP:
             type = SOCK_STREAM;
-            filter->sf_connect_in = socket_connect_in_callback;
             filter->sf_connect_out = socket_connect_out_callback;
             break;
-            
         case IPPROTO_UDP:
             type = SOCK_DGRAM;
-            filter->sf_notify = socket_notify_callback;
             break;
-            
         default:
             break;
     }
@@ -171,28 +168,28 @@ errno_t socket_bind_callback(void *cookie, socket_t socket, const struct sockadd
 }
 
 extern "C"
-errno_t socket_connect_in_callback(void *cookie, socket_t socket, const struct sockaddr *from) {
-    if (socket == nullptr || cookie == nullptr) {
-        return EINVAL;
-    }
-    
-    SocketHandler *handler = reinterpret_cast<SocketHandler *>(cookie);
-    OSIncrementAtomic(&s_activeEventCount);
-    handler->connectSocketCallback(socket, from, nullptr);
-    OSDecrementAtomic(&s_activeEventCount);
-    
-    return 0;
-}
-
-extern "C"
 errno_t socket_connect_out_callback(void *cookie, socket_t socket, const struct sockaddr *to) {
     if (socket == nullptr || cookie == nullptr) {
         return EINVAL;
     }
+
+    SocketHandler *handler = reinterpret_cast<SocketHandler *>(cookie);
+    OSIncrementAtomic(&s_activeEventCount);
+    handler->connectSocketCallback(socket, to);
+    OSDecrementAtomic(&s_activeEventCount);
+
+    return 0;
+}
+
+extern "C"
+errno_t socket_data_in_callback(void *cookie, socket_t socket, const struct sockaddr *from, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags) {
+    if (socket == nullptr || cookie == nullptr || data == nullptr) {
+        return EINVAL;
+    }
     
     SocketHandler *handler = reinterpret_cast<SocketHandler *>(cookie);
     OSIncrementAtomic(&s_activeEventCount);
-    handler->connectSocketCallback(socket, nullptr, to);
+    handler->inboundSocketCallback(socket, data, from);
     OSDecrementAtomic(&s_activeEventCount);
     
     return 0;

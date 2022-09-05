@@ -8,8 +8,16 @@
 #ifndef KextCommon_h
 #define KextCommon_h
 
-#include <libkern/OSTypes.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <netinet/in.h>
+#include <libkern/OSTypes.h>
+
+#ifdef __cplusplus
+}
+#endif
 
 static const char *kSocketFilterName = "NuwaStone.socketfilter";
 static const UInt32 kBaseFilterHandle = 0xFEEDBEEF;

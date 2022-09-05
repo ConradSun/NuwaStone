@@ -6,11 +6,12 @@
 //
 
 #include "SocketHandler.hpp"
+#include "DNSResolver.hpp"
 #include "KextLogger.hpp"
 #include <sys/proc.h>
 #include <sys/kauth.h>
 #include <sys/vnode.h>
-#include <netinet/in.h>
+#include <sys/kpi_mbuf.h>
 
 OSDefineMetaClassAndStructors(SocketHandler, OSObject);
 
@@ -127,32 +128,33 @@ errno_t SocketHandler::fillNetEventInfo(NuwaKextEvent *netEvent, NuwaKextAction 
 }
 
 void SocketHandler::fillInfoFromCache(NuwaKextEvent *netEvent) {
-    if (netEvent->mainProcess.pid == 0) {
+    if (netEvent->mainProcess.pid != 0) {
+        return;
+    }
+    
+    netEvent->mainProcess = m_procInfo;
+    if (m_procInfo.pid == 0 && netEvent->netAccess.protocol == IPPROTO_TCP) {
         UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | (UInt8)netEvent->netAccess.localAddr.sa_data[1];
         UInt64 value = m_cacheManager->obtainPortBindCache(port);
-        if (value != 0) {
-            netEvent->mainProcess.pid = value >> 32;
-            netEvent->mainProcess.ppid = (value << 32) >> 32;
-        }
+        netEvent->mainProcess.pid = value >> 32;
+        netEvent->mainProcess.ppid = (value << 32) >> 32;
     }
 }
 
 void SocketHandler::bindSocketCallback(socket_t socket, const sockaddr *to) {
     m_socket = socket;
     m_localAddr = *to;
-    NuwaKextEvent *netEvent = (NuwaKextEvent *)IOMallocAligned(sizeof(NuwaKextEvent), 2);
-    if (netEvent == nullptr) {
+    NuwaKextEvent netEvent = {};
+    if (fillNetEventInfo(&netEvent, kActionNotifyNetworkAccess) != 0) {
         return;
     }
     
-    if (fillNetEventInfo(netEvent, kActionNotifyNetworkAccess) == 0) {
-        UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | (UInt8)netEvent->netAccess.localAddr.sa_data[1];
-        UInt64 value = ((UInt64)netEvent->mainProcess.pid << 32) | netEvent->mainProcess.ppid;
-        if (port != 0) {
-            m_cacheManager->updatePortBindCache(port, value);
-        }
+    m_procInfo = netEvent.mainProcess;
+    if (netEvent.netAccess.protocol == IPPROTO_TCP) {
+        UInt16 port = ((UInt16)netEvent.netAccess.localAddr.sa_data[0] << 8) | (UInt8)netEvent.netAccess.localAddr.sa_data[1];
+        UInt64 value = ((UInt64)netEvent.mainProcess.pid << 32) | netEvent.mainProcess.ppid;
+        m_cacheManager->updatePortBindCache(port, value);
     }
-    IOFreeAligned(netEvent, sizeof(NuwaKextEvent));
 }
 
 void SocketHandler::notifySocketCallback(socket_t socket, sflt_event_t event) {
@@ -170,26 +172,53 @@ void SocketHandler::notifySocketCallback(socket_t socket, sflt_event_t event) {
     IOFreeAligned(netEvent, sizeof(NuwaKextEvent));
 }
 
-void SocketHandler::connectSocketCallback(socket_t socket, const sockaddr *from, const sockaddr *to) {
+void SocketHandler::connectSocketCallback(socket_t socket, const sockaddr *to) {
+    NuwaKextEvent netEvent = {};
+    if (fillBasicInfo(&netEvent, kActionNotifyNetworkAccess) == 0) {
+        m_procInfo = netEvent.mainProcess;
+    }
+}
+
+void SocketHandler::inboundSocketCallback(socket_t socket, mbuf_t *data, const sockaddr *from) {
     m_socket = socket;
+    mbuf_t packet = *data;
     if (from != nullptr) {
         m_remoteAddr = *from;
     }
-    if (to != nullptr) {
-        m_localAddr = *to;
+    
+    NuwaKextEvent event = {};
+    if (fillConnectionInfo(&event) != 0) {
+        Logger(LOG_ERROR, "Failed to fill info for inbound flow.")
+        return;
+    }
+    UInt16 port = ((UInt16)m_remoteAddr.sa_data[0] << 8) | (UInt8)m_remoteAddr.sa_data[1];
+    if (port != 53) {
+        return;
+    }
+    
+    while (packet != nullptr && mbuf_type(packet) != MBUF_TYPE_DATA) {
+        packet = mbuf_next(packet);
+    }
+    size_t size = mbuf_len(packet);
+    DNSResolver resolver((char *)mbuf_data(packet), size, event.netAccess.protocol);
+    DNSResolveResults results = resolver.getResults();
+    if (results.count == 0 || results.results == nullptr) {
+        return;
     }
     
     NuwaKextEvent *netEvent = (NuwaKextEvent *)IOMallocAligned(sizeof(NuwaKextEvent), 2);
     if (netEvent == nullptr) {
         return;
     }
-    
-    bzero(netEvent, sizeof(NuwaKextEvent));
-    if (fillNetEventInfo(netEvent, kActionNotifyNetworkAccess) == 0) {
-        fillInfoFromCache(netEvent);
-        if (netEvent->mainProcess.pid != 0) {
+    for (UInt16 i = 0; i < results.count; ++i) {
+        bzero(netEvent, sizeof(NuwaKextEvent));
+        if (fillBasicInfo(netEvent, kActionNotifyDnsQuery) == 0) {
+            netEvent->dnsQuery.queryStatus = results.results[i].replyCode;
+            strlcpy(netEvent->dnsQuery.domainName, results.results[i].domainName, kMaxNameLength);
+            strlcpy(netEvent->dnsQuery.queryResult, results.results[i].queryResult, kMaxPathLength);
             m_eventDispatcher->postToNotifyQueue(netEvent);
         }
     }
+    
     IOFreeAligned(netEvent, sizeof(NuwaKextEvent));
 }

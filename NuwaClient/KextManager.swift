@@ -182,6 +182,10 @@ extension KextManager {
             else {
                 nuwaEvent.props[PropProtocol] = NuwaProtocolType.Unsupport.rawValue
             }
+        case kActionNotifyDnsQuery:
+            nuwaEvent.eventType = .DNSQuery
+            nuwaEvent.props[PropDomainName] = String(cString: &event.dnsQuery.domainName.0)
+            nuwaEvent.props[PropReplyResult] = String(cString: &event.dnsQuery.queryResult.0)
         default:
             break
         }

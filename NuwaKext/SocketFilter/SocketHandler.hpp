@@ -8,10 +8,9 @@
 #ifndef SocketHandler_hpp
 #define SocketHandler_hpp
 
-#include <sys/kpi_socketfilter.h>
 #include "CacheManager.hpp"
 #include "EventDispatcher.hpp"
-
+#include <sys/kpi_socketfilter.h>
 
 class SocketHandler : public OSObject {
     OSDeclareDefaultStructors(SocketHandler);
@@ -25,7 +24,8 @@ public:
     
     void notifySocketCallback(socket_t socket, sflt_event_t event);
     void bindSocketCallback(socket_t socket, const sockaddr *to);
-    void connectSocketCallback(socket_t socket, const sockaddr *from, const sockaddr *to);
+    void connectSocketCallback(socket_t socket, const sockaddr *to);
+    void inboundSocketCallback(socket_t socket, mbuf_t *data, const sockaddr *from);
     
 private:
     errno_t fillBasicInfo(NuwaKextEvent *netEvent, NuwaKextAction action);
@@ -36,6 +36,7 @@ private:
     socket_t m_socket;
     sockaddr m_localAddr;
     sockaddr m_remoteAddr;
+    NuwaKextProc m_procInfo;
     
     CacheManager *m_cacheManager;
     EventDispatcher *m_eventDispatcher;
