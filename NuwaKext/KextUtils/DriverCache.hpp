@@ -85,6 +85,7 @@ public:
                         last->next = current->next;
                     }
                     IOFreeAligned(current, sizeof(Entry));
+                    current = nullptr;
                     OSDecrementAtomic(&m_itemCount);
                 }
                 result = true;
@@ -95,7 +96,7 @@ public:
         }
 
         if (current == nullptr && value != zero) {
-            result = addObject(bucket, key, value);
+            result = addObject(bucket, last, key, value);
         }
 
         lck_mtx_unlock(m_lock);
@@ -112,7 +113,7 @@ private:
         Entry *entry;
     };
     
-    bool addObject(Bucket *bucket, const KeyType &key, const ValueType &value) {
+    bool addObject(Bucket *bucket, Entry *last, const KeyType &key, const ValueType &value) {
         if (m_itemCount >= m_capacity) {
             lck_mtx_unlock(m_lock);
             if (m_itemCount >= m_capacity) {
@@ -128,7 +129,13 @@ private:
         entry->key = key;
         entry->value = value;
         entry->next = nullptr;
-        bucket->entry = entry;
+        
+        if (bucket->entry == nullptr) {
+            bucket->entry = entry;
+        }
+        else {
+            last->next = entry;
+        }
         OSIncrementAtomic(&m_itemCount);
         return true;
     }
