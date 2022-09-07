@@ -42,9 +42,24 @@ class ContentFilter: NEFilterDataProvider {
             return .allow()
         }
         
+        guard let remote = socketFlow.remoteEndpoint as? NWHostEndpoint else {
+            return .allow()
+        }
         if socketFlow.socketProtocol == IPPROTO_TCP || socketFlow.socketProtocol == IPPROTO_UDP {
             parseNewFlow(flow: socketFlow)
         }
+        if remote.port == "53" {
+            return NEFilterNewFlowVerdict.filterDataVerdict(withFilterInbound: true, peekInboundBytes: Int(INT_MAX), filterOutbound: false, peekOutboundBytes: 0)
+        }
+        return .allow()
+    }
+    
+    override func handleInboundData(from flow: NEFilterFlow, readBytesStartOffset offset: Int, readBytes: Data) -> NEFilterDataVerdict {
+        guard let socketFlow = flow as? NEFilterSocketFlow else {
+            return .allow()
+        }
+        parseInboundData(flow: socketFlow, data: readBytes)
+        
         return .allow()
     }
 }

@@ -18,6 +18,7 @@
 		3A4A95ED2897F1C600220EB7 /* SocketHandler.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A4A95EB2897F1C600220EB7 /* SocketHandler.hpp */; };
 		3A5F3315287B145400A8F76E /* KauthController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A5F3313287B145400A8F76E /* KauthController.cpp */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
 		3A5F3316287B145400A8F76E /* KauthController.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A5F3314287B145400A8F76E /* KauthController.hpp */; };
+		3A5F643828C72A460013C60E /* DNSResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5F643728C72A460013C60E /* DNSResolver.swift */; };
 		3A605AE828A9EE8200059F9E /* XPCServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6088F228A4A84500061A42 /* XPCServer.swift */; };
 		3A605AEA28A9F88300059F9E /* SextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A605AE928A9F88300059F9E /* SextManager.swift */; };
 		3A6088DE28A49B0D00061A42 /* libEndpointSecurity.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6088DD28A49B0D00061A42 /* libEndpointSecurity.tbd */; };
@@ -133,6 +134,7 @@
 		3A4A95EB2897F1C600220EB7 /* SocketHandler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SocketHandler.hpp; sourceTree = "<group>"; };
 		3A5F3313287B145400A8F76E /* KauthController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = KauthController.cpp; sourceTree = "<group>"; };
 		3A5F3314287B145400A8F76E /* KauthController.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = KauthController.hpp; sourceTree = "<group>"; };
+		3A5F643728C72A460013C60E /* DNSResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSResolver.swift; sourceTree = "<group>"; };
 		3A605AE928A9F88300059F9E /* SextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SextManager.swift; sourceTree = "<group>"; };
 		3A6088DC28A49B0D00061A42 /* com.nuwastone.service.eps.systemextension */ = {isa = PBXFileReference; explicitFileType = "wrapper.system-extension"; includeInIndex = 0; path = com.nuwastone.service.eps.systemextension; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A6088DD28A49B0D00061A42 /* libEndpointSecurity.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libEndpointSecurity.tbd; path = usr/lib/libEndpointSecurity.tbd; sourceTree = SDKROOT; };
@@ -288,6 +290,7 @@
 			children = (
 				3A6EAD8E28B8CA0400174980 /* ContentFilter.swift */,
 				3A82D2C128BCDD86006E30DA /* FlowParser.swift */,
+				3A5F643728C72A460013C60E /* DNSResolver.swift */,
 			);
 			path = NetworkExtension;
 			sourceTree = "<group>";
@@ -602,6 +605,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3A6088FE28A520BB00061A42 /* XPCServer.swift in Sources */,
+				3A5F643828C72A460013C60E /* DNSResolver.swift in Sources */,
 				3A6EAD8F28B8CA0400174980 /* ContentFilter.swift in Sources */,
 				3A6088FF28A520BD00061A42 /* EventParser.swift in Sources */,
 				3A60890028A520C100061A42 /* ClientManager.swift in Sources */,

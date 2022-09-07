@@ -8,6 +8,7 @@
 import Foundation
 
 struct ProcessCacheInfo {
+    var user: String
     var ppid: Int32
     var path: String
     var args: [String]
@@ -16,6 +17,7 @@ struct ProcessCacheInfo {
     var codeSign: String?
     
     init() {
+        user = ""
         ppid = 0
         path = ""
         args = [String]()
@@ -39,30 +41,10 @@ class ProcessCache {
     }
     
     private func fillCacheInfo(_ pointer: UnsafeMutablePointer<NuwaEventInfo>) {
-        pointer.pointee.fillProcPpid { error in
-            return
-        }
-        pointer.pointee.fillProcPath { error in
-            if error == EPERM {
-                self.proxy?.getProcessPath(pid: pointer.pointee.pid, eventHandler: { path, error in
-                    pointer.pointee.procPath = path
-                })
-            }
-        }
-        pointer.pointee.fillProcCurrentDir { error in
-            if error == EPERM {
-                self.proxy?.getProcessCurrentDir(pid: pointer.pointee.pid, eventHandler: { cwd, error in
-                    pointer.pointee.procCWD = cwd
-                })
-            }
-        }
-        pointer.pointee.fillProcArgs { error in
-            if error == EPERM {
-                self.proxy?.getProcessArgs(pid: pointer.pointee.pid, eventHandler: { args, error in
-                    pointer.pointee.procArgs = args
-                })
-            }
-        }
+        pointer.pointee.fillProcPpid {_ in }
+        pointer.pointee.fillProcPath {_ in }
+        pointer.pointee.fillProcCurrentDir {_ in }
+        pointer.pointee.fillProcArgs {_ in }
         pointer.pointee.fillBundleIdentifier()
         pointer.pointee.fillCodeSign()
     }
@@ -107,6 +89,7 @@ class ProcessCache {
     
     func updateCache(_ event: NuwaEventInfo) {
         var info = ProcessCacheInfo()
+        info.user = event.user
         info.ppid = event.ppid
         info.path = event.procPath
         info.args = event.procArgs
@@ -121,12 +104,13 @@ class ProcessCache {
     func getFromCache(_ event: inout NuwaEventInfo) {
         let info = cacheDict[event.pid]
         if info == nil {
-            Logger(.Warning, "Failed to find proc [\(event.pid)] info in cache.")
+            Logger(.Debug, "Failed to find proc [\(event.pid)] info in cache.")
             fillCacheInfo(&event)
-            updateCache(event)
+            // updateCache(event)
             return
         }
         
+        event.user = info!.user
         event.ppid = info!.ppid
         event.procPath = info!.path
         event.procCWD = info!.cwd
