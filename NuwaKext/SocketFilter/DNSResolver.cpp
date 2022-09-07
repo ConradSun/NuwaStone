@@ -91,7 +91,7 @@ bool DNSResolver::parseDomainName(const char *nameBegin, char *domainName, UInt1
     while (parseBegin < parseEnd && *parseBegin != endSymbol) {
         if (*parseBegin == offsetSymbol) {
             domainName[nameLen++] = '.';
-            occupyCount = occupyCount == 0 ? (parseBegin - nameBegin) : occupyCount;
+            occupyCount = occupyCount == 0 ? (parseBegin - nameBegin + 1) : occupyCount;
             m_parseIndex += occupyCount;
             return parseDomainName(parseBegin, domainName+nameLen, nameSize-nameLen);
         }
@@ -184,6 +184,7 @@ bool DNSResolver::parseReplyItem(DNSParseResult *result) {
             break;
         case kDNSType_CNAME:
             parseDomainName(messageBegin, result->queryResult, kMaxPathLength);
+            m_parseIndex -= info.length;
             Logger(LOG_DEBUG, "The replied result is canonical name [%s].", result->queryResult)
             break;
         case kDNSType_AAAA:
