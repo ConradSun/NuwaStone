@@ -110,7 +110,9 @@ class ProcessCache {
             return
         }
         
-        event.user = info!.user
+        if event.user.isEmpty {
+            event.user = info!.user
+        }
         event.ppid = info!.ppid
         event.procPath = info!.path
         event.procCWD = info!.cwd
