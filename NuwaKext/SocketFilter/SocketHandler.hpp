@@ -26,6 +26,7 @@ public:
     void bindSocketCallback(socket_t socket, const sockaddr *to);
     void connectSocketCallback(socket_t socket, const sockaddr *to);
     void inboundSocketCallback(socket_t socket, mbuf_t *data, const sockaddr *from);
+    void outboundSocketCallback(socket_t socket, const sockaddr *to);
     
 private:
     errno_t fillBasicInfo(NuwaKextEvent *netEvent, NuwaKextAction action);

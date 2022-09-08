@@ -23,6 +23,7 @@ bool SocketHandler::init() {
     }
     
     m_socket = nullptr;
+    bzero(&m_procInfo, sizeof(NuwaKextProc));
     bzero(&m_localAddr, sizeof(sockaddr));
     bzero(&m_remoteAddr, sizeof(sockaddr));
     
@@ -133,9 +134,21 @@ void SocketHandler::fillInfoFromCache(NuwaKextEvent *netEvent) {
     }
     
     netEvent->mainProcess = m_procInfo;
-    if (m_procInfo.pid == 0 && netEvent->netAccess.protocol == IPPROTO_TCP) {
-        UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | (UInt8)netEvent->netAccess.localAddr.sa_data[1];
-        UInt64 value = m_cacheManager->obtainPortBindCache(port);
+    if (m_procInfo.pid != 0) {
+        return;
+    }
+    
+    if (netEvent->eventType == kActionNotifyNetworkAccess) {
+        if (netEvent->netAccess.protocol == IPPROTO_TCP) {
+            UInt16 port = ((UInt16)netEvent->netAccess.localAddr.sa_data[0] << 8) | (UInt8)netEvent->netAccess.localAddr.sa_data[1];
+            UInt64 value = m_cacheManager->obtainPortBindCache(port);
+            netEvent->mainProcess.pid = value >> 32;
+            netEvent->mainProcess.ppid = (value << 32) >> 32;
+        }
+    }
+    else if (netEvent->eventType == kActionNotifyDnsQuery) {
+        UInt64 addr = *(UInt64 *)&netEvent->netAccess.remoteAddr.sa_data[2];
+        UInt64 value = m_cacheManager->obtainDnsOutCache(addr);
         netEvent->mainProcess.pid = value >> 32;
         netEvent->mainProcess.ppid = (value << 32) >> 32;
     }
@@ -151,7 +164,7 @@ void SocketHandler::bindSocketCallback(socket_t socket, const sockaddr *to) {
     
     m_procInfo = netEvent.mainProcess;
     if (netEvent.netAccess.protocol == IPPROTO_TCP) {
-        UInt16 port = ((UInt16)netEvent.netAccess.localAddr.sa_data[0] << 8) | (UInt8)netEvent.netAccess.localAddr.sa_data[1];
+        UInt16 port = ((UInt16)m_localAddr.sa_data[0] << 8) | (UInt8)m_localAddr.sa_data[1];
         UInt64 value = ((UInt64)netEvent.mainProcess.pid << 32) | netEvent.mainProcess.ppid;
         m_cacheManager->updatePortBindCache(port, value);
     }
@@ -211,8 +224,12 @@ void SocketHandler::inboundSocketCallback(socket_t socket, mbuf_t *data, const s
         return;
     }
     for (UInt16 i = 0; i < results.count; ++i) {
+        if (strlen(results.results[i].queryResult) == 0) {
+            continue;
+        }
         bzero(netEvent, sizeof(NuwaKextEvent));
         if (fillBasicInfo(netEvent, kActionNotifyDnsQuery) == 0) {
+            fillInfoFromCache(netEvent);
             netEvent->dnsQuery.queryStatus = results.results[i].replyCode;
             strlcpy(netEvent->dnsQuery.domainName, results.results[i].domainName, kMaxNameLength);
             strlcpy(netEvent->dnsQuery.queryResult, results.results[i].queryResult, kMaxPathLength);
@@ -221,4 +238,25 @@ void SocketHandler::inboundSocketCallback(socket_t socket, mbuf_t *data, const s
     }
     
     IOFreeAligned(netEvent, sizeof(NuwaKextEvent));
+}
+
+void SocketHandler::outboundSocketCallback(socket_t socket, const sockaddr *to) {
+    m_socket = socket;
+    if (to != nullptr) {
+        m_remoteAddr = *to;
+    }
+    
+    NuwaKextEvent event = {};
+    if (fillBasicInfo(&event, kActionNotifyDnsQuery) != 0) {
+        Logger(LOG_ERROR, "Failed to fill info for outbound flow.")
+        return;
+    }
+    
+    UInt16 port = ((UInt16)m_remoteAddr.sa_data[0] << 8) | (UInt8)m_remoteAddr.sa_data[1];
+    if (port != 53) {
+        return;
+    }
+    UInt64 addr = *(UInt64 *)&m_remoteAddr.sa_data[2];
+    UInt64 value = ((UInt64)event.mainProcess.pid << 32) | event.mainProcess.ppid;
+    m_cacheManager->updateDnsOutCache(addr, value);
 }

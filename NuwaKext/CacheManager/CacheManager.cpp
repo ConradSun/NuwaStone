@@ -41,6 +41,18 @@ bool CacheManager::init() {
     }
     m_portBindCache->zero = 0;
     
+    m_dnsOutCache = new DriverCache<UInt64, UInt64>(kMaxCacheItems);
+    if (m_dnsOutCache == nullptr) {
+        delete m_authResultCache;
+        m_authResultCache = nullptr;
+        delete m_authExecCache;
+        m_authExecCache = nullptr;
+        delete m_portBindCache;
+        m_portBindCache = nullptr;
+        return false;
+    }
+    m_dnsOutCache->zero = 0;
+    
     m_procAuthList = new DriverCache<UInt64, UInt8>(kMaxCacheItems);
     if (m_procAuthList == nullptr) {
         delete m_authResultCache;
@@ -49,6 +61,8 @@ bool CacheManager::init() {
         m_authExecCache = nullptr;
         delete m_portBindCache;
         m_portBindCache = nullptr;
+        delete m_dnsOutCache;
+        m_dnsOutCache = nullptr;
         return false;
     }
     m_procAuthList->zero = 0;
@@ -63,6 +77,8 @@ void CacheManager::free() {
     m_authExecCache = nullptr;
     delete m_portBindCache;
     m_portBindCache = nullptr;
+    delete m_dnsOutCache;
+    m_dnsOutCache = nullptr;
     delete m_procAuthList;
     m_procAuthList = nullptr;
 }
@@ -118,6 +134,14 @@ bool CacheManager::updatePortBindCache(UInt16 port, UInt64 value) {
     return m_portBindCache->setObject(port, value);
 }
 
+bool CacheManager::updateDnsOutCache(UInt64 addr, UInt64 value) {
+    if (addr == 0) {
+        return false;
+    }
+    
+    return m_dnsOutCache->setObject(addr, value);
+}
+
 bool CacheManager::updateProcAuthList(UInt64 vnodeID, bool isWhite) {
     if (vnodeID == 0) {
         return false;
@@ -148,6 +172,14 @@ UInt64 CacheManager::obtainPortBindCache(UInt16 port) {
     }
     
     return m_portBindCache->getObject(port);
+}
+
+UInt64 CacheManager::obtainDnsOutCache(UInt64 addr) {
+    if (addr == 0) {
+        return 0;
+    }
+    
+    return m_dnsOutCache->getObject(addr);
 }
 
 UInt8 CacheManager::obtainProcAuthList(UInt64 vnodeID) {

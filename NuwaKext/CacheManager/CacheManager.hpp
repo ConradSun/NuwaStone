@@ -34,6 +34,9 @@ public:
     // Called when update the cache for port bind event.
     bool updatePortBindCache(UInt16 port, UInt64 value);
     
+    // Called when update the cache for outbound flow.
+    bool updateDnsOutCache(UInt64 addr, UInt64 value);
+    
     // Called when add process to white/black list.
     bool updateProcAuthList(UInt64 vnodeID, bool isWhite);
     
@@ -46,6 +49,9 @@ public:
     // Called when obtain the result from port bind cache.
     UInt64 obtainPortBindCache(UInt16 port);
     
+    // Called when obtain the result outbound cache.
+    UInt64 obtainDnsOutCache(UInt64 addr);
+    
     // Called when check whether the process path within white/black list.
     UInt8 obtainProcAuthList(UInt64 vnodeID);
     
@@ -57,6 +63,7 @@ private:
     DriverCache<UInt64, UInt8> *m_authResultCache;
     DriverCache<UInt64, UInt64> *m_authExecCache;
     DriverCache<UInt16, UInt64> *m_portBindCache;
+    DriverCache<UInt64, UInt64> *m_dnsOutCache;
     DriverCache<UInt64, UInt8> *m_procAuthList;
 };
 

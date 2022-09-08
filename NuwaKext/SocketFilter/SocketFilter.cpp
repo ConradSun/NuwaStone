@@ -46,6 +46,7 @@ bool SocketFilter::registerSocketFilter(sflt_filter *filter, UInt32 handle, UInt
     filter->sf_bind = socket_bind_callback;
     filter->sf_notify = socket_notify_callback;
     filter->sf_data_in = socket_data_in_callback;
+    filter->sf_data_out = socket_data_out_callback;
     
     switch (proto) {
         case IPPROTO_TCP:
@@ -190,6 +191,20 @@ errno_t socket_data_in_callback(void *cookie, socket_t socket, const struct sock
     SocketHandler *handler = reinterpret_cast<SocketHandler *>(cookie);
     OSIncrementAtomic(&s_activeEventCount);
     handler->inboundSocketCallback(socket, data, from);
+    OSDecrementAtomic(&s_activeEventCount);
+    
+    return 0;
+}
+
+extern "C"
+errno_t socket_data_out_callback(void *cookie, socket_t socket, const struct sockaddr *to, mbuf_t *data, mbuf_t *control, sflt_data_flag_t flags) {
+    if (socket == nullptr || cookie == nullptr) {
+        return EINVAL;
+    }
+    
+    SocketHandler *handler = reinterpret_cast<SocketHandler *>(cookie);
+    OSIncrementAtomic(&s_activeEventCount);
+    handler->outboundSocketCallback(socket, to);
     OSDecrementAtomic(&s_activeEventCount);
     
     return 0;
