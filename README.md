@@ -2,7 +2,7 @@
 <p align="center">
     <div align="center"><img src=https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/nuwa.png width=138  /></div>
     <h2 align="center">NuwaStone</h2>
-    <div align="center">A macOS behavior audit system with scope of files, processes and network events.</div>
+    <div align="center">A macOS behavior audit system with scope of file, process and network events.</div>
 </p>
 
 <p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/NuwaStone.png"></p>
@@ -18,12 +18,12 @@ The kext uses Kauth & SocketFilter for event collection and behavior auditing.
 The sext uses Endpoint Security & Network Extension for event collection and behavior auditing.
 
 ## Installation
->1. Build 'NuwaClient' target in Xcode proejct
->2. Copy it to the 'Scripts' folder
->3. Run 'Scripts/install.sh' in Terminal
+>1. Download the installation package [here](https://github.com/ConradSun/NuwaStone/releases).
+>2. Then double-click *NuwaStone-vxx.pkg* to follow the guide.
+>3. Close the installation guide.
 
 ## Uninstallation
->1. Run 'Scripts/uninstall.sh' in Terminal
+>1. Select 'Uninstall NuwaStone' from the status bar menu of *NuwaClient* application.
 
 ## Attention
 NuwaStone wont't let unsigned app run without your authorization, but the app will run just this time if you do not authorize within 30 seconds.
