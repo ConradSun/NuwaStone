@@ -161,6 +161,11 @@ class ViewController: NSViewController {
     @IBAction func clearMenuItemSelected(_ sender: NSMenuItem) {
         clearButtonClicked(clearButton)
     }
+    
+    @IBAction func uninstallMenuItemSelected(_ sender: NSMenuItem) {
+        let proxy = XPCConnection.shared.connection?.remoteObjectProxy as! DaemonXPCProtocol
+        proxy.launchUninstaller()
+    }
 }
 
 extension ViewController {

@@ -15,6 +15,7 @@ import Foundation
     func getProcessPath(pid: Int32, eventHandler: @escaping (String, Int32) -> Void)
     func getProcessCurrentDir(pid: Int32, eventHandler: @escaping (String, Int32) -> Void)
     func getProcessArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void)
+    func launchUninstaller()
 }
 
 class XPCConnection: NSObject {
@@ -103,5 +104,22 @@ extension XPCConnection: DaemonXPCProtocol {
     
     func getProcessArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void) {
         getProcArgs(pid: pid, eventHandler: eventHandler)
+    }
+    
+    func launchUninstaller() {
+        Logger(.Info, "launchUninstaller")
+        let url = URL(fileURLWithPath: "Contents/Resources/uninstall.sh", relativeTo: Bundle.main.bundleURL)
+        let task = Process()
+        task.arguments = ["-c", url.path]
+        
+        if #available(macOS 10.13, *) {
+            task.executableURL = URL(fileURLWithPath: "/bin/zsh")
+            do {
+                try task.run()
+            } catch {}
+        } else {
+            task.launchPath = "/bin/zsh"
+            task.launch()
+        }
     }
 }

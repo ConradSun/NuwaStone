@@ -22,5 +22,5 @@ else
     fi
 fi
 
+pkill -9 NuwaClient
 sudo rm -rf /Applications/NuwaClient.app
-

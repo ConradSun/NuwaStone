@@ -53,6 +53,11 @@
                                                 <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Uninstall NuwaStone" keyEquivalent="u" id="Bbm-cM-fGr">
+                                            <connections>
+                                                <action selector="uninstallMenuItemSelected:" target="Ady-hI-5gd" id="YUE-JR-IoQ"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
