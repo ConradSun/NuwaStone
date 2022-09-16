@@ -18,9 +18,10 @@ The kext uses Kauth & SocketFilter for event collection and behavior auditing.
 The sext uses Endpoint Security & Network Extension for event collection and behavior auditing.
 
 ## Installation
->1. Download the installation package [here](https://github.com/ConradSun/NuwaStone/releases).
->2. Then double-click *NuwaStone-vxx.pkg* to follow the guide.
->3. Close the installation guide.
+>1. Disable SIP by following [here](https://developer.apple.com/documentation/security/disabling_and_enabling_system_integrity_protection).
+>2. Download the installation package [here](https://github.com/ConradSun/NuwaStone/releases).
+>3. Then double-click *NuwaStone-vxx.pkg* to follow the guide.
+>4. Close the installation guide.
 
 ## Uninstallation
 >1. Select 'Uninstall NuwaStone' from the status bar menu of *NuwaClient* application.
