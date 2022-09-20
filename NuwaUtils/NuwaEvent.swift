@@ -26,6 +26,19 @@ enum NuwaEventType: String, Codable {
     case DNSQuery
 }
 
+enum NuwaMuteType: UInt8 {
+    case FilterFileEvent     = 0
+    case FilterNetEvent      = 1
+    case AllowExec           = 2
+    case DenyExec            = 3
+}
+
+enum NuwaPrefOpt: UInt8 {
+    case Add        = 0
+    case Remove     = 1
+    case Display    = 2
+}
+
 protocol NuwaEventProcessProtocol {
     func displayNotifyEvent(_ event: NuwaEventInfo)
     func processAuthEvent(_ event: NuwaEventInfo)
@@ -38,7 +51,7 @@ protocol NuwaEventProviderProtocol {
     func stopProvider() -> Bool
     func setLogLevel(level: UInt8) -> Bool
     func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool
-    func addProcessToList(path: String?, vnodeID: UInt64, isWhite: Bool) -> Bool
+    func udpateMuteList(vnodeID: UInt64, type: NuwaMuteType, opt: NuwaPrefOpt) -> Bool
 }
 
 class NuwaEventInfo: Codable {

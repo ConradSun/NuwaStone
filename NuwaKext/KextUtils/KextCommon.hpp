@@ -33,8 +33,7 @@ typedef enum {
     kNuwaUserClientAllowBinary,
     kNuwaUserClientDenyBinary,
     kNuwaUserClientSetLogLevel,
-    kNuwaUserClientWhiteProcess,
-    kNuwaUserClientBlackProcess,
+    kNuwaUserClientUpdateMuteList,
     kNuwaUserClientNMethods
 } NuwaKextMethods;
 
@@ -57,6 +56,19 @@ typedef enum {
     kActionNotifyNetworkAccess,
     kActionNotifyDnsQuery
 } NuwaKextAction;
+
+typedef enum {
+    kFilterFileEvent    = 0,
+    kFilterNetEvent     = 1,
+    kAllowExec          = 2,
+    kDenyExec           = 3,
+} NuwaKextMuteType;
+
+typedef struct {
+    NuwaKextMuteType type;
+    UInt64 vnodeID;
+    SInt16 forAdding;
+} NuwaKextMuteInfo;
 
 typedef struct {
     SInt32 pid;

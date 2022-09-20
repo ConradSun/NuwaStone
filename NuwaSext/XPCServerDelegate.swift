@@ -57,7 +57,36 @@ extension XPCServer: SextXPCProtocol {
         ResponseManager.shared.replyAuthEvent(pointer: pointer, isAllowed: isAllowed)
     }
     
-    func addProcessPath(path: String, isWhite: Bool) {
-        ListManager.shared.addProcessPath(path: path, isWhite: isWhite)
+    func updateMuteList(vnodeID: UInt64, type: UInt8, opt: UInt8) {
+        let muteType = NuwaMuteType(rawValue: type)
+        let optType = NuwaPrefOpt(rawValue: opt)
+        switch muteType {
+        case .AllowExec:
+            if optType == .Add {
+                ListManager.shared.updateAuthProcList(vnodeID: vnodeID, isWhite: true)
+            }
+            else if (optType == .Remove) {
+                ListManager.shared.removeAuthProcPath(vnodeID: vnodeID, isWhite: true)
+            }
+        case .DenyExec:
+            if optType == .Add {
+                ListManager.shared.updateAuthProcList(vnodeID: vnodeID, isWhite: false)
+            }
+            else if (optType == .Remove) {
+                ListManager.shared.removeAuthProcPath(vnodeID: vnodeID, isWhite: false)
+            }
+        case .FilterFileEvent:
+            if optType == .Add {
+                ListManager.shared.updateFilterFileList(vnodeID: vnodeID)
+            }
+            else if (optType == .Remove) {
+                ListManager.shared.removeFilterFilePath(vnodeID: vnodeID)
+            }
+            break
+        case .FilterNetEvent:
+            break
+        default:
+            break
+        }
     }
 }

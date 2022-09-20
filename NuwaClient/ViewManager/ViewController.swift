@@ -92,6 +92,7 @@ class ViewController: NSViewController {
                 return
             }
             
+            initMutePaths();
             controlButton.image = NSImage(named: "stop")
             controlLabel.stringValue = "stop"
         }
@@ -186,6 +187,18 @@ extension ViewController {
                     self.alertWithError(error: "Unable to start monitoring for broken connection with daemon.")
                 }
             }
+        }
+    }
+    
+    func initMutePaths() {
+        for allowPath in PrefPathList.shared.allowExecList {
+            _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(allowPath), type: .AllowExec, opt: .Add)
+        }
+        for denyPath in PrefPathList.shared.denyExecList {
+            _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(denyPath), type: .DenyExec, opt: .Add)
+        }
+        for filePath in PrefPathList.shared.filterFileList {
+            _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(filePath), type: .FilterFileEvent, opt: .Add)
         }
     }
     

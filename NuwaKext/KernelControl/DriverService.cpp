@@ -17,6 +17,11 @@ void DriverService::clearInstances() {
         m_cacheManager = nullptr;
     }
     
+    if (m_listManager != nullptr) {
+        m_listManager->release();
+        m_listManager = nullptr;
+    }
+    
     if (m_eventDispatcher != nullptr) {
         m_eventDispatcher->release();
         m_eventDispatcher = nullptr;
@@ -39,10 +44,11 @@ bool DriverService::start(IOService *provider) {
     }
 
     m_cacheManager = CacheManager::getInstance();
+    m_listManager = ListManager::getInstance();
     m_eventDispatcher = EventDispatcher::getInstance();
     m_kauthController = new KauthController();
     m_socketFilter = new SocketFilter();
-    if (m_cacheManager == nullptr || m_eventDispatcher == nullptr || m_kauthController == nullptr || m_socketFilter == nullptr) {
+    if (m_cacheManager == nullptr || m_listManager == nullptr || m_eventDispatcher == nullptr || m_kauthController == nullptr || m_socketFilter == nullptr) {
         clearInstances();
         return false;
     }

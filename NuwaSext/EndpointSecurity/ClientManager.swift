@@ -122,7 +122,7 @@ class ClientManager {
                     return
                 }
                 var isWhite = true
-                if ListManager.shared.containProcPath(path: event.procPath, isWhite: &isWhite) {
+                if ListManager.shared.containsAuthProcPath(vnodeID: event.eventID, isWhite: &isWhite) {
                     let result = isWhite ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
                     self.replyAuthEvent(message: message, result: result)
                     Logger(.Info, "Process [\(event.procPath)] is contained in process list.")
@@ -134,7 +134,9 @@ class ClientManager {
         }
         else if message.pointee.action_type == ES_ACTION_TYPE_NOTIFY {
             notifyQueue.sync {
-                XPCServer.shared.sendNotifyEvent(event)
+                if event.eventType != .ProcessCreate && !ListManager.shared.containsFilterFilePath(vnodeID: event.eventID) {
+                    XPCServer.shared.sendNotifyEvent(event)
+                }
             }
         }
     }

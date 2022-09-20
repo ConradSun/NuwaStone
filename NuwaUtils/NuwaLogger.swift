@@ -18,14 +18,14 @@ enum NuwaLogLevel: UInt8 {
 struct NuwaLog {
     var logLevel: UInt8 {
         get {
-            let savedLevel = UserDefaults.standard.integer(forKey: "logLevel")
+            let savedLevel = UserDefaults.standard.integer(forKey: UserLogLevel)
             if savedLevel > 0 {
                 return UInt8(savedLevel)
             }
             return NuwaLogLevel.Info.rawValue
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: "logLevel")
+            UserDefaults.standard.set(newValue, forKey: UserLogLevel)
         }
     }
 };

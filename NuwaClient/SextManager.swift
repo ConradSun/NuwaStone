@@ -109,11 +109,11 @@ extension SextManager: NuwaEventProviderProtocol {
         return true
     }
     
-    func addProcessToList(path: String?, vnodeID: UInt64, isWhite: Bool) -> Bool {
-        if path == nil {
+    func udpateMuteList(vnodeID: UInt64, type: NuwaMuteType, opt: NuwaPrefOpt) -> Bool {
+        if vnodeID == 0 {
             return false
         }
-        sextProxy?.addProcessPath(path: path!, isWhite: isWhite)
+        sextProxy?.updateMuteList(vnodeID: vnodeID, type: type.rawValue, opt: opt.rawValue)
         return true
     }
 }

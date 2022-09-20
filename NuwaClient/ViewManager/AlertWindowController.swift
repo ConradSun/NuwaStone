@@ -51,10 +51,12 @@ class AlertWindowController: NSWindowController {
         
         isSubmitted = true
         isAllowed = decisionPopUP.selectedItem?.title == "Allow"
+        let muteType = isAllowed ? NuwaMuteType.AllowExec : NuwaMuteType.DenyExec
         shouldAddToList = decisionCheckbox.state == .off
         _ = eventProvider?.replyAuthEvent(eventID: authEvent!.eventID, isAllowed: isAllowed)
         if shouldAddToList {
-            _ = eventProvider?.addProcessToList(path: authEvent!.procPath, vnodeID: authEvent!.eventID, isWhite: isAllowed)
+            _ = eventProvider?.udpateMuteList(vnodeID: authEvent!.eventID, type: muteType, opt: .Add)
+            PrefPathList.shared.updateExecList(paths: [authEvent!.procPath], opt: .Add, isWhite: isAllowed)
         }
         window?.close()
         authEvent = nil

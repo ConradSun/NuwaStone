@@ -18,6 +18,12 @@ let KextService     = "DriverService"
 
 let MachServiceKey  = "MachServiceName"
 
+let UserLogLevel    = "Log Level"
+let UserAllowExec   = "Allow Exec"
+let UserDenyExec    = "Deny Exec"
+let UserFilterFile  = "Filter File"
+let UserFilterNet   = "Filter Net"
+
 let PropBundleID    = "Bundle ID"
 let PropCodeSign    = "Code Sign"
 let PropExitCode    = "Exit Code"
@@ -182,4 +188,11 @@ func getSignInfoFromPath(_ path: String) ->[String] {
     }
     
     return signInfo
+}
+
+func getFileVnodeID(_ path: String) -> UInt64 {
+    var fileStat = stat()
+    stat(path.cString(using: .utf8), &fileStat)
+    let vnodeID = (UInt64(fileStat.st_dev) << 32) | UInt64(fileStat.st_ino)
+    return vnodeID
 }

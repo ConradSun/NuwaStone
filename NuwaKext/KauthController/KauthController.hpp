@@ -9,6 +9,7 @@
 #define KauthController_hpp
 
 #include "CacheManager.hpp"
+#include "ListManager.hpp"
 #include "EventDispatcher.hpp"
 #include <sys/vnode.h>
 #include <sys/kauth.h>
@@ -46,6 +47,7 @@ private:
     kauth_listener_t m_vnodeListener;
     kauth_listener_t m_fileopListener;
     CacheManager *m_cacheManager;
+    ListManager *m_listManager;
     EventDispatcher *m_eventDispatcher;
     SInt32 m_activeEventCount;
 };

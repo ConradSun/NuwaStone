@@ -16,6 +16,11 @@ extension ClientManager {
         return ""
     }
     
+    func getVnodeID(fileStat: stat) -> UInt64 {
+        let vnodeID = (UInt64(fileStat.st_dev) << 32) | UInt64(fileStat.st_ino)
+        return vnodeID
+    }
+    
     func parseProcessProps(exec: es_event_exec_t, event: inout NuwaEventInfo) {
         var ref = exec
         var argv = [String]()
@@ -32,6 +37,7 @@ extension ClientManager {
     func parseExecEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
         let process = message.pointee.event.exec.target.pointee
         
+        event.eventID = getVnodeID(fileStat: process.executable.pointee.stat)
         event.pid = audit_token_to_pid(process.audit_token)
         event.ppid = process.ppid
         event.procPath = getString(token: process.executable.pointee.path)
@@ -46,10 +52,12 @@ extension ClientManager {
     }
     
     func parseCreateEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
+        event.eventID = getVnodeID(fileStat: message.pointee.event.create.destination.existing_file.pointee.stat)
         event.props[PropFilePath] = getString(token: message.pointee.event.create.destination.existing_file.pointee.path)
     }
     
     func parseUnlinkEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
+        event.eventID = getVnodeID(fileStat: message.pointee.event.unlink.target.pointee.stat)
         event.props[PropFilePath] = getString(token: message.pointee.event.unlink.target.pointee.path)
     }
     
@@ -62,11 +70,13 @@ extension ClientManager {
             dstPath = getString(token: message.pointee.event.rename.destination.new_path.dir.pointee.path)
             dstPath = dstPath + "/" + getString(token: message.pointee.event.rename.destination.new_path.filename)
         }
+        event.eventID = getVnodeID(fileStat: message.pointee.event.rename.source.pointee.stat)
         event.props[PropSrcPath] = getString(token: message.pointee.event.rename.source.pointee.path)
         event.props[PropDstPath] = dstPath
     }
     
     func parseCloseModifiedEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
+        event.eventID = getVnodeID(fileStat: message.pointee.event.close.target.pointee.stat)
         event.props[PropFilePath] = getString(token: message.pointee.event.close.target.pointee.path)
     }
 }

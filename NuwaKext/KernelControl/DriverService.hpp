@@ -11,6 +11,7 @@
 #include <IOKit/IOService.h>
 #include <libkern/OSKextLib.h>
 #include "CacheManager.hpp"
+#include "ListManager.hpp"
 #include "KauthController.hpp"
 #include "SocketFilter.hpp"
 #include "EventDispatcher.hpp"
@@ -32,6 +33,7 @@ private:
     void clearInstances();
     
     CacheManager *m_cacheManager;
+    ListManager *m_listManager;
     KauthController *m_kauthController;
     SocketFilter *m_socketFilter;
     EventDispatcher *m_eventDispatcher;

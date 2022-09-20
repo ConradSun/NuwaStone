@@ -291,19 +291,19 @@ extension KextManager: NuwaEventProviderProtocol {
         return true
     }
     
-    func addProcessToList(path: String?, vnodeID: UInt64, isWhite: Bool) -> Bool {
+    func udpateMuteList(vnodeID: UInt64, type: NuwaMuteType, opt: NuwaPrefOpt) -> Bool {
         if vnodeID == 0 {
             return false
         }
         
-        let scalar = [vnodeID]
         var result = KERN_SUCCESS
-        if isWhite {
-            result = IOConnectCallScalarMethod(connection, kNuwaUserClientWhiteProcess.rawValue, scalar, 1, nil, nil)
-        }
-        else {
-            result = IOConnectCallScalarMethod(connection, kNuwaUserClientBlackProcess.rawValue, scalar, 1, nil, nil)
-        }
+        var muteInfo = NuwaKextMuteInfo()
+        muteInfo.vnodeID = vnodeID
+        muteInfo.type.rawValue = UInt32(type.rawValue)
+        muteInfo.forAdding = opt == .Add ? 1 : 0
+        let pointer = UnsafeRawPointer(&muteInfo).bindMemory(to: UInt64.self, capacity: 1)
+        
+        result = IOConnectCallScalarMethod(connection, kNuwaUserClientUpdateMuteList.rawValue, pointer, UInt32(MemoryLayout<NuwaKextMuteInfo>.size), nil, nil)
         if result != KERN_SUCCESS {
             Logger(.Error, "Failed to add process to list [\(String.init(format: "0x%x", result))].")
             return false

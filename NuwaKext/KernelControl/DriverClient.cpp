@@ -34,6 +34,10 @@ bool DriverClient::start(IOService *provider) {
     if (m_cacheManager == nullptr) {
         return false;
     }
+    m_listManager = ListManager::getInstance();
+    if (m_listManager == nullptr) {
+        return false;
+    }
     m_eventDispatcher = EventDispatcher::getInstance();
     if (m_eventDispatcher == nullptr) {
         return false;
@@ -43,6 +47,7 @@ bool DriverClient::start(IOService *provider) {
 
 void DriverClient::stop(IOService *provider) {
     m_eventDispatcher = nullptr;
+    m_listManager = nullptr;
     m_cacheManager = nullptr;
     m_driverService = nullptr;
     IOUserClient::stop(provider);
@@ -165,25 +170,31 @@ IOReturn DriverClient::setLogLevel(OSObject* target, void* reference, IOExternal
     return kIOReturnSuccess;
 }
 
-IOReturn DriverClient::addWhiteProcess(OSObject* target, void* reference, IOExternalMethodArguments* arguments) {
+IOReturn DriverClient::updateMuteList(OSObject* target, void* reference, IOExternalMethodArguments* arguments) {
     DriverClient *me = OSDynamicCast(DriverClient, target);
     if (me == nullptr) {
         return kIOReturnBadArgument;
     }
-    
-    UInt64 vnodeID = arguments->scalarInput[0];
-    me->m_cacheManager->updateProcAuthList(vnodeID, true);
-    return kIOReturnSuccess;
-}
-
-IOReturn DriverClient::addBlackProcess(OSObject* target, void* reference, IOExternalMethodArguments* arguments) {
-    DriverClient *me = OSDynamicCast(DriverClient, target);
-    if (me == nullptr) {
-        return kIOReturnBadArgument;
+    if (arguments->structureInputSize != sizeof(NuwaKextMuteInfo)) {
+        return kIOReturnInvalid;
     }
     
-    UInt64 vnodeID = arguments->scalarInput[0];
-    me->m_cacheManager->updateProcAuthList(vnodeID, false);;
+    NuwaKextMuteInfo *info = (NuwaKextMuteInfo *)arguments->structureInput;
+    switch (info->type) {
+        case kAllowExec:
+            me->m_listManager->updateAuthProcessList(info->vnodeID, true);
+            break;
+        case kDenyExec:
+            me->m_listManager->updateAuthProcessList(info->vnodeID, false);
+            break;
+            
+        case kFilterFileEvent:
+            me->m_listManager->updateFilterFileList(info->vnodeID);
+            break;
+        case kFilterNetEvent:
+            break;
+    }
+    
     return kIOReturnSuccess;
 }
 
@@ -198,8 +209,7 @@ IOReturn DriverClient::externalMethod(UInt32 selector, IOExternalMethodArguments
         { &DriverClient::allowBinary, 1, 0, 0, 0 },
         { &DriverClient::denyBinary, 1, 0, 0, 0 },
         { &DriverClient::setLogLevel, 1, 0, 0, 0 },
-        { &DriverClient::addWhiteProcess, 1, 0, 0, 0 },
-        { &DriverClient::addBlackProcess, 1, 0, 0, 0 },
+        { &DriverClient::updateMuteList, 0, sizeof(NuwaKextMuteInfo), 0, 0 }
     };
 
     if (selector >= static_cast<UInt32>(kNuwaUserClientNMethods)) {

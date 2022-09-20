@@ -24,6 +24,10 @@ bool KauthController::init() {
     if (m_cacheManager == nullptr) {
         return false;
     }
+    m_listManager = ListManager::getInstance();
+    if (m_listManager == nullptr) {
+        return false;
+    }
     m_eventDispatcher = EventDispatcher::getInstance();
     if (m_eventDispatcher == nullptr) {
         return false;
@@ -34,6 +38,7 @@ bool KauthController::init() {
 
 void KauthController::free() {
     m_eventDispatcher = nullptr;
+    m_listManager = nullptr;
     m_cacheManager = nullptr;
     OSObject::free();
 }
@@ -109,7 +114,7 @@ int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, in
     bzero(event, sizeof(NuwaKextEvent));
     event->eventType = kActionAuthProcessCreate;
     if (fillEventInfo(event, ctx, vp) == 0) {
-        NuwaKextProcType type = (NuwaKextProcType)m_cacheManager->obtainProcAuthList(event->vnodeID);
+        NuwaKextProcType type = (NuwaKextProcType)m_listManager->obtainAuthProcessList(event->vnodeID);
         switch (type) {
             case kProcPlainType:
                 if (m_eventDispatcher->postToAuthQueue(event)) {
@@ -174,7 +179,7 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
             event->mainProcess.ppid = (result << 32) >> 32;
         }
     }
-    if (errCode == 0) {
+    if (errCode == 0 && !m_listManager->obtainFilterFileList(event->vnodeID)) {
         m_eventDispatcher->postToNotifyQueue(event);
     }
     
