@@ -116,25 +116,29 @@ class ClientManager {
     func dispatchEvent(event: NuwaEventInfo, message: UnsafePointer<es_message_t>) {
         if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
             authQueue.async {
-                event.eventID = UInt64(UInt(bitPattern: message))
                 if XPCServer.shared.connection == nil {
                     self.replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW)
                     return
                 }
-                var isWhite = true
-                if ListManager.shared.containsAuthProcPath(vnodeID: event.eventID, isWhite: &isWhite) {
-                    let result = isWhite ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
-                    self.replyAuthEvent(message: message, result: result)
-                    Logger(.Info, "Process [\(event.procPath)] is contained in process list.")
+                
+                guard let isWhite = ListManager.shared.containsAuthProcPath(vnodeID: event.eventID) else {
+                    event.eventID = UInt64(UInt(bitPattern: message))
+                    XPCServer.shared.sendAuthEvent(event)
+                    ResponseManager.shared.addAuthEvent(eventID: event.eventID)
                     return
                 }
-                XPCServer.shared.sendAuthEvent(event)
-                ResponseManager.shared.addAuthEvent(eventID: event.eventID)
+                let result = isWhite ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
+                self.replyAuthEvent(message: message, result: result)
+                Logger(.Info, "Process [\(event.procPath)] is contained in auth list.")
             }
         }
         else if message.pointee.action_type == ES_ACTION_TYPE_NOTIFY {
             notifyQueue.sync {
-                if event.eventType != .ProcessCreate && !ListManager.shared.containsFilterFilePath(vnodeID: event.eventID) {
+                if event.eventType == .ProcessCreate || event.eventType == .ProcessExit {
+                    XPCServer.shared.sendNotifyEvent(event)
+                    return
+                }
+                if !ListManager.shared.containsFilterFilePath(vnodeID: event.eventID) {
                     XPCServer.shared.sendNotifyEvent(event)
                 }
             }

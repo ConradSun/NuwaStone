@@ -19,8 +19,7 @@ let KextService     = "DriverService"
 let MachServiceKey  = "MachServiceName"
 
 let UserLogLevel    = "Log Level"
-let UserAllowExec   = "Allow Exec"
-let UserDenyExec    = "Deny Exec"
+let UserAuthExec    = "Auth Exec"
 let UserFilterFile  = "Filter File"
 let UserFilterNet   = "Filter Net"
 

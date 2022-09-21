@@ -9,8 +9,7 @@ import Foundation
 
 class PrefPathList {
     static let shared = PrefPathList()
-    var allowExecList = Set<String>()
-    var denyExecList = Set<String>()
+    var authExecDict = [String: Bool]()
     var filterFileList = Set<String>()
     var filterNetworkList = Set<String>()
     
@@ -23,39 +22,21 @@ class PrefPathList {
         for path in list {
             filterNetworkList.update(with: path)
         }
-        list = UserDefaults.standard.array(forKey: UserAllowExec) as? [String] ?? [String]()
-        for path in list {
-            allowExecList.update(with: path)
-        }
-        list = UserDefaults.standard.array(forKey: UserDenyExec) as? [String] ?? [String]()
-        for path in list {
-            denyExecList.update(with: path)
-        }
+        authExecDict = UserDefaults.standard.dictionary(forKey: UserAuthExec) as? [String : Bool] ?? [String: Bool]()
     }
     
     func updateExecList(paths: [String], opt: NuwaPrefOpt, isWhite: Bool) {
-        if isWhite {
+        if opt == .Add {
             for path in paths {
-                if opt == .Add {
-                    allowExecList.update(with: path)
-                }
-                else if opt == .Remove {
-                    allowExecList.remove(path)
-                }
+                authExecDict[path] = isWhite
             }
-            UserDefaults.standard.set(allowExecList.sorted(), forKey: UserAllowExec)
         }
-        else {
+        else if opt == .Remove {
             for path in paths {
-                if opt == .Add {
-                    denyExecList.update(with: path)
-                }
-                else if opt == .Remove {
-                    denyExecList.remove(path)
-                }
+                authExecDict[path] = nil
             }
-            UserDefaults.standard.set(denyExecList.sorted(), forKey: UserDenyExec)
         }
+        UserDefaults.standard.set(authExecDict, forKey: UserAuthExec)
     }
     
     func updateWhiteFileList(paths: [String], opt: NuwaPrefOpt) {

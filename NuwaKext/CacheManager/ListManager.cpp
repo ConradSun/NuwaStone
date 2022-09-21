@@ -59,21 +59,22 @@ void ListManager::release() {
     m_sharedInstance = nullptr;
 }
 
-bool ListManager::updateAuthProcessList(UInt64 vnodeID, bool isWhite) {
+bool ListManager::updateAuthProcessList(UInt64 vnodeID, bool isWhite, bool forAdding) {
     if (vnodeID == 0) {
         return false;
     }
     
     UInt8 procType = isWhite ? kProcWhiteType : kProcBlackType;
+    procType = forAdding ? procType : kProcPlainType;
     return m_authProcessList->setObject(vnodeID, procType);
 }
 
-bool ListManager::updateFilterFileList(UInt64 vnodeID) {
+bool ListManager::updateFilterFileList(UInt64 vnodeID, bool forAdding) {
     if (vnodeID == 0) {
         return false;
     }
     
-    return m_filterFileList->setObject(vnodeID, true);
+    return m_filterFileList->setObject(vnodeID, forAdding);
 }
 
 UInt8 ListManager::obtainAuthProcessList(UInt64 vnodeID) {

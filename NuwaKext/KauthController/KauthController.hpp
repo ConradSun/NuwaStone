@@ -42,7 +42,7 @@ private:
     errno_t fillBasicInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp);
     errno_t fillProcInfo(NuwaKextProc *ProctInfo, const vfs_context_t ctx);
     errno_t fillFileInfo(NuwaKextFile *FileInfo, const vfs_context_t ctx, const vnode_t vp);
-    errno_t fillEventInfo(NuwaKextEvent *eventInfo, const vfs_context_t ctx, const vnode_t vp);
+    errno_t fillEventInfo(NuwaKextEvent *event, const vfs_context_t procCtx, const vfs_context_t fileCtx, const vnode_t fileVp);
     
     kauth_listener_t m_vnodeListener;
     kauth_listener_t m_fileopListener;

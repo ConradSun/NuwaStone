@@ -136,7 +136,7 @@ class DNSResolver {
             }
             parseIndex += querySize
             results.append(result)
-            nameDict.updateValue(i, forKey: result.domainName)
+            nameDict[result.domainName] = i
         }
         return true
     }
@@ -164,7 +164,7 @@ class DNSResolver {
         if !parseDomainName(begin: begin, domainName: &name) {
             return
         }
-        nameDict.updateValue(index, forKey: name)
+        nameDict[name] = index
     }
     
     private func parseReplyItem() -> Bool {

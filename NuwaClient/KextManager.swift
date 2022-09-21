@@ -301,11 +301,10 @@ extension KextManager: NuwaEventProviderProtocol {
         muteInfo.vnodeID = vnodeID
         muteInfo.type.rawValue = UInt32(type.rawValue)
         muteInfo.forAdding = opt == .Add ? 1 : 0
-        let pointer = UnsafeRawPointer(&muteInfo).bindMemory(to: UInt64.self, capacity: 1)
         
-        result = IOConnectCallScalarMethod(connection, kNuwaUserClientUpdateMuteList.rawValue, pointer, UInt32(MemoryLayout<NuwaKextMuteInfo>.size), nil, nil)
+        result = IOConnectCallStructMethod(connection, kNuwaUserClientUpdateMuteList.rawValue, &muteInfo, MemoryLayout<NuwaKextMuteInfo>.size, nil, nil)
         if result != KERN_SUCCESS {
-            Logger(.Error, "Failed to add process to list [\(String.init(format: "0x%x", result))].")
+            Logger(.Error, "Failed to add mute info to list [\(String.init(format: "0x%x", result))].")
             return false
         }
         return true

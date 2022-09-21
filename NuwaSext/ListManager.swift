@@ -9,26 +9,15 @@ import Foundation
 
 class ListManager {
     static let shared = ListManager()
-    private var whiteProcList = Set<UInt64>()
-    private var blackProcList = Set<UInt64>()
+    private var authExecDict = [UInt64: Bool]()
     private var filterFileList = Set<UInt64>()
     
     func updateAuthProcList(vnodeID: UInt64, isWhite: Bool) {
-        if isWhite {
-            whiteProcList.update(with: vnodeID)
-        }
-        else {
-            blackProcList.update(with: vnodeID)
-        }
+        authExecDict[vnodeID] = isWhite
     }
     
     func removeAuthProcPath(vnodeID: UInt64, isWhite: Bool) {
-        if isWhite {
-            whiteProcList.remove(vnodeID)
-        }
-        else {
-            blackProcList.remove(vnodeID)
-        }
+        authExecDict[vnodeID] = nil
     }
     
     func updateFilterFileList(vnodeID: UInt64) {
@@ -41,16 +30,8 @@ class ListManager {
         filterFileList.remove(vnodeID)
     }
     
-    func containsAuthProcPath(vnodeID: UInt64, isWhite: inout Bool) -> Bool {
-        if whiteProcList.contains(vnodeID) {
-            isWhite = true
-            return true
-        }
-        if blackProcList.contains(vnodeID) {
-            isWhite = false
-            return true
-        }
-        return false
+    func containsAuthProcPath(vnodeID: UInt64) -> Bool? {
+        return authExecDict[vnodeID]
     }
     
     func containsFilterFilePath(vnodeID: UInt64) -> Bool {

@@ -113,7 +113,7 @@ int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, in
     
     bzero(event, sizeof(NuwaKextEvent));
     event->eventType = kActionAuthProcessCreate;
-    if (fillEventInfo(event, ctx, vp) == 0) {
+    if (fillEventInfo(event, ctx, ctx, vp) == 0) {
         NuwaKextProcType type = (NuwaKextProcType)m_listManager->obtainAuthProcessList(event->vnodeID);
         switch (type) {
             case kProcPlainType:
@@ -147,7 +147,8 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
     }
     
     bzero(event, sizeof(NuwaKextEvent));
-    vfs_context_t ctx = vfs_context_create(NULL);
+    vfs_context_t procCtx = vfs_context_create(NULL);
+    vfs_context_t fileCtx = vfs_context_create(NULL);
     switch (action) {
         case KAUTH_FILEOP_CLOSE:
             event->eventType = kActionNotifyFileCloseModify;
@@ -171,7 +172,7 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
             break;
     }
     
-    errCode = fillEventInfo(event, ctx, vp);
+    errCode = fillEventInfo(event, procCtx, fileCtx, vp);
     if (action == KAUTH_FILEOP_EXEC) {
         UInt64 result = m_cacheManager->obtainAuthExecCache(event->vnodeID);
         if ((result >> 32) != event->mainProcess.pid) {
@@ -183,8 +184,11 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
         m_eventDispatcher->postToNotifyQueue(event);
     }
     
-    if (ctx != NULL) {
-        vfs_context_rele(ctx);
+    if (procCtx != NULL) {
+        vfs_context_rele(procCtx);
+    }
+    if (fileCtx != NULL) {
+        vfs_context_rele(fileCtx);
     }
     IOFreeAligned(event, sizeof(NuwaKextEvent));
 }
@@ -267,7 +271,7 @@ errno_t KauthController::fillFileInfo(NuwaKextFile *FileInfo, const vfs_context_
     return errCode;
 }
 
-errno_t KauthController::fillEventInfo(NuwaKextEvent *event, const vfs_context_t ctx, const vnode_t vp) {
+errno_t KauthController::fillEventInfo(NuwaKextEvent *event, const vfs_context_t procCtx, const vfs_context_t fileCtx, const vnode_t fileVp) {
     errno_t errCode = 0;
     NuwaKextFile *fileInfo = nullptr;
     
@@ -287,17 +291,17 @@ errno_t KauthController::fillEventInfo(NuwaKextEvent *event, const vfs_context_t
             break;
     }
     
-    errCode = fillBasicInfo(event, ctx, vp);
+    errCode = fillBasicInfo(event, fileCtx, fileVp);
     if (errCode != 0) {
         Logger(LOG_WARN, "Failed to fill basic info [%d].", errCode)
         return errCode;
     }
-    errCode = fillProcInfo(&event->mainProcess, ctx);
+    errCode = fillProcInfo(&event->mainProcess, procCtx);
     if (errCode != 0) {
         Logger(LOG_WARN, "Failed to fill proc info [%d].", errCode)
         return errCode;
     }
-    errCode = fillFileInfo(fileInfo, ctx, vp);
+    errCode = fillFileInfo(fileInfo, fileCtx, fileVp);
     if (errCode != 0) {
         Logger(LOG_WARN, "Failed to fill file info [%d].", errCode)
         return errCode;
@@ -339,8 +343,8 @@ int fileop_scope_callback(kauth_cred_t credential, void *idata, kauth_action_t a
         return KAUTH_RESULT_DEFER;
     }
     
-    vnode_t vp = nullptr;
-    char *srcPath = nullptr;
+    vnode_t vp = reinterpret_cast<vnode_t>(arg0);
+    char *srcPath = reinterpret_cast<char *>(arg1);
     char *newPath = nullptr;
     int flag = 0;
     
@@ -353,23 +357,19 @@ int fileop_scope_callback(kauth_cred_t credential, void *idata, kauth_action_t a
             
         case KAUTH_FILEOP_DELETE:
         case KAUTH_FILEOP_EXEC:
-            vp = reinterpret_cast<vnode_t>(arg0);
-            srcPath = reinterpret_cast<char *>(arg1);
-            if (vnode_vtype(vp) != VREG) {
-                return KAUTH_RESULT_DEFER;
-            }
-            if (action == KAUTH_FILEOP_DELETE) {
-                vp = nullptr;
-            }
             break;
             
         case KAUTH_FILEOP_RENAME:
+            vp = nullptr;
             srcPath = reinterpret_cast<char *>(arg0);
             newPath = reinterpret_cast<char *>(arg1);
             break;
             
         default:
             return KAUTH_RESULT_DEFER;
+    }
+    if (vp != nullptr && vnode_vtype(vp) != VREG) {
+        return KAUTH_RESULT_DEFER;
     }
     
     selfPtr->increaseEventCount();

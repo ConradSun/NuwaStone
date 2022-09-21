@@ -37,9 +37,11 @@ class PrefsViewController: NSViewController {
         case NuwaMuteType.FilterNetEvent.rawValue:
             pathView.string = PrefPathList.shared.filterNetworkList.joined(separator: "\n")
         case NuwaMuteType.AllowExec.rawValue:
-            pathView.string = PrefPathList.shared.allowExecList.joined(separator: "\n")
+            let allowDict = PrefPathList.shared.authExecDict.filter { $0.value == true }
+            pathView.string = allowDict.keys.joined(separator: "\n")
         case NuwaMuteType.DenyExec.rawValue:
-            pathView.string = PrefPathList.shared.denyExecList.joined(separator: "\n")
+            let denyDict = PrefPathList.shared.authExecDict.filter { $0.value == false }
+            pathView.string = denyDict.keys.joined(separator: "\n")
         default:
             return
         }

@@ -191,11 +191,9 @@ extension ViewController {
     }
     
     func initMutePaths() {
-        for allowPath in PrefPathList.shared.allowExecList {
-            _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(allowPath), type: .AllowExec, opt: .Add)
-        }
-        for denyPath in PrefPathList.shared.denyExecList {
-            _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(denyPath), type: .DenyExec, opt: .Add)
+        for item in PrefPathList.shared.authExecDict {
+            let type = item.value ? NuwaMuteType.AllowExec : NuwaMuteType.DenyExec
+            _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(item.key), type: type, opt: .Add)
         }
         for filePath in PrefPathList.shared.filterFileList {
             _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(filePath), type: .FilterFileEvent, opt: .Add)

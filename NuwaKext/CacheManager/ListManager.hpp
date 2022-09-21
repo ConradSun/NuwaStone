@@ -26,10 +26,10 @@ public:
     static void release();
     
     // Called when add process to white/black list.
-    bool updateAuthProcessList(UInt64 vnodeID, bool isWhite);
+    bool updateAuthProcessList(UInt64 vnodeID, bool isWhite, bool forAdding);
     
     // Called when add path to file filter list.
-    bool updateFilterFileList(UInt64 vnodeID);
+    bool updateFilterFileList(UInt64 vnodeID, bool forAdding);
     
     // Called when check whether the process path within white/black list.
     UInt8 obtainAuthProcessList(UInt64 vnodeID);
