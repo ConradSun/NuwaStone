@@ -9,7 +9,7 @@ import Cocoa
 
 extension ViewController: NuwaEventProcessProtocol {
     func displayNotifyEvent(_ event: NuwaEventInfo) {
-        eventQueue.sync {
+        eventQueue.async(flags: .barrier) { [self] in
             reportedItems.append(event)
             eventCount[DisplayMode.DisplayAll.rawValue] += 1
 
@@ -40,7 +40,9 @@ extension ViewController: NuwaEventProcessProtocol {
                 return
             }
             if searchText.isEmpty || event.desc.contains(searchText) {
-                displayedItems.append(event)
+                eventQueue.async(flags: .barrier) {
+                    self.displayedItems.append(event)
+                }
             }
         }
     }
@@ -74,17 +76,26 @@ extension ViewController: NSTableViewDelegate {
 
 extension ViewController: NSTableViewDataSource {
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return displayedItems.count
+        return eventQueue.sync {
+            displayedItems.count
+        }
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        if eventView.numberOfRows == 0 || row >= eventView.numberOfRows || row >= displayedItems.count {
-            return nil
+        var itemCount = 0
+        var text = ""
+        var event = NuwaEventInfo()
+        let format = DateFormatter()
+        eventQueue.sync {
+            itemCount = self.displayedItems.count
+            if row < itemCount {
+                event = self.displayedItems[row]
+            }
         }
         
-        var text = ""
-        let event = displayedItems[row]
-        let format = DateFormatter()
+        if eventView.numberOfRows == 0 || row >= eventView.numberOfRows || row >= itemCount {
+            return nil
+        }
         format.dateFormat = "MM-dd HH:mm:ss"
         format.timeZone = .current
         guard let identity = tableColumn?.identifier else {

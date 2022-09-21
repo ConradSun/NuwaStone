@@ -34,7 +34,7 @@ class ViewController: NSViewController {
     var displayMode = DisplayMode.DisplayAll
     var displayTimer = Timer()
     
-    let eventQueue = DispatchQueue(label: "com.nuwastone.eventview.queue")
+    let eventQueue = DispatchQueue(label: "com.nuwastone.eventview.queue", attributes: .concurrent)
     var eventCount = [UInt32](repeating: 0, count: DisplayMode.allCases.count)
     var eventCountCopy = [UInt32](repeating: 0, count: DisplayMode.allCases.count)
     var reportedItems = [NuwaEventInfo]()
@@ -119,8 +119,11 @@ class ViewController: NSViewController {
     }
     
     @IBAction func clearButtonClicked(_ sender: NSButton) {
-        reportedItems.removeAll()
-        displayedItems.removeAll()
+        eventQueue.async(flags: .barrier) {
+            self.reportedItems.removeAll()
+            self.displayedItems.removeAll()
+        }
+        
         reloadEventInfo()
         infoLabel.stringValue = ""
     }
@@ -210,10 +213,12 @@ extension ViewController {
     }
     
     func refreshDisplayedEvents() {
-        displayedItems.removeAll()
-        if displayMode == .DisplayAll && searchText.isEmpty {
-            displayedItems = reportedItems
-            return
+        eventQueue.async(flags: .barrier) {
+            self.displayedItems.removeAll()
+            if self.displayMode == .DisplayAll && self.searchText.isEmpty {
+                self.displayedItems = self.reportedItems
+                return
+            }
         }
         
         for event in reportedItems {
@@ -234,7 +239,9 @@ extension ViewController {
                 }
             }
             if searchText.isEmpty || event.desc.contains(searchText) {
-                displayedItems.append(event)
+                eventQueue.async(flags: .barrier) {
+                    self.displayedItems.append(event)
+                }
             }
         }
         reloadEventInfo()
