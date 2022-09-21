@@ -71,16 +71,16 @@ extension SextManager: NuwaEventProviderProtocol {
     
     func startProvider() -> Bool {
         var isConnected = false
+        let semaphore = DispatchSemaphore(value: 0)
         XPCServer.shared.connectToSext(bundle: Bundle.main, delegate: self) { success in
-            DispatchQueue.global().sync {
-                isConnected = success
-                if !success {
-                    self.delegate?.handleBrokenConnection()
-                }
+            isConnected = success
+            if !success {
+                self.delegate?.handleBrokenConnection()
             }
+            semaphore.signal()
         }
         
-        usleep(10000)
+        semaphore.wait()
         return isConnected
     }
     
