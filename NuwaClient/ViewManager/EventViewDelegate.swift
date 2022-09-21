@@ -27,6 +27,9 @@ extension ViewController: NuwaEventProcessProtocol {
                 }
                 
             case .NetAccess, .DNSQuery:
+                if PrefPathList.shared.filterNetworkList.contains(event.procPath) {
+                    return
+                }
                 eventCount[DisplayMode.DisplayNetwork.rawValue] += 1
                 if displayMode != .DisplayAll && displayMode != .DisplayNetwork {
                     return
