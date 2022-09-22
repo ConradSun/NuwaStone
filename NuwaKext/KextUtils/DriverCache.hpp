@@ -133,8 +133,11 @@ private:
         if (bucket->entry == nullptr) {
             bucket->entry = entry;
         }
-        else {
+        else if (last != nullptr) {
             last->next = entry;
+        }
+        else {
+            return false;
         }
         OSIncrementAtomic(&m_itemCount);
         return true;

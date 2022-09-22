@@ -245,7 +245,7 @@ errno_t KauthController::fillFileInfo(NuwaKextFile *FileInfo, const vfs_context_
     int length = kMaxPathLength;
     vnode_attr vap;
     
-    if (ctx == nullptr || vp == nullptr) {
+    if (ctx == nullptr || vp == nullptr || FileInfo == nullptr) {
         return errCode;
     }
     
