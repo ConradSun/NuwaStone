@@ -929,7 +929,7 @@
         <scene sceneID="hh0-ya-UP7">
             <objects>
                 <windowController id="nLu-dj-p6H" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="9kR-gK-4wq">
+                    <window key="window" title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="9kR-gK-4wq">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="239" width="480" height="270"/>
@@ -1012,12 +1012,12 @@ DQ
                             </scrollView>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zdv-t1-pNs">
                                 <rect key="frame" x="269" y="226" width="182" height="25"/>
-                                <popUpButtonCell key="cell" type="push" title="filtering file event" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="kNj-lf-RY2" id="qH0-lN-jGO">
+                                <popUpButtonCell key="cell" type="push" title="filtering file events" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="kNj-lf-RY2" id="qH0-lN-jGO">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" id="3fS-l9-Fdw">
                                         <items>
-                                            <menuItem title="filtering file event" state="on" id="kNj-lf-RY2"/>
+                                            <menuItem title="filtering file events" state="on" id="kNj-lf-RY2"/>
                                             <menuItem title="filtering network events" tag="1" id="qup-l1-eEe"/>
                                             <menuItem title="allowing execution" tag="2" id="Zf4-ku-RSA">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
