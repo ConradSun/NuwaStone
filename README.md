@@ -24,13 +24,15 @@ The sext uses Endpoint Security & Network Extension for event collection and beh
 >4. Close the installation guide.
 
 ## Uninstallation
->1. Select 'Uninstall NuwaStone' from the status bar menu of *NuwaClient* application.
+>1. Select 'Uninstall NuwaStone' from the status bar menu of **NuwaClient** application.
 
 ## Attention
-<p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/AuthAllert.png"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/AuthAllert.png" width=512></p>
+
 NuwaStone wont't let unsigned app run without your authorization, but the app will run just this time if you do not authorize within 30 seconds.
 
 ## Preferences
-<p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/Preferences.png"></p>
-Select 'Preferences' from the status bar menu of *NuwaClient* application to check or update user preferences.
+<p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/Preferences.png" width=512></p>
+
+Select 'Preferences' from the status bar menu of **NuwaClient** application to check or update user preferences.
 It supports 'add/remove/display' paths for filtering 'file/network/' events or 'allowing/denying' execution.
