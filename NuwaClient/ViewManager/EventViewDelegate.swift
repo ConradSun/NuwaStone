@@ -67,10 +67,16 @@ extension ViewController: NuwaEventProcessProtocol {
 
 extension ViewController: NSTableViewDelegate {
     func tableViewSelectionDidChange(_ notification: Notification) {
-        if eventView.selectedRowIndexes.count == 0 || eventView.selectedRow > displayedItems.count {
+        let count = eventQueue.sync {
+            displayedItems.count
+        }
+        
+        if eventView.selectedRowIndexes.count == 0 || eventView.selectedRow > count {
             return
         }
-        infoLabel.stringValue = displayedItems[eventView.selectedRow].desc
+        infoLabel.stringValue = eventQueue.sync {
+            displayedItems[eventView.selectedRow].desc
+        }
     }
 }
 
@@ -82,25 +88,23 @@ extension ViewController: NSTableViewDataSource {
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        var itemCount = 0
-        var text = ""
-        var event = NuwaEventInfo()
-        let format = DateFormatter()
-        eventQueue.sync {
-            itemCount = self.displayedItems.count
-            if row < itemCount {
-                event = self.displayedItems[row]
-            }
+        let itemCount = eventQueue.sync {
+            displayedItems.count
         }
-        
         if eventView.numberOfRows == 0 || row >= eventView.numberOfRows || row >= itemCount {
             return nil
         }
-        format.dateFormat = "MM-dd HH:mm:ss"
-        format.timeZone = .current
         guard let identity = tableColumn?.identifier else {
             return nil
         }
+        
+        let event = eventQueue.sync {
+            displayedItems[row]
+        }
+        let format = DateFormatter()
+        format.dateFormat = "MM-dd HH:mm:ss"
+        format.timeZone = .current
+        var text = ""
         
         switch tableColumn {
         case eventView.tableColumns[0]:

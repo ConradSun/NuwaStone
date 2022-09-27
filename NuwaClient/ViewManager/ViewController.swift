@@ -65,8 +65,10 @@ class ViewController: NSViewController {
             
             self.reloadEventInfo()
             for (index, _) in DisplayMode.allCases.enumerated() {
-                graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), index: index)
-                eventCountCopy[index] = eventCount[index]
+                DispatchQueue.main.async(flags: .barrier) { [self] in
+                    graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), index: index)
+                    eventCountCopy[index] = eventCount[index]
+                }
             }
             graphView.draw(graphView.frame)
             graphView.needsDisplay = true

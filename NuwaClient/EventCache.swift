@@ -30,6 +30,7 @@ struct ProcessCacheInfo {
 class ProcessCache {
     static let shared = ProcessCache()
     private var cacheDict = [Int32: ProcessCacheInfo]()
+    let cacheQueue = DispatchQueue(label: "com.nuwastone.eventcache.queue", attributes: .concurrent)
     private lazy var proxy = XPCConnection.shared.connection?.remoteObjectProxy as? DaemonXPCProtocol
     
     private func getActivePids() -> (UnsafeMutablePointer<Int32>, Int32) {
@@ -59,7 +60,10 @@ class ProcessCache {
             pidArray.deallocate()
         }
         
-        for pid in cacheDict.keys {
+        let pids = cacheQueue.sync {
+            cacheDict.keys
+        }
+        for pid in pids {
             var isAlived = false
             for i in 0 ..< count {
                 if pid == pidArray[Int(i)] {
@@ -68,7 +72,9 @@ class ProcessCache {
                 }
             }
             if !isAlived {
-                cacheDict[pid] = nil
+                cacheQueue.async(flags: .barrier) {
+                    self.cacheDict[pid] = nil
+                }
             }
         }
     }
@@ -97,14 +103,19 @@ class ProcessCache {
         info.bundleID = event.props[PropBundleID]
         info.codeSign = event.props[PropCodeSign]
         
-        cacheDict[event.pid] = info
+        cacheQueue.async(flags: .barrier) {
+            self.cacheDict[event.pid] = info
+        }
         Logger(.Debug, "Add process [\(event.pid): \(event.procPath)] to cache.")
     }
     
     func getFromCache(_ event: inout NuwaEventInfo) {
-        let info = cacheDict[event.pid]
+        let info = cacheQueue.sync {
+            cacheDict[event.pid]
+        }
+        
         if info == nil {
-            Logger(.Debug, "Failed to find proc [\(event.pid)] info in cache.")
+            Logger(.Warning, "Failed to find proc [\(event.pid)] info in cache.")
             fillCacheInfo(&event)
             // updateCache(event)
             return
