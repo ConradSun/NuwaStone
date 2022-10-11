@@ -24,7 +24,6 @@ class XPCServer: NSObject {
     var nuwaLog = NuwaLog()
     var listener: NSXPCListener?
     var connection: NSXPCConnection?
-    var delegate: ManagerXPCProtocol?
     
     private func getMachServiceName(from bundle: Bundle) -> String {
         let clientKeys = bundle.object(forInfoDictionaryKey: ClientName) as? [String: Any]
@@ -41,7 +40,6 @@ class XPCServer: NSObject {
     }
     
     func connectToSext(bundle: Bundle, delegate: ManagerXPCProtocol, handler: @escaping (Bool) -> Void) {
-        self.delegate = delegate
         guard connection == nil else {
             Logger(.Info, "Manager already connected.")
             handler(true)

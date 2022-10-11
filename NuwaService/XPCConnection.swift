@@ -22,7 +22,6 @@ class XPCConnection: NSObject {
     static let shared = XPCConnection()
     var listener: NSXPCListener?
     var connection: NSXPCConnection?
-    var delegate: ClientXPCProtocol?
     
     private func getMachServiceName(from bundle: Bundle) -> String {
         let clientKeys = bundle.object(forInfoDictionaryKey: ClientName) as? [String: Any]
@@ -39,7 +38,6 @@ class XPCConnection: NSObject {
     }
     
     func connectToDaemon(bundle: Bundle, delegate: ClientXPCProtocol, handler: @escaping (Bool) -> Void) {
-        self.delegate = delegate
         guard connection == nil else {
             Logger(.Info, "Client already connected.")
             handler(true)

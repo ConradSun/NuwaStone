@@ -28,7 +28,7 @@ struct NuwaLog {
             UserDefaults.standard.set(newValue, forKey: UserLogLevel)
         }
     }
-};
+}
 
 func Logger<T>(_ level: NuwaLogLevel, _ message: T, file: String = #file, lineNumber: Int = #line) {
     if level.rawValue > NuwaLog().logLevel {

@@ -55,7 +55,7 @@ class KextManager {
         let appearedCallback: IOServiceMatchingCallback = { refcon, iterator in
             let selfPtr = Unmanaged<KextManager>.fromOpaque(refcon!).takeUnretainedValue()
             selfPtr.processConnectionRequest(iterator: iterator)
-        };
+        }
         
         notificationPort = IONotificationPortCreate(kIOMasterPortDefault)
         IONotificationPortSetDispatchQueue(notificationPort, notificationQueue)
