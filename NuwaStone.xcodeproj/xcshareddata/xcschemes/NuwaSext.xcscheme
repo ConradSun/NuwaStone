@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3ABAFF7E2879C0D900928C22"
-               BuildableName = "NuwaClient.app"
-               BlueprintName = "NuwaClient"
+               BlueprintIdentifier = "3A6088DB28A49B0D00061A42"
+               BuildableName = "com.nuwastone.service.eps.systemextension"
+               BlueprintName = "NuwaSext"
                ReferencedContainer = "container:NuwaStone.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -34,23 +34,12 @@
       buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      enableASanStackUseAfterReturn = "YES"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3ABAFF7E2879C0D900928C22"
-            BuildableName = "NuwaClient.app"
-            BlueprintName = "NuwaClient"
-            ReferencedContainer = "container:NuwaStone.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -58,16 +47,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3ABAFF7E2879C0D900928C22"
-            BuildableName = "NuwaClient.app"
-            BlueprintName = "NuwaClient"
+            BlueprintIdentifier = "3A6088DB28A49B0D00061A42"
+            BuildableName = "com.nuwastone.service.eps.systemextension"
+            BlueprintName = "NuwaSext"
             ReferencedContainer = "container:NuwaStone.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

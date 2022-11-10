@@ -19,7 +19,6 @@
 		3A4A95E82897A8E900220EB7 /* SocketFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A4A95E62897A8E900220EB7 /* SocketFilter.hpp */; };
 		3A4A95EC2897F1C600220EB7 /* SocketHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A4A95EA2897F1C600220EB7 /* SocketHandler.cpp */; };
 		3A4A95ED2897F1C600220EB7 /* SocketHandler.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A4A95EB2897F1C600220EB7 /* SocketHandler.hpp */; };
-		3A4CF30D28D805E9002DF7D4 /* NuwaService.app in Resources */ = {isa = PBXBuildFile; fileRef = 3A60896528A64C1B00061A42 /* NuwaService.app */; };
 		3A5F3315287B145400A8F76E /* KauthController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A5F3313287B145400A8F76E /* KauthController.cpp */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
 		3A5F3316287B145400A8F76E /* KauthController.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A5F3314287B145400A8F76E /* KauthController.hpp */; };
 		3A5F643828C72A460013C60E /* DNSResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5F643728C72A460013C60E /* DNSResolver.swift */; };
@@ -42,7 +41,6 @@
 		3A60897828A64DEE00061A42 /* SextControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6088FA28A4FCE500061A42 /* SextControl.swift */; };
 		3A60897928A64E1200061A42 /* NuwaLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFFAC2879C47800928C22 /* NuwaLogger.swift */; };
 		3A60897A28A64E1C00061A42 /* NuwaCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB9B37E289268690078B45D /* NuwaCommon.swift */; };
-		3A60897B28A6561E00061A42 /* NuwaStone.kext in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 3ABAFF962879C1BC00928C22 /* NuwaStone.kext */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3A60897F28A6562200061A42 /* com.nuwastone.service.eps.systemextension in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 3A6088DC28A49B0D00061A42 /* com.nuwastone.service.eps.systemextension */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3A6EAD8F28B8CA0400174980 /* ContentFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6EAD8E28B8CA0400174980 /* ContentFilter.swift */; };
 		3A7F472028CB36DC00540EF1 /* com.nuwastone.service.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3A7F471F28CB36DC00540EF1 /* com.nuwastone.service.plist */; };
@@ -50,6 +48,8 @@
 		3A82D2C228BCDD86006E30DA /* FlowParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A82D2C128BCDD86006E30DA /* FlowParser.swift */; };
 		3A82D2C528BE3632006E30DA /* DNSResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A82D2C328BE3632006E30DA /* DNSResolver.cpp */; };
 		3A82D2C628BE3632006E30DA /* DNSResolver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A82D2C428BE3632006E30DA /* DNSResolver.hpp */; };
+		3AA77592291CEF6A006D4765 /* NuwaStone.kext in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 3ABAFF962879C1BC00928C22 /* NuwaStone.kext */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3AA77597291CF027006D4765 /* NuwaService.app in Resources */ = {isa = PBXBuildFile; fileRef = 3A60896528A64C1B00061A42 /* NuwaService.app */; };
 		3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */; };
 		3AB13ABC287EC378004E1093 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AB13ABB287EC378004E1093 /* main.cpp */; };
 		3AB9B38128926BF80078B45D /* NuwaCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB9B37E289268690078B45D /* NuwaCommon.swift */; };
@@ -78,21 +78,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3A60897C28A6561E00061A42 /* PBXContainerItemProxy */ = {
+		3AA77595291CEFBA006D4765 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3ABAFF772879C0D900928C22 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 3ABAFF952879C1BC00928C22;
 			remoteInfo = NuwaKext;
 		};
-		3A60898028A6562200061A42 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3ABAFF772879C0D900928C22 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3A6088DB28A49B0D00061A42;
-			remoteInfo = NuwaSext;
-		};
-		3A60898428A6565000061A42 /* PBXContainerItemProxy */ = {
+		3AA77598291CF027006D4765 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3ABAFF772879C0D900928C22 /* Project object */;
 			proxyType = 1;
@@ -108,7 +101,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				3A60897B28A6561E00061A42 /* NuwaStone.kext in Embed PlugIns */,
+				3AA77592291CEF6A006D4765 /* NuwaStone.kext in Embed PlugIns */,
 			);
 			name = "Embed PlugIns";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -492,8 +485,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				3A60897D28A6561E00061A42 /* PBXTargetDependency */,
-				3A60898128A6562200061A42 /* PBXTargetDependency */,
+				3AA77596291CEFBA006D4765 /* PBXTargetDependency */,
 			);
 			name = NuwaService;
 			productName = NuwaService;
@@ -511,7 +503,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				3A60898528A6565000061A42 /* PBXTargetDependency */,
+				3AA77599291CF027006D4765 /* PBXTargetDependency */,
 			);
 			name = NuwaClient;
 			productName = NuwaStone;
@@ -544,7 +536,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1340;
-				LastUpgradeCheck = 1340;
+				LastUpgradeCheck = 1410;
 				TargetAttributes = {
 					3A6088DB28A49B0D00061A42 = {
 						CreatedOnToolsVersion = 13.4.1;
@@ -607,7 +599,7 @@
 				3ABAFF872879C0DA00928C22 /* Assets.xcassets in Resources */,
 				3ABAFF8A2879C0DA00928C22 /* Main.storyboard in Resources */,
 				3A2305CC28ADD96E00F85A82 /* Alert.xib in Resources */,
-				3A4CF30D28D805E9002DF7D4 /* NuwaService.app in Resources */,
+				3AA77597291CF027006D4765 /* NuwaService.app in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -696,20 +688,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3A60897D28A6561E00061A42 /* PBXTargetDependency */ = {
+		3AA77596291CEFBA006D4765 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3ABAFF952879C1BC00928C22 /* NuwaKext */;
-			targetProxy = 3A60897C28A6561E00061A42 /* PBXContainerItemProxy */;
+			targetProxy = 3AA77595291CEFBA006D4765 /* PBXContainerItemProxy */;
 		};
-		3A60898128A6562200061A42 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3A6088DB28A49B0D00061A42 /* NuwaSext */;
-			targetProxy = 3A60898028A6562200061A42 /* PBXContainerItemProxy */;
-		};
-		3A60898528A6565000061A42 /* PBXTargetDependency */ = {
+		3AA77599291CF027006D4765 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3A60896428A64C1B00061A42 /* NuwaService */;
-			targetProxy = 3A60898428A6565000061A42 /* PBXContainerItemProxy */;
+			targetProxy = 3AA77598291CF027006D4765 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -740,6 +727,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -771,6 +759,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -801,9 +790,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = NuwaService/NuwaService.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -815,7 +806,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -832,9 +823,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = NuwaService/NuwaService.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -846,7 +839,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -890,6 +883,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -950,6 +944,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -981,6 +976,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -992,7 +988,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1014,6 +1010,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1025,7 +1022,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1044,11 +1041,12 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaKext/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
 				MODULE_NAME = com.nuwastone.service;
 				MODULE_START = 0;
@@ -1072,11 +1070,12 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaKext/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0;
 				MODULE_NAME = com.nuwastone.service;
 				MODULE_START = 0;
