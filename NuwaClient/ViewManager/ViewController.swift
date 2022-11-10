@@ -59,7 +59,7 @@ class ViewController: NSViewController {
         eventView.target = self
         
         displayTimer = Timer(timeInterval: 1.0, repeats: true) { [self] timer in
-            if (!isStarted) {
+            if !isStarted {
                 return
             }
             

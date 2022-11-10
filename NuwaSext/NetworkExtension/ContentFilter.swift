@@ -33,7 +33,7 @@ class ContentFilter: NEFilterDataProvider {
     }
     
     override func stopFilter(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
-        Logger(.Info, "Stop content filter for \(reason).")
+        Logger(.Info, "Stop content filter for [\(reason)].")
         completionHandler()
     }
     
