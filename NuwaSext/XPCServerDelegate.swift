@@ -53,8 +53,8 @@ extension XPCServer: SextXPCProtocol {
         Logger(.Info, "Log level is setted to \(nuwaLog)")
     }
     
-    func replyAuthEvent(pointer: UInt, isAllowed: Bool) {
-        ResponseManager.shared.replyAuthEvent(pointer: pointer, isAllowed: isAllowed)
+    func replyAuthEvent(index: UInt64, isAllowed: Bool) {
+        ResponseManager.shared.replyAuthEvent(index: index, isAllowed: isAllowed)
     }
     
     func updateMuteList(vnodeID: UInt64, type: UInt8, opt: UInt8) {
@@ -65,21 +65,21 @@ extension XPCServer: SextXPCProtocol {
             if optType == .Add {
                 ListManager.shared.updateAuthProcList(vnodeID: vnodeID, isWhite: true)
             }
-            else if (optType == .Remove) {
+            else if optType == .Remove {
                 ListManager.shared.removeAuthProcPath(vnodeID: vnodeID, isWhite: true)
             }
         case .DenyExec:
             if optType == .Add {
                 ListManager.shared.updateAuthProcList(vnodeID: vnodeID, isWhite: false)
             }
-            else if (optType == .Remove) {
+            else if optType == .Remove {
                 ListManager.shared.removeAuthProcPath(vnodeID: vnodeID, isWhite: false)
             }
         case .FilterFileEvent:
             if optType == .Add {
                 ListManager.shared.updateFilterFileList(vnodeID: vnodeID)
             }
-            else if (optType == .Remove) {
+            else if optType == .Remove {
                 ListManager.shared.removeFilterFilePath(vnodeID: vnodeID)
             }
             break

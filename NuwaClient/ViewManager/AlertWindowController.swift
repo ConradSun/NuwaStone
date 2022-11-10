@@ -55,7 +55,7 @@ class AlertWindowController: NSWindowController {
         shouldAddToList = decisionCheckbox.state == .off
         _ = eventProvider?.replyAuthEvent(eventID: authEvent!.eventID, isAllowed: isAllowed)
         if shouldAddToList {
-            _ = eventProvider?.udpateMuteList(vnodeID: authEvent!.eventID, type: muteType, opt: .Add)
+            _ = eventProvider?.udpateMuteList(vnodeID: getFileVnodeID(authEvent!.procPath), type: muteType, opt: .Add)
             PrefPathList.shared.updateExecList(paths: [authEvent!.procPath], opt: .Add, isWhite: isAllowed)
         }
         window?.close()

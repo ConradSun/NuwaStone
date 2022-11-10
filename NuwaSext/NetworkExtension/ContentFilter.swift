@@ -38,13 +38,16 @@ class ContentFilter: NEFilterDataProvider {
     }
     
     override func handleNewFlow(_ flow: NEFilterFlow) -> NEFilterNewFlowVerdict {
+        guard XPCServer.shared.connection != nil else {
+            return .allow()
+        }
         guard let socketFlow = flow as? NEFilterSocketFlow else {
             return .allow()
         }
-        
         guard let remote = socketFlow.remoteEndpoint as? NWHostEndpoint else {
             return .allow()
         }
+        
         if socketFlow.socketProtocol == IPPROTO_TCP || socketFlow.socketProtocol == IPPROTO_UDP {
             parseNewFlow(flow: socketFlow)
         }

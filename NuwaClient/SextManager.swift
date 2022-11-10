@@ -105,7 +105,7 @@ extension SextManager: NuwaEventProviderProtocol {
         if eventID == 0 {
             return false
         }
-        sextProxy?.replyAuthEvent(pointer: UInt(eventID), isAllowed: isAllowed)
+        sextProxy?.replyAuthEvent(index: eventID, isAllowed: isAllowed)
         return true
     }
     

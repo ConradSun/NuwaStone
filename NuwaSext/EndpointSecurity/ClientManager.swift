@@ -10,6 +10,7 @@ import EndpointSecurity
 
 class ClientManager {
     static let shared = ClientManager()
+    var authCount = UInt64(0)
     var esClient: OpaquePointer?
     var initError = ESClientError.NewClientError
     let authQueue = DispatchQueue(label: "com.nuwastone.sext.authqueue", attributes: .concurrent)
@@ -71,6 +72,13 @@ class ClientManager {
     }
     
     func processMessage(_ message: UnsafePointer<es_message_t>) {
+        guard XPCServer.shared.connection != nil else {
+            if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
+                replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW)
+            }
+            return
+        }
+        
         let process = message.pointee.process.pointee
         var nuwaEvent = NuwaEventInfo()
         
@@ -116,15 +124,11 @@ class ClientManager {
     func dispatchEvent(event: NuwaEventInfo, message: UnsafePointer<es_message_t>) {
         if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
             authQueue.async {
-                if XPCServer.shared.connection == nil {
-                    self.replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW)
-                    return
-                }
-                
                 guard let isWhite = ListManager.shared.containsAuthProcPath(vnodeID: event.eventID) else {
-                    event.eventID = UInt64(UInt(bitPattern: message))
+                    self.authCount += 1
+                    event.eventID = self.authCount
                     XPCServer.shared.sendAuthEvent(event)
-                    ResponseManager.shared.addAuthEvent(eventID: event.eventID)
+                    ResponseManager.shared.addAuthEvent(index: event.eventID, msgPtr: UInt64(UInt(bitPattern: message)))
                     return
                 }
                 let result = isWhite ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
@@ -148,7 +152,7 @@ class ClientManager {
     func replyAuthEvent(message: UnsafePointer<es_message_t>, result: es_auth_result_t) {
         let ret = es_respond_auth_result(self.esClient!, message, result, false)
         if ret != ES_RESPOND_RESULT_SUCCESS {
-            Logger(.Warning, "Failed to respond auth event [\(ret)].")
+            Logger(.Error, "Failed to respond auth event [\(ret)].")
         }
     }
 }
