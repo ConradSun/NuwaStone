@@ -98,7 +98,7 @@ func getProcCurrentDir(pid: Int32, eventHandler: @escaping (String, Int32) -> Vo
         eventHandler("", errno)
         return
     }
-    eventHandler(String(cString: &info.pvi_cdir.vip_path.0), 0)
+    eventHandler(String(info.pvi_cdir.vip_path.0), 0)
 }
 
 func getProcArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void) {

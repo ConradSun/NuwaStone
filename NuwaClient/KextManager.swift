@@ -139,7 +139,7 @@ extension KextManager {
         nuwaEvent.eventTime = event.eventTime
         nuwaEvent.pid = event.mainProcess.pid
         nuwaEvent.ppid = event.mainProcess.ppid
-        nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
+        nuwaEvent.procPath = String(event.processCreate.path.0)
         nuwaEvent.fillBundleIdentifier()
         nuwaEvent.fillCodeSign()
         
@@ -158,17 +158,17 @@ extension KextManager {
         switch event.eventType {
         case kActionNotifyProcessCreate:
             nuwaEvent.eventType = .ProcessCreate
-            nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
+            nuwaEvent.procPath = String(event.processCreate.path.0)
         case kActionNotifyFileCloseModify:
             nuwaEvent.eventType = .FileCloseModify
-            nuwaEvent.props[PropFilePath] = String(cString: &event.fileCloseModify.path.0)
+            nuwaEvent.props[PropFilePath] = String(event.fileCloseModify.path.0)
         case kActionNotifyFileRename:
             nuwaEvent.eventType = .FileRename
-            nuwaEvent.props[PropSrcPath] = String(cString: &event.fileRename.srcFile.path.0)
-            nuwaEvent.props[PropDstPath] = String(cString: &event.fileRename.newPath.0)
+            nuwaEvent.props[PropSrcPath] = String(event.fileRename.srcFile.path.0)
+            nuwaEvent.props[PropDstPath] = String(event.fileRename.newPath.0)
         case kActionNotifyFileDelete:
             nuwaEvent.eventType = .FileDelete
-            nuwaEvent.props[PropFilePath] = String(cString: &event.fileDelete.path.0)
+            nuwaEvent.props[PropFilePath] = String(event.fileDelete.path.0)
         case kActionNotifyNetworkAccess:
             nuwaEvent.eventType = .NetAccess
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.localAddr, isLocal: true)
@@ -184,8 +184,8 @@ extension KextManager {
             }
         case kActionNotifyDnsQuery:
             nuwaEvent.eventType = .DNSQuery
-            nuwaEvent.props[PropDomainName] = String(cString: &event.dnsQuery.domainName.0)
-            nuwaEvent.props[PropReplyResult] = String(cString: &event.dnsQuery.queryResult.0)
+            nuwaEvent.props[PropDomainName] = String(event.dnsQuery.domainName.0)
+            nuwaEvent.props[PropReplyResult] = String(event.dnsQuery.queryResult.0)
         default:
             break
         }
@@ -196,7 +196,7 @@ extension KextManager {
         nuwaEvent.setUserName(uid: event.mainProcess.euid)
         
         if nuwaEvent.eventType == .ProcessCreate {
-            nuwaEvent.procPath = String(cString: &event.processCreate.path.0)
+            nuwaEvent.procPath = String(event.processCreate.path.0)
             nuwaEvent.fillProcCurrentDir { error in
                 if error == EPERM {
                     self.proxy?.getProcessCurrentDir(pid: nuwaEvent.pid, eventHandler: { cwd, error in
