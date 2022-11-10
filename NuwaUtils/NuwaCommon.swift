@@ -192,6 +192,8 @@ func getSignInfoFromPath(_ path: String) ->[String] {
 func getFileVnodeID(_ path: String) -> UInt64 {
     var fileStat = stat()
     stat(path.cString(using: .utf8), &fileStat)
-    let vnodeID = (UInt64(fileStat.st_dev) << 32) | UInt64(fileStat.st_ino)
+    let dev = UInt64(truncating: fileStat.st_dev as NSNumber)
+    let ino = UInt64(truncating: fileStat.st_ino as NSNumber)
+    let vnodeID = (dev << 32) | ino
     return vnodeID
 }

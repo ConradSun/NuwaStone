@@ -17,7 +17,9 @@ extension ClientManager {
     }
     
     func getVnodeID(fileStat: stat) -> UInt64 {
-        let vnodeID = (UInt64(fileStat.st_dev) << 32) | UInt64(fileStat.st_ino)
+        let dev = UInt64(truncating: fileStat.st_dev as NSNumber)
+        let ino = UInt64(truncating: fileStat.st_ino as NSNumber)
+        let vnodeID = (dev << 32) | ino
         return vnodeID
     }
     
