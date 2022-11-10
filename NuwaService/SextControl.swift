@@ -62,14 +62,17 @@ extension SextControl {
     func switchNEStatus(_ enable: Bool) -> Bool {
         let manager = NEFilterManager.shared()
         let semaphore = DispatchSemaphore(value: 0)
+        let managerQueue = DispatchQueue(label: "com.nuwastone.necontrol.queue", qos: .background)
         var isError = false
         
-        manager.loadFromPreferences { error in
-            if error != nil {
-                isError = true
-                Logger(.Error, "Failed to load preferences for network extension [\(error!)]")
+        managerQueue.async {
+            manager.loadFromPreferences { error in
+                if error != nil {
+                    isError = true
+                    Logger(.Error, "Failed to load preferences for network extension [\(error!)]")
+                }
+                semaphore.signal()
             }
-            semaphore.signal()
         }
         if semaphore.wait(timeout: .distantFuture) == .timedOut || isError {
             return false
@@ -93,12 +96,14 @@ extension SextControl {
         }
         
         isError = false
-        manager.saveToPreferences { error in
-            if error != nil {
-                isError = true
-                Logger(.Error, "Failed to save preferences for network extension [\(error!)]")
+        managerQueue.async {
+            manager.saveToPreferences { error in
+                if error != nil {
+                    isError = true
+                    Logger(.Error, "Failed to save preferences for network extension [\(error!)]")
+                }
+                semaphore.signal()
             }
-            semaphore.signal()
         }
         if semaphore.wait(timeout: .distantFuture) == .timedOut || isError {
             return false

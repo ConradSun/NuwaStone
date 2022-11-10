@@ -88,7 +88,12 @@ class ViewController: NSViewController {
     @IBAction func controlButtonClicked(_ sender: NSButton) {
         isStarted = !isStarted
         if isStarted {
-            ProcessCache.shared.initProcCache()
+            let semaphore = DispatchSemaphore(value: 0)
+            DispatchQueue.global().async {
+                ProcessCache.shared.initProcCache()
+                semaphore.signal()
+            }
+            semaphore.wait()
             if !eventProvider!.startProvider() {
                 alertWithError(error: "Failed to connect extension.")
                 return
