@@ -174,8 +174,23 @@ class ViewController: NSViewController {
     }
     
     @IBAction func uninstallMenuItemSelected(_ sender: NSMenuItem) {
-        let proxy = XPCConnection.shared.connection?.remoteObjectProxy as! DaemonXPCProtocol
-        proxy.launchUninstaller()
+        if !self.controlButton.isEnabled {
+            alertWithError(error: "Unable to uninstall for broken connection with daemon.")
+            return
+        }
+        
+        let confirmView = NSAlert()
+        confirmView.alertStyle = .informational
+        confirmView.messageText = "Confirm"
+        confirmView.informativeText = "Are you sure to uninstall NuwaClient?"
+        confirmView.addButton(withTitle: "NO")
+        confirmView.addButton(withTitle: "YES")
+        let result = confirmView.runModal()
+        
+        if result == .alertSecondButtonReturn {
+            let proxy = XPCConnection.shared.connection?.remoteObjectProxy as! DaemonXPCProtocol
+            proxy.launchUninstaller()
+        }
     }
 }
 
