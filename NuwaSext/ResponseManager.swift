@@ -12,44 +12,47 @@ class ResponseManager {
     static let shared = ResponseManager()
     let replyQueue = DispatchQueue(label: "com.nuwastone.sext.replyqueue", attributes: .concurrent)
     let dictQueue = DispatchQueue(label: "com.nuwastone.sext.dictqueue", attributes: .concurrent)
-    var underwayEvent = [UInt64: UInt64]()
+    var underwayEvent = [UInt64: UnsafePointer<es_message_t>]()
     
     func replyAuthEvent(index: UInt64, isAllowed: Bool) {
-        let pointer = dictQueue.sync {
+        let message = dictQueue.sync {
             underwayEvent[index]
         }
-        guard pointer != nil else {
+        guard message != nil else {
             Logger(.Debug, "Event [index: \(index)] has been replied.")
             return
         }
         
-        dictQueue.async {
+        dictQueue.async(flags: .barrier) {
             self.underwayEvent[index] = nil
         }
         
-        let message = UnsafePointer<es_message_t>.init(bitPattern: UInt(pointer!))
         let decision = isAllowed ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
-        let result = es_respond_auth_result(ClientManager.shared.esClient!, message!, decision, false)
-        
-        if result != ES_RESPOND_RESULT_SUCCESS {
-            if result == ES_RESPOND_RESULT_NOT_FOUND {
-                Logger(.Error, "Failed to respond auth event for not found.")
-            }
-            else {
-                Logger(.Error, "Failed to respond auth event [\(result)].")
-                
-            }
+        if !ClientManager.shared.replyAuthEvent(message: message!, result: decision) {
+            Logger(.Error, "Failed to reply auth event [index: \(index)].")
         }
     }
     
-    func addAuthEvent(index: UInt64, msgPtr: UInt64) {
-        dictQueue.async {
-            self.underwayEvent[index] = msgPtr
+    func addAuthEvent(index: UInt64, message: UnsafePointer<es_message_t>) {
+        dictQueue.async(flags: .barrier) {
+            self.underwayEvent[index] = message
         }
                 
         let waitTime = DispatchTime.now() + .milliseconds(MaxWaitTime)
         replyQueue.asyncAfter(deadline: waitTime) {
             self.replyAuthEvent(index: index, isAllowed: true)
+        }
+    }
+    
+    func replyAllEvents() {
+        dictQueue.sync {
+            for item in underwayEvent {
+                if !ClientManager.shared.replyAuthEvent(message: item.value, result: ES_AUTH_RESULT_ALLOW) {}
+                Logger(.Error, "Failed to reply auth event [index: \(item.key)].")
+            }
+        }
+        dictQueue.async(flags: .barrier) {
+            self.underwayEvent.removeAll()
         }
     }
 }

@@ -14,7 +14,7 @@ class ClientManager {
     var esClient: OpaquePointer?
     var initError = ESClientError.NewClientError
     let authQueue = DispatchQueue(label: "com.nuwastone.sext.authqueue", attributes: .concurrent)
-    let notifyQueue = DispatchQueue(label: "com.nuwastone.sext.notifyqueue")
+    let notifyQueue = DispatchQueue(label: "com.nuwastone.sext.notifyqueue", attributes: .concurrent)
     let subTypes = [
         ES_EVENT_TYPE_AUTH_EXEC,
         ES_EVENT_TYPE_NOTIFY_EXEC,
@@ -23,6 +23,16 @@ class ClientManager {
         ES_EVENT_TYPE_NOTIFY_UNLINK,
         ES_EVENT_TYPE_NOTIFY_RENAME,
         ES_EVENT_TYPE_NOTIFY_CLOSE
+    ]
+    
+    let typeDict = [
+        ES_EVENT_TYPE_AUTH_EXEC.rawValue: "AuthExec",
+        ES_EVENT_TYPE_NOTIFY_EXEC.rawValue: "NotifyExec",
+        ES_EVENT_TYPE_NOTIFY_EXIT.rawValue: "NotifyExit",
+        ES_EVENT_TYPE_NOTIFY_CREATE.rawValue: "NotifyCreate",
+        ES_EVENT_TYPE_NOTIFY_UNLINK.rawValue: "NotifyUnlink",
+        ES_EVENT_TYPE_NOTIFY_RENAME.rawValue: "NotifyRename",
+        ES_EVENT_TYPE_NOTIFY_CLOSE.rawValue: "NotifyClose"
     ]
     
     func startMonitoring() {
@@ -43,13 +53,13 @@ class ClientManager {
             Logger(.Error, "Failed to create ES client [\(result)].")
             return
         }
+        es_clear_cache(client!)
         if es_subscribe(client!, subTypes, UInt32(subTypes.count)) != ES_RETURN_SUCCESS {
             es_delete_client(client)
             initError = .FailedSubscription
             Logger(.Error, "Failed to subscribe event source.")
             return
         }
-        es_clear_cache(client!)
         
         esClient = client
         initError = .Success
@@ -64,6 +74,8 @@ class ClientManager {
         if es_unsubscribe(esClient!, subTypes, UInt32(subTypes.count)) == ES_RETURN_ERROR {
             Logger(.Error, "Failed to unsubscibe event source.")
         }
+        ResponseManager.shared.replyAllEvents()
+        
         if es_delete_client(esClient) == ES_RETURN_ERROR {
             Logger(.Error, "Failed to delete ES client.")
         }
@@ -74,7 +86,7 @@ class ClientManager {
     func processMessage(_ message: UnsafePointer<es_message_t>) {
         guard XPCServer.shared.connection != nil else {
             if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
-                replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW)
+                _ = replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW)
             }
             return
         }
@@ -127,17 +139,19 @@ class ClientManager {
                 guard let isWhite = ListManager.shared.containsAuthProcPath(vnodeID: event.eventID) else {
                     self.authCount += 1
                     event.eventID = self.authCount
+                    ResponseManager.shared.addAuthEvent(index: event.eventID, message: message)
                     XPCServer.shared.sendAuthEvent(event)
-                    ResponseManager.shared.addAuthEvent(index: event.eventID, msgPtr: UInt64(UInt(bitPattern: message)))
                     return
                 }
                 let result = isWhite ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
-                self.replyAuthEvent(message: message, result: result)
+                if !self.replyAuthEvent(message: message, result: result) {
+                    Logger(.Error, "Failed to reply auth event [\(event.desc)].")
+                }
                 Logger(.Info, "Process [\(event.procPath)] is contained in auth list.")
             }
         }
         else if message.pointee.action_type == ES_ACTION_TYPE_NOTIFY {
-            notifyQueue.sync {
+            notifyQueue.async {
                 if event.eventType == .ProcessCreate || event.eventType == .ProcessExit {
                     XPCServer.shared.sendNotifyEvent(event)
                     return
@@ -149,10 +163,17 @@ class ClientManager {
         }
     }
     
-    func replyAuthEvent(message: UnsafePointer<es_message_t>, result: es_auth_result_t) {
+    func replyAuthEvent(message: UnsafePointer<es_message_t>, result: es_auth_result_t) ->Bool {
+        if message.pointee.action_type != ES_ACTION_TYPE_AUTH {
+            Logger(.Warning, "Event [type: \(typeDict[message.pointee.event_type.rawValue]!)] to be replied is not auth type.")
+            return false
+        }
+        
         let ret = es_respond_auth_result(self.esClient!, message, result, false)
         if ret != ES_RESPOND_RESULT_SUCCESS {
-            Logger(.Error, "Failed to respond auth event [\(ret)].")
+            Logger(.Error, "Failed to respond auth event with error [\(ret.rawValue)].")
+            return false
         }
+        return true
     }
 }
