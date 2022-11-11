@@ -8,7 +8,7 @@
 import Foundation
 
 class SextManager {
-    private lazy var sextProxy = XPCServer.shared.connection?.remoteObjectProxy() as? SextXPCProtocol
+    private var sextProxy: SextXPCProtocol?
     static let shared = SextManager()
     var nuwaLog = NuwaLog()
     var delegate: NuwaEventProcessProtocol?
@@ -78,6 +78,9 @@ extension SextManager: NuwaEventProviderProtocol {
             if !success {
                 self.delegate?.handleBrokenConnection()
             }
+            else {
+                self.sextProxy = XPCServer.shared.connection?.remoteObjectProxy() as? SextXPCProtocol
+            }
             semaphore.signal()
         }
         
@@ -91,6 +94,7 @@ extension SextManager: NuwaEventProviderProtocol {
         conn?.interruptionHandler = nil
         conn?.invalidationHandler = nil
         conn?.invalidate()
+        sextProxy = nil
         
         return true
     }
