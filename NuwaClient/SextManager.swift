@@ -15,37 +15,38 @@ class SextManager {
 }
 
 extension SextManager: ManagerXPCProtocol {
-    private func decodeEventInfo(event: String, isAuth: Bool) -> NuwaEventInfo? {
+    private func decodeEventInfo(event: String) -> NuwaEventInfo? {
         let decoder = JSONDecoder()
         guard let data = event.data(using: .utf8) else {
             Logger(.Warning, "Failed to seralize event.")
             return nil
         }
-        guard var event = try? decoder.decode(NuwaEventInfo.self, from: data) else {
+        guard let event = try? decoder.decode(NuwaEventInfo.self, from: data) else {
             Logger(.Warning, "Failed to decode event.")
             return nil
         }
-        if !isAuth {
-            if event.eventType == .ProcessCreate {
-                ProcessCache.shared.updateCache(event)
-            }
-            else {
-                ProcessCache.shared.getFromCache(&event)
-            }
-        }
-        
         return event
     }
     
     func reportNotifyEvent(notifyEvent: String) {
-        guard let event = decodeEventInfo(event: notifyEvent, isAuth: false) else {
+        guard var event = decodeEventInfo(event: notifyEvent) else {
+            Logger(.Warning, "Failed to decode notify event.")
             return
         }
+        
+        if event.eventType == .ProcessCreate {
+            ProcessCache.shared.updateCache(event)
+        }
+        else {
+            ProcessCache.shared.getFromCache(&event)
+        }
+        
         delegate?.displayNotifyEvent(event)
     }
     
     func reportAuthEvent(authEvent: String) {
-        guard let event = decodeEventInfo(event: authEvent, isAuth: true) else {
+        guard let event = decodeEventInfo(event: authEvent) else {
+            Logger(.Warning, "Failed to decode auth event.")
             return
         }
         

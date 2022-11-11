@@ -25,12 +25,16 @@ extension XPCServer {
         return json
     }
     
-    func sendAuthEvent(_ event: NuwaEventInfo) {
-        let proxy = connection?.remoteObjectProxy as? ManagerXPCProtocol
+    func sendAuthEvent(_ event: NuwaEventInfo) ->Bool {
+        guard let proxy = connection?.remoteObjectProxy as? ManagerXPCProtocol else {
+            return false
+        }
         let json = encodeEventInfo(event)
         if !json.isEmpty {
-            proxy?.reportAuthEvent(authEvent: json)
+            proxy.reportAuthEvent(authEvent: json)
+            return true
         }
+        return false
     }
     
     func sendNotifyEvent(_ event: NuwaEventInfo) {

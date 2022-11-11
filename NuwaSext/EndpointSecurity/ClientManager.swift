@@ -139,8 +139,15 @@ class ClientManager {
                 guard let isWhite = ListManager.shared.containsAuthProcPath(vnodeID: event.eventID) else {
                     self.authCount += 1
                     event.eventID = self.authCount
-                    ResponseManager.shared.addAuthEvent(index: event.eventID, message: message)
-                    XPCServer.shared.sendAuthEvent(event)
+                    if !XPCServer.shared.sendAuthEvent(event) {
+                        Logger(.Warning, "Failed to send auth event [index: \(event.eventID)].")
+                        if !self.replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW) {
+                            Logger(.Error, "Failed to reply auth event [\(event.desc)].")
+                        }
+                    }
+                    else {
+                        ResponseManager.shared.addAuthEvent(index: event.eventID, message: message)
+                    }
                     return
                 }
                 let result = isWhite ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
