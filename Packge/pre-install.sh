@@ -7,7 +7,7 @@ version=$(uname -r)
 version=${version:0:2}
 version=$(($version-4))
 
-if (($version < 12))
+if (($version < 13))
 then
     echo "Unsupport OS."
     exit -1
