@@ -8,6 +8,8 @@
 
 <p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/NuwaStone.png"></p>
 
+[![LICENSE](https://img.shields.io/badge/license-GPL--3.0-green)](https://github.com/ConradSun/NuwaStone/blob/main/LICENSE) [![Language](https://img.shields.io/badge/Language-swift-red.svg)](https://www.swift.org)
+
 It supports events as below
 
 - File: create, delete, close with modified, rename
