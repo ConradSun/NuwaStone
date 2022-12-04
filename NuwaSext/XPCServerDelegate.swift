@@ -61,34 +61,18 @@ extension XPCServer: SextXPCProtocol {
         ResponseManager.shared.replyAuthEvent(index: index, isAllowed: isAllowed)
     }
     
-    func updateMuteList(vnodeID: UInt64, type: UInt8, opt: UInt8) {
-        let muteType = NuwaMuteType(rawValue: type)
-        let optType = NuwaPrefOpt(rawValue: opt)
+    func updateMuteList(vnodeID: [UInt64], type: UInt8) {
+        guard let muteType = NuwaMuteType(rawValue: type) else {
+            return
+        }
+        
         switch muteType {
-        case .AllowExec:
-            if optType == .Add {
-                ListManager.shared.updateAuthProcList(vnodeID: vnodeID, isWhite: true)
-            }
-            else if optType == .Remove {
-                ListManager.shared.removeAuthProcPath(vnodeID: vnodeID, isWhite: true)
-            }
-        case .DenyExec:
-            if optType == .Add {
-                ListManager.shared.updateAuthProcList(vnodeID: vnodeID, isWhite: false)
-            }
-            else if optType == .Remove {
-                ListManager.shared.removeAuthProcPath(vnodeID: vnodeID, isWhite: false)
-            }
-        case .FilterFileEvent:
-            if optType == .Add {
-                ListManager.shared.updateFilterFileList(vnodeID: vnodeID)
-            }
-            else if optType == .Remove {
-                ListManager.shared.removeFilterFilePath(vnodeID: vnodeID)
-            }
-            break
-        case .FilterNetEvent:
-            break
+        case .FilterFileByFilePath, .FilterFileByProcPath:
+            ListManager.shared.updateFilterFileList(vnodeID: vnodeID, type: muteType)
+            
+        case .AllowProcExec, .DenyProcExec:
+            ListManager.shared.updateAuthProcList(vnodeID: vnodeID, type: muteType)
+            
         default:
             break
         }

@@ -8,14 +8,32 @@
 import Cocoa
 
 class PrefsViewController: NSViewController {
-    @IBOutlet weak var operatePopup: NSPopUpButton!
-    @IBOutlet weak var filterPopup: NSPopUpButton!
-    @IBOutlet weak var pathView: NSTextView!
+    private enum MuteChoice {
+        case FilterFile
+        case FilterNetwork
+        case MuteProcess
+    }
     
-    var eventProvider: NuwaEventProviderProtocol?
+    @IBOutlet weak var upRadioButton: NSButton!
+    @IBOutlet weak var downRadioButton: NSButton!
+    @IBOutlet weak var pathView: NSTextView!
+    @IBOutlet weak var fileCheckButton: NSButton!
+    @IBOutlet weak var networkCheckButton: NSButton!
+    @IBOutlet weak var processCheckButton: NSButton!
+    
+    private var isUpButtonChoosed = true
+    private var muteChoice = MuteChoice.FilterFile
+    private var muteType = NuwaMuteType.FilterFileByFilePath
+    private var eventProvider: NuwaEventProviderProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        fileCheckButton.isHidden = true
+        networkCheckButton.isHidden = true
+        processCheckButton.isHidden = true
+        upRadioButton.state = .off
+        downRadioButton.state = .off
+        
         if #available(macOS 10.16, *) {
             eventProvider = SextManager.shared
         }
@@ -24,70 +42,108 @@ class PrefsViewController: NSViewController {
         }
     }
     
-    @IBAction func operateMenuSelected(_ sender: NSPopUpButton) {
-        pathView.string = ""
-        if operatePopup.selectedTag() != NuwaPrefOpt.Display.rawValue {
-            return
-        }
+    private func updateCheckButton(choice: MuteChoice) {
+        fileCheckButton.isHidden = true
+        networkCheckButton.isHidden = true
+        processCheckButton.isHidden = true
         
-        let menu = UInt8(filterPopup.selectedTag())
-        switch menu {
-        case NuwaMuteType.FilterFileEvent.rawValue:
-            pathView.string = PrefPathList.shared.filterFileList.joined(separator: "\n")
-        case NuwaMuteType.FilterNetEvent.rawValue:
-            pathView.string = PrefPathList.shared.filterNetworkList.joined(separator: "\n")
-        case NuwaMuteType.AllowExec.rawValue:
-            let allowDict = PrefPathList.shared.authExecDict.filter { $0.value == true }
-            pathView.string = allowDict.keys.joined(separator: "\n")
-        case NuwaMuteType.DenyExec.rawValue:
-            let denyDict = PrefPathList.shared.authExecDict.filter { $0.value == false }
-            pathView.string = denyDict.keys.joined(separator: "\n")
-        default:
-            return
+        switch choice {
+        case .FilterFile:
+            fileCheckButton.isHidden = false
+        case .FilterNetwork:
+            networkCheckButton.isHidden = false
+        case .MuteProcess:
+            processCheckButton.isHidden = false
         }
     }
     
-    @IBAction func filterMenuSelected(_ sender: NSPopUpButton) {
-        if operatePopup.selectedTag() != NuwaPrefOpt.Display.rawValue {
-            return
+    private func displayPrefList() {
+        switch muteChoice {
+        case .FilterFile:
+            muteType = isUpButtonChoosed ? .FilterFileByFilePath : .FilterFileByProcPath
+        case .FilterNetwork:
+            muteType = isUpButtonChoosed ? .FilterNetByProcPath : .FilterNetByIPAddr
+        case .MuteProcess:
+            muteType = isUpButtonChoosed ? .AllowProcExec : .DenyProcExec
         }
         
-        operateMenuSelected(operatePopup)
+        switch muteType {
+        case .FilterFileByFilePath:
+            pathView.string = PrefPathList.shared.filePathsForFileMute.joined(separator: "\n")
+        case .FilterFileByProcPath:
+            pathView.string = PrefPathList.shared.procPathsForFileMute.joined(separator: "\n")
+        case .FilterNetByProcPath:
+            pathView.string = PrefPathList.shared.procPathsForNetMute.joined(separator: "\n")
+        case .FilterNetByIPAddr:
+            pathView.string = PrefPathList.shared.ipAddrsForNetMute.joined(separator: "\n")
+        case .AllowProcExec:
+            pathView.string = PrefPathList.shared.allowExecList.joined(separator: "\n")
+        case .DenyProcExec:
+            pathView.string = PrefPathList.shared.denyExecList.joined(separator: "\n")
+        }
     }
     
-    @IBAction func cancelButtonClicked(_ sender: NSButton) {
+    @IBAction func fileButtonClicked(_ sender: NSButton) {
+        upRadioButton.title = "FileList"
+        downRadioButton.title = "ProcList"
+        muteChoice = .FilterFile
+        updateCheckButton(choice: muteChoice)
+        upButtonClicked(upRadioButton)
+        Logger(.Info, "fileButtonClicked")
+    }
+    
+    @IBAction func networkButtonClicked(_ sender: NSButton) {
+        upRadioButton.title = "ProcList"
+        downRadioButton.title = "IPList"
+        muteChoice = .FilterNetwork
+        networkCheckButton.isHidden = false
+        updateCheckButton(choice: muteChoice)
+        upButtonClicked(upRadioButton)
+        Logger(.Info, "networkButtonClicked")
+    }
+    
+    @IBAction func processButtonClicked(_ sender: NSButton) {
+        upRadioButton.title = "AllowList"
+        downRadioButton.title = "DenyList"
+        muteChoice = .MuteProcess
+        processCheckButton.isHidden = false
+        updateCheckButton(choice: muteChoice)
+        upButtonClicked(upRadioButton)
+    }
+    
+    @IBAction func upButtonClicked(_ sender: NSButton) {
+        upRadioButton.state = .on
+        downRadioButton.state = .off
+        isUpButtonChoosed = true
+        displayPrefList()
+    }
+    
+    @IBAction func downButtonClicked(_ sender: NSButton) {
+        upRadioButton.state = .off
+        downRadioButton.state = .on
+        isUpButtonChoosed = false
+        displayPrefList()
+    }
+    
+    @IBAction func closeButtonClicked(_ sender: NSButton) {
         view.window?.close()
     }
     
-    @IBAction func okButtonClicked(_ sender: NSButton) {
-        if operatePopup.selectedTag() == NuwaPrefOpt.Display.rawValue {
-            view.window?.close()
-        }
-        
-        let muteType = NuwaMuteType(rawValue: UInt8(filterPopup.selectedTag()))
-        let optType = NuwaPrefOpt(rawValue: UInt8(operatePopup.selectedTag()))
-        let paths = pathView.string.components(separatedBy: "\n")
+    @IBAction func updateButtonClicked(_ sender: NSButton) {
+        let inputs = pathView.string.components(separatedBy: "\n")
         
         switch muteType {
-        case .FilterFileEvent:
-            PrefPathList.shared.updateWhiteFileList(paths: paths, opt: .Add)
-            for path in paths {
-                _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(path), type: .FilterFileEvent, opt: optType!)
-            }
-        case .FilterNetEvent:
-            PrefPathList.shared.updateWhiteNetworkList(paths: paths, opt: optType!)
-        case .AllowExec:
-            PrefPathList.shared.updateExecList(paths: paths, opt: optType!, isWhite: true)
-            for path in paths {
-                _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(path), type: .AllowExec, opt: optType!)
-            }
-        case .DenyExec:
-            PrefPathList.shared.updateExecList(paths: paths, opt: optType!, isWhite: false)
-            for path in paths {
-                _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(path), type: .DenyExec, opt: optType!)
-            }
-        default:
-            break
+        case .FilterFileByFilePath, .FilterFileByProcPath:
+            PrefPathList.shared.updateMuteFileList(paths: inputs, type: muteType)
+            _ = eventProvider!.udpateMuteList(list: inputs, type: muteType)
+            
+        case .FilterNetByProcPath, .FilterNetByIPAddr:
+            PrefPathList.shared.updateMuteNetworkList(values: inputs, type: muteType)
+            // _ = eventProvider!.udpateMuteList(list: inputs, type: muteType)
+            
+        case .AllowProcExec, .DenyProcExec:
+            PrefPathList.shared.updateMuteExecList(paths: inputs, type: muteType)
+            _ = eventProvider!.udpateMuteList(list: inputs, type: muteType)
         }
         
         view.window?.close()

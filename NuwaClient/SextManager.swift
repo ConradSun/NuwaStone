@@ -114,11 +114,12 @@ extension SextManager: NuwaEventProviderProtocol {
         return true
     }
     
-    func udpateMuteList(vnodeID: UInt64, type: NuwaMuteType, opt: NuwaPrefOpt) -> Bool {
-        if vnodeID == 0 {
-            return false
+    func udpateMuteList(list: [String], type: NuwaMuteType) -> Bool {
+        var vnodeList = [UInt64]()
+        for path in list {
+            vnodeList.append(getFileVnodeID(path))
         }
-        sextProxy?.updateMuteList(vnodeID: vnodeID, type: type.rawValue, opt: opt.rawValue)
+        sextProxy?.updateMuteList(vnodeID: vnodeList, type: type.rawValue)
         return true
     }
 }

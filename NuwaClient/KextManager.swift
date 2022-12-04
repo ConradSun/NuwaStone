@@ -291,16 +291,23 @@ extension KextManager: NuwaEventProviderProtocol {
         return true
     }
     
-    func udpateMuteList(vnodeID: UInt64, type: NuwaMuteType, opt: NuwaPrefOpt) -> Bool {
-        if vnodeID == 0 {
-            return false
-        }
-        
+    func udpateMuteList(list: [String], type: NuwaMuteType) -> Bool {
         var result = KERN_SUCCESS
         var muteInfo = NuwaKextMuteInfo()
-        muteInfo.vnodeID = vnodeID
-        muteInfo.type.rawValue = UInt32(type.rawValue)
-        muteInfo.forAdding = opt == .Add ? 1 : 0
+        var vnodePtr = withUnsafeMutablePointer(to: &muteInfo.vnodeID) { pointer in
+            pointer.withMemoryRebound(to: UInt64.self, capacity: MemoryLayout.size(ofValue: pointer)) { pointer in
+                return pointer
+            }
+        }
+        
+        for i in 0 ..< list.count {
+            if i >= kMaxCacheItems {
+                break
+            }
+            vnodePtr.pointee = getFileVnodeID(list[i])
+            vnodePtr += 1
+        }
+        muteInfo.muteType.rawValue = UInt32(type.rawValue)
         
         result = IOConnectCallStructMethod(connection, kNuwaUserClientUpdateMuteList.rawValue, &muteInfo, MemoryLayout<NuwaKextMuteInfo>.size, nil, nil)
         if result != KERN_SUCCESS {

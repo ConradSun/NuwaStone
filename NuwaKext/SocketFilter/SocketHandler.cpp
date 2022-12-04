@@ -47,18 +47,18 @@ void SocketHandler::free() {
 errno_t SocketHandler::fillBasicInfo(NuwaKextEvent *netEvent, NuwaKextAction action) {
     timeval time;
     microtime(&time);
-    vfs_context_t context = vfs_context_create(NULL);
+    vfs_context_t context = vfs_context_create(nullptr);
     proc_t proc = vfs_context_proc(context);
     kauth_cred_t cred = vfs_context_ucred(context);
     
     netEvent->eventType = action;
     netEvent->eventTime = time.tv_sec;
     
-    if (proc != NULL) {
+    if (proc != nullptr) {
         netEvent->mainProcess.pid = proc_pid(proc);
         netEvent->mainProcess.ppid = proc_ppid(proc);
     }
-    if (cred != NULL) {
+    if (cred != nullptr) {
         netEvent->mainProcess.euid = kauth_cred_getuid(cred);
         netEvent->mainProcess.ruid = kauth_cred_getruid(cred);
         netEvent->mainProcess.egid = kauth_cred_getgid(cred);

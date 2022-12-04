@@ -16,7 +16,7 @@ import Foundation
     func connectResponse(_ handler: @escaping (Bool) -> Void)
     func setLogLevel(_ level: UInt8)
     func replyAuthEvent(index: UInt64, isAllowed: Bool)
-    func updateMuteList(vnodeID: UInt64, type: UInt8, opt: UInt8)
+    func updateMuteList(vnodeID: [UInt64], type: UInt8)
 }
 
 class XPCServer: NSObject {

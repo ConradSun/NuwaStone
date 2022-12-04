@@ -9,61 +9,71 @@ import Foundation
 
 class PrefPathList {
     static let shared = PrefPathList()
-    var authExecDict = [String: Bool]()
-    var filterFileList = Set<String>()
-    var filterNetworkList = Set<String>()
+    
+    var allowExecList = [String]()
+    var denyExecList = [String]()
+    var filePathsForFileMute = [String]()
+    var procPathsForFileMute = [String]()
+    var ipAddrsForNetMute = Set<String>()
+    var procPathsForNetMute = Set<String>()
     
     init() {
-        var list = UserDefaults.standard.array(forKey: UserFilterFile) as? [String] ?? [String]()
+        var list = UserDefaults.standard.array(forKey: UserMuteNetByProc) as? [String] ?? [String]()
         for path in list {
-            filterFileList.update(with: path)
+            procPathsForNetMute.update(with: path)
         }
-        list = UserDefaults.standard.array(forKey: UserFilterNet) as? [String] ?? [String]()
-        for path in list {
-            filterNetworkList.update(with: path)
+        list = UserDefaults.standard.array(forKey: UserMuteNetByIP) as? [String] ?? [String]()
+        for ip in list {
+            ipAddrsForNetMute.update(with: ip)
         }
-        authExecDict = UserDefaults.standard.dictionary(forKey: UserAuthExec) as? [String : Bool] ?? [String: Bool]()
+        
+        filePathsForFileMute = UserDefaults.standard.array(forKey: UserMuteFileByFile) as? [String] ?? [String]()
+        procPathsForFileMute = UserDefaults.standard.array(forKey: UserMuteFileByProc) as? [String] ?? [String]()
+        
+        allowExecList = UserDefaults.standard.array(forKey: UserAllowExecList) as? [String] ?? [String]()
+        denyExecList = UserDefaults.standard.array(forKey: UserDenyExecList) as? [String] ?? [String]()
     }
     
-    func updateExecList(paths: [String], opt: NuwaPrefOpt, isWhite: Bool) {
-        if opt == .Add {
-            for path in paths {
-                authExecDict[path] = isWhite
-            }
-        }
-        else if opt == .Remove {
-            for path in paths {
-                authExecDict[path] = nil
-            }
-        }
-        UserDefaults.standard.set(authExecDict, forKey: UserAuthExec)
-    }
-    
-    func updateWhiteFileList(paths: [String], opt: NuwaPrefOpt) {
-        if opt == .Add {
-            for path in paths {
-                filterFileList.update(with: path)
-            }
+    func updateMuteExecList(paths: [String], type: NuwaMuteType) {
+        if type == .AllowProcExec {
+            allowExecList.removeAll()
+            allowExecList = paths
+            UserDefaults.standard.set(allowExecList, forKey: UserAllowExecList)
         }
         else {
-            for path in paths {
-                filterFileList.remove(path)
-            }
+            denyExecList.removeAll()
+            denyExecList = paths
+            UserDefaults.standard.set(denyExecList, forKey: UserDenyExecList)
         }
-        UserDefaults.standard.set(filterFileList.sorted(), forKey: UserFilterFile)
     }
     
-    func updateWhiteNetworkList(paths: [String], opt: NuwaPrefOpt) {
-        if opt == .Add {
-            for path in paths {
-                filterNetworkList.update(with: path)
-            }
+    func updateMuteFileList(paths: [String], type: NuwaMuteType) {
+        if type == .FilterFileByFilePath {
+            filePathsForFileMute.removeAll()
+            filePathsForFileMute = paths
+            UserDefaults.standard.set(filePathsForFileMute, forKey: UserMuteFileByFile)
         }
         else {
-            for path in paths {
-                filterNetworkList.remove(path)
-            }
+            procPathsForFileMute.removeAll()
+            procPathsForFileMute = paths
+            UserDefaults.standard.set(procPathsForFileMute, forKey: UserMuteFileByProc)
         }
-        UserDefaults.standard.set(filterNetworkList.sorted(), forKey: UserFilterNet)
+    }
+    
+    func updateMuteNetworkList(values: [String], type: NuwaMuteType) {
+        if type == .FilterNetByProcPath {
+            procPathsForNetMute.removeAll()
+            for path in values {
+                procPathsForNetMute.update(with: path)
+            }
+            UserDefaults.standard.set(procPathsForNetMute.sorted(), forKey: UserMuteNetByProc)
+        }
+        else {
+            ipAddrsForNetMute.removeAll()
+            for ip in values {
+                procPathsForNetMute.update(with: ip)
+            }
+            UserDefaults.standard.set(ipAddrsForNetMute.sorted(), forKey: UserMuteNetByIP)
+        }
     }
 }

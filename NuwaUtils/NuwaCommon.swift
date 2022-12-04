@@ -18,10 +18,13 @@ let KextService     = "DriverService"
 
 let MachServiceKey  = "MachServiceName"
 
-let UserLogLevel    = "Log Level"
-let UserAuthExec    = "Auth Exec"
-let UserFilterFile  = "Filter File"
-let UserFilterNet   = "Filter Net"
+let UserLogLevel        = "Log Level"
+let UserAllowExecList   = "Allow Exec List"
+let UserDenyExecList    = "Deny Exec List"
+let UserMuteFileByFile  = "File Paths for Filtering File"
+let UserMuteFileByProc  = "Proc Paths for Filtering File"
+let UserMuteNetByProc   = "Proc Paths for Filtering Net"
+let UserMuteNetByIP     = "IP Addrs for Filtering Net"
 
 let PropBundleID    = "Bundle ID"
 let PropCodeSign    = "Code Sign"

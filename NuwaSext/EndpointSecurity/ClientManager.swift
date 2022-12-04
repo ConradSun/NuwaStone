@@ -136,7 +136,7 @@ class ClientManager {
     func dispatchEvent(event: NuwaEventInfo, message: UnsafePointer<es_message_t>) {
         if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
             authQueue.async {
-                guard let isWhite = ListManager.shared.containsAuthProcPath(vnodeID: event.eventID) else {
+                guard let isWhite = ListManager.shared.shouldAllowProcExec(vnodeID: event.eventID) else {
                     self.authCount += 1
                     event.eventID = self.authCount
                     if !XPCServer.shared.sendAuthEvent(event) {
@@ -163,7 +163,7 @@ class ClientManager {
                     XPCServer.shared.sendNotifyEvent(event)
                     return
                 }
-                if !ListManager.shared.containsFilterFilePath(vnodeID: event.eventID) {
+                if !ListManager.shared.shouldAbandonFileEvent(fileVnodeID: event.eventID, procVnodeID: getFileVnodeID(event.procPath)) {
                     XPCServer.shared.sendNotifyEvent(event)
                 }
             }

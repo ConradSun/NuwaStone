@@ -9,35 +9,58 @@ import Foundation
 
 class ListManager {
     static let shared = ListManager()
-    private var authExecDict = [UInt64: Bool]()
-    private var filterFileList = Set<UInt64>()
+    private var allowExecList = Set<UInt64>()
+    private var denyExecList = Set<UInt64>()
+    private var filePathsForFileMute = Set<UInt64>()
+    private var procPathsForFileMute = Set<UInt64>()
     
-    func updateAuthProcList(vnodeID: UInt64, isWhite: Bool) {
-        authExecDict[vnodeID] = isWhite
-    }
-    
-    func removeAuthProcPath(vnodeID: UInt64, isWhite: Bool) {
-        authExecDict[vnodeID] = nil
-    }
-    
-    func updateFilterFileList(vnodeID: UInt64) {
-        if vnodeID != 0 {
-            filterFileList.update(with: vnodeID)
+    func updateAuthProcList(vnodeID: [UInt64], type: NuwaMuteType) {
+        if type == .AllowProcExec {
+            allowExecList.removeAll()
+            for vnode in vnodeID {
+                allowExecList.update(with: vnode)
+            }
+        }
+        else {
+            denyExecList.removeAll()
+            for vnode in vnodeID {
+                denyExecList.update(with: vnode)
+            }
         }
     }
     
-    func removeFilterFilePath(vnodeID: UInt64) {
-        filterFileList.remove(vnodeID)
+    func updateFilterFileList(vnodeID: [UInt64], type: NuwaMuteType) {
+        if type == .FilterFileByFilePath {
+            filePathsForFileMute.removeAll()
+            for vnode in vnodeID {
+                filePathsForFileMute.update(with: vnode)
+            }
+        }
+        else {
+            procPathsForFileMute.removeAll()
+            for vnode in vnodeID {
+                procPathsForFileMute.update(with: vnode)
+            }
+        }
     }
     
-    func containsAuthProcPath(vnodeID: UInt64) -> Bool? {
-        return authExecDict[vnodeID]
-    }
-    
-    func containsFilterFilePath(vnodeID: UInt64) -> Bool {
-        if vnodeID == 0 {
+    func shouldAllowProcExec(vnodeID: UInt64) -> Bool? {
+        if allowExecList.contains(vnodeID) {
+            return true
+        }
+        else if denyExecList.contains(vnodeID) {
             return false
         }
-        return filterFileList.contains(vnodeID)
+        else {
+            return nil
+        }
+    }
+    
+    func shouldAbandonFileEvent(fileVnodeID: UInt64, procVnodeID: UInt64) -> Bool {
+        if filePathsForFileMute.contains(fileVnodeID) || procPathsForFileMute.contains(procVnodeID) {
+            return true
+        }
+        
+        return false
     }
 }

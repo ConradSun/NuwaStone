@@ -58,16 +58,15 @@ typedef enum {
 } NuwaKextAction;
 
 typedef enum {
-    kFilterFileEvent    = 0,
-    kFilterNetEvent     = 1,
-    kAllowExec          = 2,
-    kDenyExec           = 3,
+    kAllowAuthExec          = 0,
+    kDenyAuthExec           = 1,
+    kFilterFileByFilePath   = 2,
+    kFilterFileByProcPath   = 3,
 } NuwaKextMuteType;
 
 typedef struct {
-    NuwaKextMuteType type;
-    UInt64 vnodeID;
-    SInt16 forAdding;
+    NuwaKextMuteType muteType;
+    UInt64 vnodeID[kMaxCacheItems];
 } NuwaKextMuteInfo;
 
 typedef struct {

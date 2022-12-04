@@ -216,13 +216,10 @@ extension ViewController {
     }
     
     func initMutePaths() {
-        for item in PrefPathList.shared.authExecDict {
-            let type = item.value ? NuwaMuteType.AllowExec : NuwaMuteType.DenyExec
-            _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(item.key), type: type, opt: .Add)
-        }
-        for filePath in PrefPathList.shared.filterFileList {
-            _ = eventProvider!.udpateMuteList(vnodeID: getFileVnodeID(filePath), type: .FilterFileEvent, opt: .Add)
-        }
+        _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.allowExecList, type: .AllowProcExec)
+        _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.denyExecList, type: .AllowProcExec)
+        _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.filePathsForFileMute, type: .FilterFileByFilePath)
+        _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.procPathsForFileMute, type: .FilterFileByProcPath)
     }
     
     func reloadEventInfo() {

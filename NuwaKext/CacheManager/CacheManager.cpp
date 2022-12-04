@@ -25,30 +25,21 @@ bool CacheManager::init() {
     
     m_authExecCache = new DriverCache<UInt64, UInt64>(kMaxCacheItems);
     if (m_authExecCache == nullptr) {
-        delete m_authResultCache;
-        m_authResultCache = nullptr;
+        free();
         return false;
     }
     m_authExecCache->zero = 0;
     
     m_portBindCache = new DriverCache<UInt16, UInt64>(kMaxCacheItems);
     if (m_portBindCache == nullptr) {
-        delete m_authResultCache;
-        m_authResultCache = nullptr;
-        delete m_authExecCache;
-        m_authExecCache = nullptr;
+        free();
         return false;
     }
     m_portBindCache->zero = 0;
     
     m_dnsOutCache = new DriverCache<UInt64, UInt64>(kMaxCacheItems);
     if (m_dnsOutCache == nullptr) {
-        delete m_authResultCache;
-        m_authResultCache = nullptr;
-        delete m_authExecCache;
-        m_authExecCache = nullptr;
-        delete m_portBindCache;
-        m_portBindCache = nullptr;
+        free();
         return false;
     }
     m_dnsOutCache->zero = 0;
@@ -57,14 +48,22 @@ bool CacheManager::init() {
 }
 
 void CacheManager::free() {
-    delete m_authResultCache;
-    m_authResultCache = nullptr;
-    delete m_authExecCache;
-    m_authExecCache = nullptr;
-    delete m_portBindCache;
-    m_portBindCache = nullptr;
-    delete m_dnsOutCache;
-    m_dnsOutCache = nullptr;
+    if (m_authResultCache != nullptr) {
+        delete m_authResultCache;
+        m_authResultCache = nullptr;
+    }
+    if (m_authExecCache != nullptr) {
+        delete m_authExecCache;
+        m_authExecCache = nullptr;
+    }
+    if (m_portBindCache != nullptr) {
+        delete m_portBindCache;
+        m_portBindCache = nullptr;
+    }
+    if (m_dnsOutCache != nullptr) {
+        delete m_dnsOutCache;
+        m_dnsOutCache = nullptr;
+    }
 }
 
 CacheManager *CacheManager::getInstance() {

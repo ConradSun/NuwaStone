@@ -103,6 +103,23 @@ public:
         return result;
     }
     
+    void clearObjects() {
+        for (UInt64 i = 0; i < m_bucketCount; ++i) {
+            lck_mtx_lock(m_lock);
+            Entry *current = m_buckets[i].entry;
+            Entry *next = nullptr;
+            while (current != nullptr) {
+                next = current->next;
+                IOFreeAligned(current, sizeof(Entry));
+                current = next;
+            }
+            lck_mtx_unlock(m_lock);
+        }
+        
+        m_itemCount = 0;
+        bzero(m_buckets, sizeof(Bucket)*m_bucketCount);
+    }
+    
 private:
     struct Entry {
         KeyType key;
@@ -141,23 +158,6 @@ private:
         }
         OSIncrementAtomic(&m_itemCount);
         return true;
-    }
-    
-    void clearObjects() {
-        for (UInt64 i = 0; i < m_bucketCount; ++i) {
-            lck_mtx_lock(m_lock);
-            Entry *current = m_buckets[i].entry;
-            Entry *next = nullptr;
-            while (current != nullptr) {
-                next = current->next;
-                IOFreeAligned(current, sizeof(Entry));
-                current = next;
-            }
-            lck_mtx_unlock(m_lock);
-        }
-        
-        m_itemCount = 0;
-        bzero(m_buckets, sizeof(Bucket)*m_bucketCount);
     }
     
     UInt64 m_capacity;

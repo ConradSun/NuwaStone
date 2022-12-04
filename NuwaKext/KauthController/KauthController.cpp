@@ -8,6 +8,7 @@
 #include "KauthController.hpp"
 #include "EventDispatcher.hpp"
 #include "KextLogger.hpp"
+#include <sys/fcntl.h>
 #include <sys/proc.h>
 
 OSDefineMetaClassAndStructors(KauthController, OSObject);
@@ -147,8 +148,8 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
     }
     
     bzero(event, sizeof(NuwaKextEvent));
-    vfs_context_t procCtx = vfs_context_create(NULL);
-    vfs_context_t fileCtx = vfs_context_create(NULL);
+    vfs_context_t procCtx = vfs_context_create(nullptr);
+    vfs_context_t fileCtx = vfs_context_create(nullptr);
     switch (action) {
         case KAUTH_FILEOP_CLOSE:
             event->eventType = kActionNotifyFileCloseModify;
@@ -180,14 +181,16 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
             event->mainProcess.ppid = (result << 32) >> 32;
         }
     }
-    if (errCode == 0 && !m_listManager->obtainFilterFileList(event->vnodeID)) {
-        m_eventDispatcher->postToNotifyQueue(event);
+    if (errCode == 0) {
+        if (action == KAUTH_FILEOP_EXEC || !m_listManager->obtainFilterFileList(event->vnodeID)) {
+            m_eventDispatcher->postToNotifyQueue(event);
+        }
     }
     
-    if (procCtx != NULL) {
+    if (procCtx != nullptr) {
         vfs_context_rele(procCtx);
     }
-    if (fileCtx != NULL) {
+    if (fileCtx != nullptr) {
         vfs_context_rele(fileCtx);
     }
     IOFreeAligned(event, sizeof(NuwaKextEvent));
@@ -225,12 +228,12 @@ errno_t KauthController::fillProcInfo(NuwaKextProc *ProctInfo, const vfs_context
     proc_t proc = vfs_context_proc(ctx);
     kauth_cred_t cred = vfs_context_ucred(ctx);
     
-    if (proc != NULL) {
+    if (proc != nullptr) {
         ProctInfo->pid = proc_pid(proc);
         ProctInfo->ppid = proc_ppid(proc);
     }
     
-    if (cred != NULL) {
+    if (cred != nullptr) {
         ProctInfo->euid = kauth_cred_getuid(cred);
         ProctInfo->ruid = kauth_cred_getruid(cred);
         ProctInfo->egid = kauth_cred_getgid(cred);

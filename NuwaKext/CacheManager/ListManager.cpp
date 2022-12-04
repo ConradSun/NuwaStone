@@ -12,28 +12,41 @@
 ListManager* ListManager::m_sharedInstance = nullptr;
 
 bool ListManager::init() {
-    m_authProcessList = new DriverCache<UInt64, UInt8>(kMaxCacheItems);
-    if (m_authProcessList == nullptr) {
+    m_allowProcList = new DriverCache<UInt64, UInt8>(kMaxCacheItems);
+    if (m_allowProcList == nullptr) {
         return false;
     }
-    m_authProcessList->zero = 0;
+    m_allowProcList->zero = kProcPlainType;
+    m_denyProcList = new DriverCache<UInt64, UInt8>(kMaxCacheItems);
+    if (m_denyProcList == nullptr) {
+        free();
+        return false;
+    }
+    m_denyProcList->zero = kProcPlainType;
     
-    m_filterFileList = new DriverCache<UInt64, UInt8>(kMaxCacheItems);
-    if (m_filterFileList == nullptr) {
-        delete m_authProcessList;
-        m_authProcessList = nullptr;
+    m_muteFileList = new DriverCache<UInt64, UInt8>(kMaxCacheItems);
+    if (m_muteFileList == nullptr) {
+        free();
         return false;
     }
-    m_filterFileList->zero = 0;
+    m_muteFileList->zero = false;
 
     return true;
 }
 
 void ListManager::free() {
-    delete m_authProcessList;
-    m_authProcessList = nullptr;
-    delete m_filterFileList;
-    m_filterFileList = nullptr;
+    if (m_allowProcList != nullptr) {
+        delete m_allowProcList;
+        m_allowProcList = nullptr;
+    }
+    if (m_denyProcList != nullptr) {
+        delete m_denyProcList;
+        m_denyProcList = nullptr;
+    }
+    if (m_muteFileList != nullptr) {
+        delete m_muteFileList;
+        m_muteFileList = nullptr;
+    }
 }
 
 ListManager *ListManager::getInstance() {
@@ -59,22 +72,47 @@ void ListManager::release() {
     m_sharedInstance = nullptr;
 }
 
-bool ListManager::updateAuthProcessList(UInt64 vnodeID, bool isWhite, bool forAdding) {
-    if (vnodeID == 0) {
+bool ListManager::updateAuthProcessList(UInt64 *vnodeID, NuwaKextMuteType type) {
+    if (vnodeID == nullptr) {
         return false;
     }
     
-    UInt8 procType = isWhite ? kProcWhiteType : kProcBlackType;
-    procType = forAdding ? procType : kProcPlainType;
-    return m_authProcessList->setObject(vnodeID, procType);
+    SInt i = 0;
+    NuwaKextProcType procType = kProcPlainType;
+    DriverCache<UInt64, UInt8> *procList = nullptr;
+    
+    if (type == kAllowAuthExec) {
+        procType = kProcWhiteType;
+        procList = m_allowProcList;
+    }
+    else {
+        procType = kProcBlackType;
+        procList = m_denyProcList;
+    }
+    procList->clearObjects();
+    while (vnodeID[i] != 0 && i < kMaxCacheItems) {
+        if (!procList->setObject(vnodeID[i], procType)) {
+            Logger(LOG_WARN, "Failed to update item for auth process.")
+        }
+    }
+    
+    return true;
 }
 
-bool ListManager::updateFilterFileList(UInt64 vnodeID, bool forAdding) {
-    if (vnodeID == 0) {
+bool ListManager::updateFilterFileList(UInt64 *vnodeID, NuwaKextMuteType type) {
+    if (vnodeID == nullptr) {
         return false;
     }
     
-    return m_filterFileList->setObject(vnodeID, forAdding);
+    SInt i = 0;
+    m_muteFileList->clearObjects();
+    while (vnodeID[i] != 0 && i < kMaxCacheItems) {
+        if (!m_muteFileList->setObject(vnodeID[i], true)) {
+            Logger(LOG_WARN, "Failed to update item for filtering file event.")
+        }
+    }
+    
+    return true;
 }
 
 UInt8 ListManager::obtainAuthProcessList(UInt64 vnodeID) {
@@ -83,7 +121,10 @@ UInt8 ListManager::obtainAuthProcessList(UInt64 vnodeID) {
         return type;
     }
     
-    type = m_authProcessList->getObject(vnodeID);
+    type = m_allowProcList->getObject(vnodeID);
+    if (type == kProcPlainType) {
+        type = m_denyProcList->getObject(vnodeID);
+    }
     return type;
 }
 
@@ -92,5 +133,5 @@ UInt8 ListManager::obtainFilterFileList(UInt64 vnodeID) {
         return false;
     }
     
-    return m_filterFileList->getObject(vnodeID);
+    return m_muteFileList->getObject(vnodeID);
 }
