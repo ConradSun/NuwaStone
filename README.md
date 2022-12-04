@@ -44,4 +44,8 @@ NuwaStone wont't let unsigned app run without your authorization, but the app wi
 <p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/Preferences.png" width=512></p>
 
 Select 'Preferences' from the status bar menu of **NuwaClient** application to check or update user preferences.
-It supports 'add/remove/display' paths for filtering 'file/network' events or 'allowing/denying' execution.
+It supports filtering as below
+
+- Mute file events by file paths or process paths
+- Mute network events by process paths or remote ip addresses
+- Mute process events by allowing or denying binary paths
