@@ -101,11 +101,11 @@ bool DNSResolver::parseDomainName(const char *nameBegin, char *domainName, UInt1
             domainName[nameLen++] = '.';
         }
         if (count >= (nameSize-nameLen)) {
-            Logger(LOG_ERROR, "Domain name is too long.")
+            Logger(LOG_WARN, "Domain name is too long.")
             return false;
         }
         if (count >= (parseEnd-parseBegin)) {
-            Logger(LOG_ERROR, "Domain name is invalid.")
+            Logger(LOG_WARN, "Domain name is invalid.")
             return false;
         }
         for (UInt8 i = 0; i < count; ++i) {

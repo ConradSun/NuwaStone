@@ -112,7 +112,7 @@ class DNSResolver {
                 domainName += "."
             }
             if count >= (originData.count-currentSite) {
-                Logger(.Error, "Domain name is invalid.")
+                Logger(.Warning, "Domain name is invalid.")
                 return false
             }
             for _ in 0 ..< count {
