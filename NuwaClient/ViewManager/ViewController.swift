@@ -217,7 +217,7 @@ extension ViewController {
     
     func initMutePaths() {
         _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.allowExecList, type: .AllowProcExec)
-        _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.denyExecList, type: .AllowProcExec)
+        _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.denyExecList, type: .DenyProcExec)
         _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.filePathsForFileMute, type: .FilterFileByFilePath)
         _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.procPathsForFileMute, type: .FilterFileByProcPath)
     }

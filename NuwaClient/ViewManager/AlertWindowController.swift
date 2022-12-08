@@ -56,7 +56,7 @@ class AlertWindowController: NSWindowController {
         _ = eventProvider?.replyAuthEvent(eventID: authEvent!.eventID, isAllowed: isAllowed)
         if shouldAddToList {
             _ = eventProvider?.udpateMuteList(list: [authEvent!.procPath], type: muteType)
-            PrefPathList.shared.updateMuteExecList(paths: [authEvent!.procPath], type: muteType)
+            PrefPathList.shared.appendMuteExecList(path: authEvent!.procPath, type: muteType)
         }
         window?.close()
         authEvent = nil

@@ -47,6 +47,17 @@ class PrefPathList {
         }
     }
     
+    func appendMuteExecList(path: String, type: NuwaMuteType) {
+        if type == .AllowProcExec {
+            allowExecList.append(path)
+            UserDefaults.standard.set(allowExecList, forKey: UserAllowExecList)
+        }
+        else {
+            denyExecList.append(path)
+            UserDefaults.standard.set(denyExecList, forKey: UserDenyExecList)
+        }
+    }
+    
     func updateMuteFileList(paths: [String], type: NuwaMuteType) {
         if type == .FilterFileByFilePath {
             filePathsForFileMute.removeAll()
