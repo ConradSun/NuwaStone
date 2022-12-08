@@ -137,6 +137,13 @@ class ClientManager {
         if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
             authQueue.async {
                 guard let isWhite = ListManager.shared.shouldAllowProcExec(vnodeID: event.eventID) else {
+                    if event.props[PropCodeSign] != nil {
+                        if !self.replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW) {
+                            Logger(.Error, "Failed to respond auth event [\(event.desc)].")
+                        }
+                        return
+                    }
+                    
                     self.authCount += 1
                     event.eventID = self.authCount
                     if !XPCServer.shared.sendAuthEvent(event) {
@@ -150,9 +157,10 @@ class ClientManager {
                     }
                     return
                 }
+                
                 let result = isWhite ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
                 if !self.replyAuthEvent(message: message, result: result) {
-                    Logger(.Error, "Failed to reply auth event [\(event.desc)].")
+                    Logger(.Error, "Failed to respond auth event [\(event.desc)].")
                 }
                 Logger(.Info, "Process [\(event.procPath)] is contained in auth list.")
             }

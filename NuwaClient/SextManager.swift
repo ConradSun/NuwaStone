@@ -50,12 +50,6 @@ extension SextManager: ManagerXPCProtocol {
             return
         }
         
-        if event.eventType == .ProcessCreate {
-            if event.props[PropCodeSign] != nil {
-                _ = replyAuthEvent(eventID: event.eventID, isAllowed: true)
-                return
-            }
-        }
         delegate?.processAuthEvent(event)
     }
 }
