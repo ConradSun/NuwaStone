@@ -14,6 +14,8 @@ class PrefsViewController: NSViewController {
         case MuteProcess
     }
     
+    @IBOutlet weak var logLevelButton: NSPopUpButton!
+    @IBOutlet weak var auditSwitchButton: NSPopUpButton!
     @IBOutlet weak var upRadioButton: NSButton!
     @IBOutlet weak var downRadioButton: NSButton!
     @IBOutlet weak var pathView: NSTextView!
@@ -21,6 +23,8 @@ class PrefsViewController: NSViewController {
     @IBOutlet weak var networkCheckButton: NSButton!
     @IBOutlet weak var processCheckButton: NSButton!
     
+    private var nuwaLog = NuwaLog()
+    private var auditSwitch = true
     private var isUpButtonChoosed = true
     private var muteChoice = MuteChoice.FilterFile
     private var muteType = NuwaMuteType.FilterFileByFilePath
@@ -40,6 +44,10 @@ class PrefsViewController: NSViewController {
         else {
             eventProvider = KextManager.shared
         }
+        auditSwitch = (UserDefaults.standard.integer(forKey: UserAuditSwitch) != 0)
+        
+        logLevelButton.selectItem(withTag: Int(nuwaLog.logLevel))
+        auditSwitchButton.selectItem(withTag: (auditSwitch ? 1 : 0))
     }
     
     private func updateCheckButton(choice: MuteChoice) {
@@ -89,7 +97,6 @@ class PrefsViewController: NSViewController {
         muteChoice = .FilterFile
         updateCheckButton(choice: muteChoice)
         upButtonClicked(upRadioButton)
-        Logger(.Info, "fileButtonClicked")
     }
     
     @IBAction func networkButtonClicked(_ sender: NSButton) {
@@ -99,7 +106,6 @@ class PrefsViewController: NSViewController {
         networkCheckButton.isHidden = false
         updateCheckButton(choice: muteChoice)
         upButtonClicked(upRadioButton)
-        Logger(.Info, "networkButtonClicked")
     }
     
     @IBAction func processButtonClicked(_ sender: NSButton) {
@@ -131,6 +137,8 @@ class PrefsViewController: NSViewController {
     
     @IBAction func updateButtonClicked(_ sender: NSButton) {
         let inputs = pathView.string.components(separatedBy: "\n")
+        let level = logLevelButton.selectedItem!.tag
+        let status = auditSwitchButton.selectedItem!.tag > 0
         
         switch muteType {
         case .FilterFileByFilePath, .FilterFileByProcPath:
@@ -144,6 +152,13 @@ class PrefsViewController: NSViewController {
         case .AllowProcExec, .DenyProcExec:
             PrefPathList.shared.updateMuteExecList(paths: inputs, type: muteType)
             _ = eventProvider!.udpateMuteList(list: inputs, type: muteType)
+        }
+        
+        if level != nuwaLog.logLevel {
+            _ = eventProvider!.setLogLevel(level: UInt8(level))
+        }
+        if status != auditSwitch {
+            _ = eventProvider!.setAuditSwitch(status: status)
         }
         
         view.window?.close()

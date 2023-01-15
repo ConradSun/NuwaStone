@@ -43,8 +43,8 @@ NuwaStone wont't let unsigned app run without your authorization, but the app wi
 
 <p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/Preferences.png" width=512></p>
 
-Select 'Preferences' from the status bar menu of **NuwaClient** application to check or update user preferences.
-It supports filtering as below
+Select 'Preferences' or 'Settings' from the status bar menu of **NuwaClient** application to check or update user preferences.
+It supports setting the log level, opening/closing audit switch, and filtering events as below
 
 - Mute file events by file paths or process paths
 - Mute network events by process paths or remote ip addresses

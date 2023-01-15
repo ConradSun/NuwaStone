@@ -11,6 +11,7 @@ class SextManager {
     private var sextProxy: SextXPCProtocol?
     static let shared = SextManager()
     var nuwaLog = NuwaLog()
+    var auditSwitch = (UserDefaults.standard.integer(forKey: UserAuditSwitch) != 0)
     var delegate: NuwaEventProcessProtocol?
 }
 
@@ -50,7 +51,12 @@ extension SextManager: ManagerXPCProtocol {
             return
         }
         
-        delegate?.processAuthEvent(event)
+        if auditSwitch {
+            delegate?.processAuthEvent(event)
+        }
+        else {
+            _ = replyAuthEvent(eventID: event.eventID, isAllowed: true)
+        }
     }
 }
 
@@ -97,6 +103,11 @@ extension SextManager: NuwaEventProviderProtocol {
         nuwaLog.logLevel = level
         sextProxy?.setLogLevel(level)
         Logger(.Info, "Log level is setted to \(nuwaLog)")
+        return true
+    }
+    
+    func setAuditSwitch(status: Bool) -> Bool {
+        auditSwitch = status
         return true
     }
     

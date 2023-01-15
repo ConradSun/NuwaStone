@@ -46,6 +46,7 @@ protocol NuwaEventProviderProtocol {
     func startProvider() -> Bool
     func stopProvider() -> Bool
     func setLogLevel(level: UInt8) -> Bool
+    func setAuditSwitch(status: Bool) -> Bool
     func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool
     func udpateMuteList(list: [String], type: NuwaMuteType) -> Bool
 }
