@@ -158,6 +158,7 @@ class PrefsViewController: NSViewController {
             _ = eventProvider!.setLogLevel(level: UInt8(level))
         }
         if status != auditSwitch {
+            UserDefaults.standard.set(status, forKey: UserAuditSwitch)
             _ = eventProvider!.setAuditSwitch(status: status)
         }
         
