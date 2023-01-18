@@ -295,7 +295,7 @@ errno_t KauthController::fillEventInfo(NuwaKextEvent *event, const vfs_context_t
     }
     
     errCode = fillBasicInfo(event, fileCtx, fileVp);
-    if (errCode != 0) {
+    if (errCode != 0 && errCode != ENOENT) {
         Logger(LOG_WARN, "Failed to fill basic info [%d].", errCode)
         return errCode;
     }
