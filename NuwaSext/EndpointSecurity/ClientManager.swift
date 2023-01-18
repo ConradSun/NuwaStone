@@ -14,7 +14,7 @@ class ClientManager {
     var esClient: OpaquePointer?
     var initError = ESClientError.NewClientError
     let authQueue = DispatchQueue(label: "com.nuwastone.sext.authqueue", attributes: .concurrent)
-    let notifyQueue = DispatchQueue(label: "com.nuwastone.sext.notifyqueue", attributes: .concurrent)
+    let notifyQueue = DispatchQueue(label: "com.nuwastone.sext.notifyqueue")
     let subTypes = [
         ES_EVENT_TYPE_AUTH_EXEC,
         ES_EVENT_TYPE_NOTIFY_EXEC,
@@ -135,10 +135,12 @@ class ClientManager {
     
     func dispatchEvent(event: NuwaEventInfo, message: UnsafePointer<es_message_t>) {
         if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
+            event.msgPtr = UInt(bitPattern: message)
             authQueue.async {
+                let msgPtr = UnsafePointer<es_message_t>.init(bitPattern: event.msgPtr)!
                 guard let isWhite = ListManager.shared.shouldAllowProcExec(vnodeID: event.eventID) else {
                     if event.props[PropCodeSign] != nil {
-                        if !self.replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW) {
+                        if !self.replyAuthEvent(message: msgPtr, result: ES_AUTH_RESULT_ALLOW) {
                             Logger(.Error, "Failed to respond auth event [\(event.desc)].")
                         }
                         return
@@ -148,25 +150,25 @@ class ClientManager {
                     event.eventID = self.authCount
                     if !XPCServer.shared.sendAuthEvent(event) {
                         Logger(.Warning, "Failed to send auth event [index: \(event.eventID)].")
-                        if !self.replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW) {
+                        if !self.replyAuthEvent(message: msgPtr, result: ES_AUTH_RESULT_ALLOW) {
                             Logger(.Error, "Failed to reply auth event [\(event.desc)].")
                         }
                     }
                     else {
-                        ResponseManager.shared.addAuthEvent(index: event.eventID, message: message)
+                        ResponseManager.shared.addAuthEvent(index: event.eventID, message: msgPtr)
                     }
                     return
                 }
                 
                 let result = isWhite ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
-                if !self.replyAuthEvent(message: message, result: result) {
+                if !self.replyAuthEvent(message: msgPtr, result: result) {
                     Logger(.Error, "Failed to respond auth event [\(event.desc)].")
                 }
                 Logger(.Info, "Process [\(event.procPath)] is contained in auth list.")
             }
         }
         else if message.pointee.action_type == ES_ACTION_TYPE_NOTIFY {
-            notifyQueue.async {
+            notifyQueue.sync {
                 if event.eventType == .ProcessCreate || event.eventType == .ProcessExit {
                     XPCServer.shared.sendNotifyEvent(event)
                     return

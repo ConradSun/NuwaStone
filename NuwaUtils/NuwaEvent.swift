@@ -56,6 +56,7 @@ class NuwaEventInfo: Codable {
     var eventID: UInt64
     var eventType: NuwaEventType
     var eventTime: UInt64
+    var msgPtr: UInt
     var pid: Int32
     var ppid: Int32
     var user: String
@@ -80,6 +81,7 @@ class NuwaEventInfo: Codable {
     }
     
     init() {
+        msgPtr = 0
         eventID = 0
         eventType = .TypeNil
         eventTime = 0
