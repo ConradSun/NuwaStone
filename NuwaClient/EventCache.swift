@@ -115,8 +115,8 @@ class ProcessCache {
         }
         
         if info == nil {
-            Logger(.Warning, "Failed to find proc [\(event.pid)] info in cache.")
-            fillCacheInfo(&event)
+            Logger(.Debug, "Failed to find proc [\(event.pid)] info in cache.")
+            // fillCacheInfo(&event)
             // updateCache(event)
             return
         }
