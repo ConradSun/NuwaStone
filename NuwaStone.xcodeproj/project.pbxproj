@@ -48,6 +48,7 @@
 		3A82D2C228BCDD86006E30DA /* FlowParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A82D2C128BCDD86006E30DA /* FlowParser.swift */; };
 		3A82D2C528BE3632006E30DA /* DNSResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A82D2C328BE3632006E30DA /* DNSResolver.cpp */; };
 		3A82D2C628BE3632006E30DA /* DNSResolver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A82D2C428BE3632006E30DA /* DNSResolver.hpp */; };
+		3AA1B8D52A0CEB01001F0FC5 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA1B8D42A0CEB01001F0FC5 /* DeviceInfo.swift */; };
 		3AA77592291CEF6A006D4765 /* NuwaStone.kext in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 3ABAFF962879C1BC00928C22 /* NuwaStone.kext */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3AA77597291CF027006D4765 /* NuwaService.app in Resources */ = {isa = PBXBuildFile; fileRef = 3A60896528A64C1B00061A42 /* NuwaService.app */; };
 		3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */; };
@@ -159,6 +160,7 @@
 		3A82D2C128BCDD86006E30DA /* FlowParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowParser.swift; sourceTree = "<group>"; };
 		3A82D2C328BE3632006E30DA /* DNSResolver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DNSResolver.cpp; sourceTree = "<group>"; };
 		3A82D2C428BE3632006E30DA /* DNSResolver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DNSResolver.hpp; sourceTree = "<group>"; };
+		3AA1B8D42A0CEB01001F0FC5 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
 		3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewDelegate.swift; sourceTree = "<group>"; };
 		3AB13ABB287EC378004E1093 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3AB9B37C2892656D0078B45D /* XPCConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCConnection.swift; sourceTree = "<group>"; };
@@ -340,6 +342,7 @@
 			isa = PBXGroup;
 			children = (
 				3A4A95E12897735500220EB7 /* ViewManager */,
+				3AA1B8D42A0CEB01001F0FC5 /* DeviceInfo.swift */,
 				3AFFBBB028D47411001D421C /* PrefPathList.swift */,
 				3ADA61A2288D819C002C2537 /* EventCache.swift */,
 				3ABAFFAE2879C4A200928C22 /* KextManager.swift */,
@@ -536,7 +539,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1340;
-				LastUpgradeCheck = 1420;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					3A6088DB28A49B0D00061A42 = {
 						CreatedOnToolsVersion = 13.4.1;
@@ -657,6 +660,7 @@
 				3AED3F5B288953FD00FCA79A /* GraphView.swift in Sources */,
 				3A01FEF128D86E3200A1F30F /* XPCServer.swift in Sources */,
 				3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */,
+				3AA1B8D52A0CEB01001F0FC5 /* DeviceInfo.swift in Sources */,
 				3AFFBBBA28D725C5001D421C /* PrefsViewController.swift in Sources */,
 				3AB9B38128926BF80078B45D /* NuwaCommon.swift in Sources */,
 				3A605AEA28A9F88300059F9E /* SextManager.swift in Sources */,
@@ -807,7 +811,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -841,7 +845,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -991,7 +995,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1026,7 +1030,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1050,7 +1054,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaKext/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MARKETING_VERSION = 1.4;
 				MODULE_NAME = com.nuwastone.service;
 				MODULE_START = 0;
@@ -1079,7 +1083,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaKext/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MARKETING_VERSION = 1.4;
 				MODULE_NAME = com.nuwastone.service;
 				MODULE_START = 0;

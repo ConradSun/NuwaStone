@@ -16,12 +16,22 @@ class PrefsViewController: NSViewController {
     
     @IBOutlet weak var logLevelButton: NSPopUpButton!
     @IBOutlet weak var auditSwitchButton: NSPopUpButton!
+    
     @IBOutlet weak var upRadioButton: NSButton!
     @IBOutlet weak var downRadioButton: NSButton!
     @IBOutlet weak var pathView: NSTextView!
     @IBOutlet weak var fileCheckButton: NSButton!
     @IBOutlet weak var networkCheckButton: NSButton!
     @IBOutlet weak var processCheckButton: NSButton!
+    
+    @IBOutlet weak var deviceName: NSTextField!
+    @IBOutlet weak var systemVersion: NSTextField!
+    @IBOutlet weak var sipStatus: NSTextField!
+    @IBOutlet weak var availableStorage: NSTextField!
+    @IBOutlet weak var totalStorage: NSTextField!
+    @IBOutlet weak var processorArch: NSTextField!
+    @IBOutlet weak var physicalMemory: NSTextField!
+    @IBOutlet weak var batteryState: NSTextField!
     
     private var nuwaLog = NuwaLog()
     private var auditSwitch = true
@@ -48,6 +58,15 @@ class PrefsViewController: NSViewController {
         
         logLevelButton.selectItem(withTag: Int(nuwaLog.logLevel))
         auditSwitchButton.selectItem(withTag: (auditSwitch ? 1 : 0))
+        
+        deviceName.stringValue = getDeviceName()
+        systemVersion.stringValue = getSystemVersion()
+        sipStatus.stringValue = getSIPStatus()
+        availableStorage.stringValue = getAvailableRAM()
+        totalStorage.stringValue = getTotalRAM()
+        processorArch.stringValue = getProcessorArch()
+        physicalMemory.stringValue = getPhysicalMemory()
+        batteryState.stringValue = getBatteryState()
     }
     
     private func updateCheckButton(choice: MuteChoice) {

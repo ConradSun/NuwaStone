@@ -41,10 +41,13 @@ NuwaStone wont't let unsigned app run without your authorization, but the app wi
 
 ## Preferences
 
-<p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/Preferences.png" width=512></p>
+Select 'Preferences' or 'Settings' from the status bar menu of **NuwaClient** application to check or update user preferences. It provides 'Basic Settings', 'Event Muting' and 'System Info' sub viewers.
 
-Select 'Preferences' or 'Settings' from the status bar menu of **NuwaClient** application to check or update user preferences.
-It supports setting the log level, opening/closing audit switch, and filtering events as below
+<p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/Preferences-BasicSettings.png" width=512></p>
+<p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/Preferences-EventMuting.png" width=512></p>
+<p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/Preferences-SystemInfo.png" width=512></p>
+
+Sub viewer of 'Event Muting' support filtering events as below:
 
 - Mute file events by file paths or process paths
 - Mute network events by process paths or remote ip addresses
