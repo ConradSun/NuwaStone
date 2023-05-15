@@ -82,7 +82,7 @@ class PrefPathList {
         else {
             ipAddrsForNetMute.removeAll()
             for ip in values {
-                procPathsForNetMute.update(with: ip)
+                ipAddrsForNetMute.update(with: ip)
             }
             UserDefaults.standard.set(ipAddrsForNetMute.sorted(), forKey: UserMuteNetByIP)
         }

@@ -31,7 +31,10 @@ extension ViewController: NuwaEventProcessProtocol {
                     return
                 }
                 if event.eventType == .NetAccess {
-                    if PrefPathList.shared.ipAddrsForNetMute.contains(event.props[PropRemoteAddr]!) {
+                    guard let remoteIP = event.props[PropRemoteAddr]!.split(separator: " ").first?.lowercased() else {
+                        return
+                    }
+                    if PrefPathList.shared.ipAddrsForNetMute.contains(remoteIP) {
                         return
                     }
                 }

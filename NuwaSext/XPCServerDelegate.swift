@@ -54,7 +54,7 @@ extension XPCServer: SextXPCProtocol {
     
     func setLogLevel(_ level: UInt8) {
         nuwaLog.logLevel = level
-        Logger(.Info, "Log level is setted to \(nuwaLog)")
+        Logger(.Info, "Log level is setted to \(nuwaLog.logLevel)")
     }
     
     func replyAuthEvent(index: UInt64, isAllowed: Bool) {

@@ -180,7 +180,5 @@ class PrefsViewController: NSViewController {
             UserDefaults.standard.set(status, forKey: UserAuditSwitch)
             _ = eventProvider!.setAuditSwitch(status: status)
         }
-        
-        view.window?.close()
     }
 }

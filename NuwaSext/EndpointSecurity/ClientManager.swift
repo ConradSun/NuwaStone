@@ -136,7 +136,7 @@ class ClientManager {
     func dispatchEvent(event: NuwaEventInfo, message: UnsafePointer<es_message_t>) {
         if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
             event.msgPtr = UInt(bitPattern: message)
-            authQueue.async {
+            authQueue.sync {
                 let msgPtr = UnsafePointer<es_message_t>.init(bitPattern: event.msgPtr)!
                 guard let isWhite = ListManager.shared.shouldAllowProcExec(vnodeID: event.eventID) else {
                     if event.props[PropCodeSign] != nil {

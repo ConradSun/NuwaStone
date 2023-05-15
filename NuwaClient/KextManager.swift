@@ -281,7 +281,7 @@ extension KextManager: NuwaEventProviderProtocol {
             Logger(.Error, "Failed to set log level for kext [\(String.init(format: "0x%x", result))].")
             return false
         }
-        Logger(.Info, "Log level is setted to \(nuwaLog)")
+        Logger(.Info, "Log level is setted to \(nuwaLog.logLevel)")
         return true
     }
     
