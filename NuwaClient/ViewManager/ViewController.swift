@@ -223,7 +223,7 @@ extension ViewController {
     }
     
     func reloadEventInfo() {
-        let index = IndexSet(integer: eventView.selectedRow)
+        let index = eventView.selectedRowIndexes
         eventView.reloadData()
         eventView.selectRowIndexes(index, byExtendingSelection: false)
         if eventView.numberOfRows > 0 && isScrollOn {

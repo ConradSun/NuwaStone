@@ -103,6 +103,9 @@ class ClientManager {
         
         switch message.pointee.event_type {
         case ES_EVENT_TYPE_AUTH_EXEC:
+            if message.pointee.event.exec.target.pointee.is_es_client {
+                _ = replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW)
+            }
             nuwaEvent.eventType = .ProcessCreate
             parseExecEvent(message: message, event: &nuwaEvent)
         case ES_EVENT_TYPE_NOTIFY_EXEC:
