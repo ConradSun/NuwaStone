@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 extension XPCServer {
     func encodeEventInfo(_ event: NuwaEventInfo) -> String {
         let encoder = JSONEncoder()

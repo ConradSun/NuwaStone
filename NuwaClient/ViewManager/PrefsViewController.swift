@@ -48,7 +48,7 @@ class PrefsViewController: NSViewController {
         upRadioButton.state = .off
         downRadioButton.state = .off
         
-        if #available(macOS 10.16, *) {
+        if #available(macOS 11.0, *) {
             eventProvider = SextManager.shared
         }
         else {

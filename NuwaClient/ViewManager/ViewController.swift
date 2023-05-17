@@ -46,7 +46,7 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if #available(macOS 10.16, *) {
+        if #available(macOS 11.0, *) {
             eventProvider = SextManager.shared
         }
         else {

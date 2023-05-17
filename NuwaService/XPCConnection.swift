@@ -85,39 +85,3 @@ extension XPCConnection: NSXPCListenerDelegate {
         return true
     }
 }
-
-extension XPCConnection: DaemonXPCProtocol {
-    func connectResponse(_ handler: @escaping (Bool) -> Void) {
-        Logger(.Info, "Client connected.")
-        handler(true)
-    }
-    
-    func getProcessPath(pid: Int32, eventHandler: @escaping (String, Int32) -> Void) {
-        getProcPath(pid: pid, eventHandler: eventHandler)
-    }
-    
-    func getProcessCurrentDir(pid: Int32, eventHandler: @escaping (String, Int32) -> Void) {
-        getProcCurrentDir(pid: pid, eventHandler: eventHandler)
-    }
-    
-    func getProcessArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void) {
-        getProcArgs(pid: pid, eventHandler: eventHandler)
-    }
-    
-    func launchUninstaller() {
-        Logger(.Info, "launchUninstaller")
-        let url = URL(fileURLWithPath: "Contents/Resources/uninstall.sh", relativeTo: Bundle.main.bundleURL)
-        let task = Process()
-        task.arguments = ["-c", url.path]
-        
-        if #available(macOS 10.13, *) {
-            task.executableURL = URL(fileURLWithPath: "/bin/zsh")
-            do {
-                try task.run()
-            } catch {}
-        } else {
-            task.launchPath = "/bin/zsh"
-            task.launch()
-        }
-    }
-}

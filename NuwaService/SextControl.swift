@@ -9,7 +9,7 @@ import Foundation
 import SystemExtensions
 import NetworkExtension
 
-@available(macOS 10.16, *)
+@available(macOS 11.0, *)
 class SextControl: NSObject, OSSystemExtensionRequestDelegate {
     static let shared = SextControl()
     let controlQueue = DispatchQueue(label: "com.nuwastone.sextcontrol.queue")
@@ -27,6 +27,31 @@ class SextControl: NSObject, OSSystemExtensionRequestDelegate {
         let request = OSSystemExtensionRequest.deactivationRequest(forExtensionWithIdentifier: SextBundle, queue: controlQueue)
         request.delegate = self
         OSSystemExtensionManager.shared.submitRequest(request)
+    }
+    
+    func getExtensionStatus() -> Bool {
+        let task = Process()
+        let pipe = Pipe()
+        
+        task.arguments = ["list"]
+        task.standardOutput = pipe
+        task.launchPath = "/usr/bin/systemextensionsctl"
+        task.launch()
+        
+        let output = try! pipe.fileHandleForReading.readToEnd()!
+        guard let result = String(data: output, encoding: .utf8) else {
+            return false
+        }
+        
+        let sextList = result.split(separator: "\n")
+        for sextItem in sextList {
+            let sextInfo = sextItem.lowercased()
+            if sextInfo.contains(SextBundle) && sextInfo.hasSuffix("[activated enabled]") {
+                return true
+            }
+        }
+        
+        return false
     }
     
     func request(_ request: OSSystemExtensionRequest, actionForReplacingExtension existing: OSSystemExtensionProperties, withExtension ext: OSSystemExtensionProperties) -> OSSystemExtensionRequest.ReplacementAction {
@@ -57,7 +82,7 @@ class SextControl: NSObject, OSSystemExtensionRequestDelegate {
     }
 }
 
-@available(macOS 10.16, *)
+@available(macOS 11.0, *)
 extension SextControl {
     func switchNEStatus(_ enable: Bool) -> Bool {
         let manager = NEFilterManager.shared()

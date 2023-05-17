@@ -24,7 +24,7 @@ class AlertWindowController: NSWindowController {
     override func windowDidLoad() {
         super.windowDidLoad()
         
-        if #available(macOS 10.16, *) {
+        if #available(macOS 11.0, *) {
             eventProvider = SextManager.shared
         }
         else {

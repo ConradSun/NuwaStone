@@ -43,6 +43,7 @@
 		3A60897A28A64E1C00061A42 /* NuwaCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB9B37E289268690078B45D /* NuwaCommon.swift */; };
 		3A60897F28A6562200061A42 /* com.nuwastone.service.eps.systemextension in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 3A6088DC28A49B0D00061A42 /* com.nuwastone.service.eps.systemextension */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3A6EAD8F28B8CA0400174980 /* ContentFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6EAD8E28B8CA0400174980 /* ContentFilter.swift */; };
+		3A78B8DF2A13AA38001C0EBD /* XPCServerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A78B8DE2A13AA38001C0EBD /* XPCServerDelegate.swift */; };
 		3A7F472028CB36DC00540EF1 /* com.nuwastone.service.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3A7F471F28CB36DC00540EF1 /* com.nuwastone.service.plist */; };
 		3A7F472228CB3EE800540EF1 /* uninstall.sh in Resources */ = {isa = PBXBuildFile; fileRef = 3A7F472128CB3EE800540EF1 /* uninstall.sh */; };
 		3A82D2C228BCDD86006E30DA /* FlowParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A82D2C128BCDD86006E30DA /* FlowParser.swift */; };
@@ -155,6 +156,7 @@
 		3A60897028A64C1C00061A42 /* NuwaService.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NuwaService.entitlements; sourceTree = "<group>"; };
 		3A60897428A64D0B00061A42 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3A6EAD8E28B8CA0400174980 /* ContentFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentFilter.swift; sourceTree = "<group>"; };
+		3A78B8DE2A13AA38001C0EBD /* XPCServerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCServerDelegate.swift; sourceTree = "<group>"; };
 		3A7F471F28CB36DC00540EF1 /* com.nuwastone.service.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = com.nuwastone.service.plist; sourceTree = "<group>"; };
 		3A7F472128CB3EE800540EF1 /* uninstall.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = uninstall.sh; sourceTree = "<group>"; };
 		3A82D2C128BCDD86006E30DA /* FlowParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowParser.swift; sourceTree = "<group>"; };
@@ -284,6 +286,7 @@
 				3A4A95E2289773DE00220EB7 /* KextControl.swift */,
 				3A6088FA28A4FCE500061A42 /* SextControl.swift */,
 				3AB9B37C2892656D0078B45D /* XPCConnection.swift */,
+				3A78B8DE2A13AA38001C0EBD /* XPCServerDelegate.swift */,
 				3A60896728A64C1B00061A42 /* AppDelegate.swift */,
 				3A60897428A64D0B00061A42 /* Info.plist */,
 				3A60896B28A64C1C00061A42 /* Assets.xcassets */,
@@ -641,6 +644,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3A60896828A64C1B00061A42 /* AppDelegate.swift in Sources */,
+				3A78B8DF2A13AA38001C0EBD /* XPCServerDelegate.swift in Sources */,
 				3A60897828A64DEE00061A42 /* SextControl.swift in Sources */,
 				3A60897528A64D6600061A42 /* XPCConnection.swift in Sources */,
 				3A60897A28A64E1C00061A42 /* NuwaCommon.swift in Sources */,
@@ -811,7 +815,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -845,7 +849,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -995,7 +999,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1030,7 +1034,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1054,7 +1058,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaKext/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.4;
 				MODULE_NAME = com.nuwastone.service;
 				MODULE_START = 0;
@@ -1083,7 +1087,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaKext/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.4;
 				MODULE_NAME = com.nuwastone.service;
 				MODULE_START = 0;
