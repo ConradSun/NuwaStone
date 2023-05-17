@@ -85,6 +85,7 @@ extension SextManager: NuwaEventProviderProtocol {
         }
         
         semaphore.wait()
+        isConnected = sextProxy != nil
         return isConnected
     }
     
@@ -101,7 +102,7 @@ extension SextManager: NuwaEventProviderProtocol {
     
     func setLogLevel(level: UInt8) -> Bool {
         nuwaLog.logLevel = level
-        sextProxy?.setLogLevel(level)
+        sextProxy!.setLogLevel(level)
         Logger(.Info, "Log level is setted to \(nuwaLog.logLevel)")
         return true
     }
@@ -115,7 +116,7 @@ extension SextManager: NuwaEventProviderProtocol {
         if eventID == 0 {
             return false
         }
-        sextProxy?.replyAuthEvent(index: eventID, isAllowed: isAllowed)
+        sextProxy!.replyAuthEvent(index: eventID, isAllowed: isAllowed)
         return true
     }
     
@@ -124,7 +125,7 @@ extension SextManager: NuwaEventProviderProtocol {
         for path in list {
             vnodeList.append(getFileVnodeID(path))
         }
-        sextProxy?.updateMuteList(vnodeID: vnodeList, type: type.rawValue)
+        sextProxy!.updateMuteList(vnodeID: vnodeList, type: type.rawValue)
         return true
     }
 }

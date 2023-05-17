@@ -40,7 +40,7 @@ let PropQueryStatus = "Status"
 let PropDomainName  = "Query"
 let PropReplyResult = "Reply"
 let MaxIPLength     = 41
-let MaxWaitTime     = 30000 //   ms
+let MaxWaitTime     = 20000 //   ms
 
 enum ESClientError: Error {
     case Success
