@@ -76,7 +76,7 @@
 		3AF7723D28801567009AC154 /* CacheManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3AF7723B28801567009AC154 /* CacheManager.hpp */; };
 		3AF772412880308E009AC154 /* DriverCache.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3AF7723F2880308E009AC154 /* DriverCache.hpp */; };
 		3AFFBBBA28D725C5001D421C /* PrefsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFFBBB928D725C5001D421C /* PrefsViewController.swift */; };
-		3AFFBBBB28D72992001D421C /* PrefPathList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFFBBB028D47411001D421C /* PrefPathList.swift */; };
+		3AFFBBBB28D72992001D421C /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFFBBB028D47411001D421C /* Preferences.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -192,7 +192,7 @@
 		3AF7723A28801567009AC154 /* CacheManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CacheManager.cpp; sourceTree = "<group>"; };
 		3AF7723B28801567009AC154 /* CacheManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CacheManager.hpp; sourceTree = "<group>"; };
 		3AF7723F2880308E009AC154 /* DriverCache.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DriverCache.hpp; sourceTree = "<group>"; };
-		3AFFBBB028D47411001D421C /* PrefPathList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefPathList.swift; sourceTree = "<group>"; };
+		3AFFBBB028D47411001D421C /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		3AFFBBB928D725C5001D421C /* PrefsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -346,7 +346,7 @@
 			children = (
 				3A4A95E12897735500220EB7 /* ViewManager */,
 				3AA1B8D42A0CEB01001F0FC5 /* DeviceInfo.swift */,
-				3AFFBBB028D47411001D421C /* PrefPathList.swift */,
+				3AFFBBB028D47411001D421C /* Preferences.swift */,
 				3ADA61A2288D819C002C2537 /* EventCache.swift */,
 				3ABAFFAE2879C4A200928C22 /* KextManager.swift */,
 				3A605AE928A9F88300059F9E /* SextManager.swift */,
@@ -671,7 +671,7 @@
 				3ABAFFAD2879C47800928C22 /* NuwaLogger.swift in Sources */,
 				3A60897628A64D7300061A42 /* XPCConnection.swift in Sources */,
 				3ABAFFAF2879C4A200928C22 /* KextManager.swift in Sources */,
-				3AFFBBBB28D72992001D421C /* PrefPathList.swift in Sources */,
+				3AFFBBBB28D72992001D421C /* Preferences.swift in Sources */,
 				3AF77239287FFDEF009AC154 /* NuwaEvent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

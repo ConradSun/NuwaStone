@@ -34,10 +34,10 @@ class PrefsViewController: NSViewController {
     @IBOutlet weak var batteryState: NSTextField!
     
     private var nuwaLog = NuwaLog()
-    private var auditSwitch = true
+    private var userPref = Preferences()
     private var isUpButtonChoosed = true
     private var muteChoice = MuteChoice.FilterFile
-    private var muteType = NuwaMuteType.FilterFileByFilePath
+    private var muteType = NuwaMuteType.TypeNil
     private var eventProvider: NuwaEventProviderProtocol?
     
     override func viewDidLoad() {
@@ -54,10 +54,9 @@ class PrefsViewController: NSViewController {
         else {
             eventProvider = KextManager.shared
         }
-        auditSwitch = (UserDefaults.standard.integer(forKey: UserAuditSwitch) != 0)
         
         logLevelButton.selectItem(withTag: Int(nuwaLog.logLevel))
-        auditSwitchButton.selectItem(withTag: (auditSwitch ? 1 : 0))
+        auditSwitchButton.selectItem(withTag: (userPref.auditSwitch ? 1 : 0))
         
         deviceName.stringValue = getDeviceName()
         systemVersion.stringValue = getSystemVersion()
@@ -95,18 +94,20 @@ class PrefsViewController: NSViewController {
         }
         
         switch muteType {
+        case .TypeNil:
+            break
         case .FilterFileByFilePath:
-            pathView.string = PrefPathList.shared.filePathsForFileMute.joined(separator: "\n")
+            pathView.string = userPref.filePathsForFileMute.joined(separator: "\n")
         case .FilterFileByProcPath:
-            pathView.string = PrefPathList.shared.procPathsForFileMute.joined(separator: "\n")
+            pathView.string = userPref.procPathsForFileMute.joined(separator: "\n")
         case .FilterNetByProcPath:
-            pathView.string = PrefPathList.shared.procPathsForNetMute.joined(separator: "\n")
+            pathView.string = userPref.procPathsForNetMute.joined(separator: "\n")
         case .FilterNetByIPAddr:
-            pathView.string = PrefPathList.shared.ipAddrsForNetMute.joined(separator: "\n")
+            pathView.string = userPref.ipAddrsForNetMute.joined(separator: "\n")
         case .AllowProcExec:
-            pathView.string = PrefPathList.shared.allowExecList.joined(separator: "\n")
+            pathView.string = userPref.allowExecList.joined(separator: "\n")
         case .DenyProcExec:
-            pathView.string = PrefPathList.shared.denyExecList.joined(separator: "\n")
+            pathView.string = userPref.denyExecList.joined(separator: "\n")
         }
     }
     
@@ -160,25 +161,42 @@ class PrefsViewController: NSViewController {
         let status = auditSwitchButton.selectedItem!.tag > 0
         
         switch muteType {
-        case .FilterFileByFilePath, .FilterFileByProcPath:
-            PrefPathList.shared.updateMuteFileList(paths: inputs, type: muteType)
-            _ = eventProvider!.udpateMuteList(list: inputs, type: muteType)
+        case .TypeNil:
+            break
             
-        case .FilterNetByProcPath, .FilterNetByIPAddr:
-            PrefPathList.shared.updateMuteNetworkList(values: inputs, type: muteType)
-            // _ = eventProvider!.udpateMuteList(list: inputs, type: muteType)
+        case .FilterFileByFilePath:
+            userPref.filePathsForFileMute = inputs
+        case .FilterFileByProcPath:
+            userPref.procPathsForFileMute = inputs
             
-        case .AllowProcExec, .DenyProcExec:
-            PrefPathList.shared.updateMuteExecList(paths: inputs, type: muteType)
+        case .FilterNetByProcPath:
+            var procPaths = Set<String>()
+            for path in inputs {
+                procPaths.update(with: path)
+            }
+            userPref.procPathsForNetMute = procPaths
+        case .FilterNetByIPAddr:
+            var ipAddrs = Set<String>()
+            for path in inputs {
+                ipAddrs.update(with: path)
+            }
+            userPref.ipAddrsForNetMute = ipAddrs
+            
+        case .AllowProcExec:
+            userPref.allowExecList = inputs
+        case .DenyProcExec:
+            userPref.denyExecList = inputs
+        }
+        if (muteType != .TypeNil) {
             _ = eventProvider!.udpateMuteList(list: inputs, type: muteType)
         }
         
         if level != nuwaLog.logLevel {
+            nuwaLog.logLevel = UInt8(level)
             _ = eventProvider!.setLogLevel(level: UInt8(level))
         }
-        if status != auditSwitch {
-            UserDefaults.standard.set(status, forKey: UserAuditSwitch)
-            _ = eventProvider!.setAuditSwitch(status: status)
+        if status != userPref.auditSwitch {
+            userPref.auditSwitch = status
         }
     }
 }

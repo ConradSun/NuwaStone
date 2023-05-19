@@ -19,6 +19,7 @@ class AlertWindowController: NSWindowController {
     var isAllowed = false
     var shouldAddToList = false
     var isSubmitted = false
+    var userPref = Preferences()
     var eventProvider: NuwaEventProviderProtocol?
     
     override func windowDidLoad() {
@@ -55,8 +56,16 @@ class AlertWindowController: NSWindowController {
         shouldAddToList = decisionCheckbox.state == .off
         _ = eventProvider!.replyAuthEvent(eventID: authEvent!.eventID, isAllowed: isAllowed)
         if shouldAddToList {
-            _ = eventProvider!.udpateMuteList(list: [authEvent!.procPath], type: muteType)
-            PrefPathList.shared.appendMuteExecList(path: authEvent!.procPath, type: muteType)
+            var list = [authEvent!.procPath]
+            if isAllowed {
+                list.append(contentsOf: userPref.allowExecList)
+                userPref.allowExecList = list
+            }
+            else {
+                list.append(contentsOf: userPref.denyExecList)
+                userPref.denyExecList = list
+            }
+            _ = eventProvider!.udpateMuteList(list: list, type: muteType)
         }
         window?.close()
         authEvent = nil

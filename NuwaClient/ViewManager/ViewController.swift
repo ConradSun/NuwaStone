@@ -40,6 +40,7 @@ class ViewController: NSViewController {
     var reportedItems = [NuwaEventInfo]()
     var displayedItems = [NuwaEventInfo]()
     
+    var userPref = Preferences()
     var eventProvider: NuwaEventProviderProtocol?
     var alertWindow: AlertWindowController?
     
@@ -216,10 +217,10 @@ extension ViewController {
     }
     
     func initMutePaths() {
-        _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.allowExecList, type: .AllowProcExec)
-        _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.denyExecList, type: .DenyProcExec)
-        _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.filePathsForFileMute, type: .FilterFileByFilePath)
-        _ = eventProvider!.udpateMuteList(list: PrefPathList.shared.procPathsForFileMute, type: .FilterFileByProcPath)
+        _ = eventProvider!.udpateMuteList(list: userPref.allowExecList, type: .AllowProcExec)
+        _ = eventProvider!.udpateMuteList(list: userPref.denyExecList, type: .DenyProcExec)
+        _ = eventProvider!.udpateMuteList(list: userPref.filePathsForFileMute, type: .FilterFileByFilePath)
+        _ = eventProvider!.udpateMuteList(list: userPref.procPathsForFileMute, type: .FilterFileByProcPath)
     }
     
     func reloadEventInfo() {

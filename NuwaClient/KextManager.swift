@@ -17,7 +17,7 @@ class KextManager {
     var connection: io_connect_t = 0
     var isConnected: Bool = false
     var nuwaLog = NuwaLog()
-    var auditSwitch = (UserDefaults.standard.integer(forKey: UserAuditSwitch) != 0)
+    var userPref = Preferences()
     var delegate: NuwaEventProcessProtocol?
     
     private func processConnectionRequest(iterator: io_iterator_t) {
@@ -152,7 +152,7 @@ extension KextManager {
             }
         }
         
-        if auditSwitch {
+        if userPref.auditSwitch {
             delegate?.processAuthEvent(nuwaEvent)
         }
         else {
@@ -274,7 +274,6 @@ extension KextManager: NuwaEventProviderProtocol {
     }
     
     func setLogLevel(level: UInt8) -> Bool {
-        nuwaLog.logLevel = level
         let scalar = [UInt64(level)]
         let result = IOConnectCallScalarMethod(connection, kNuwaUserClientSetLogLevel.rawValue, scalar, 1, nil, nil)
         if result != KERN_SUCCESS {
@@ -282,11 +281,6 @@ extension KextManager: NuwaEventProviderProtocol {
             return false
         }
         Logger(.Info, "Log level is setted to \(nuwaLog.logLevel)")
-        return true
-    }
-    
-    func setAuditSwitch(status: Bool) -> Bool {
-        auditSwitch = status
         return true
     }
     

@@ -20,6 +20,7 @@ let MachServiceKey  = "MachServiceName"
 
 let UserLogLevel        = "Log Level"
 let UserAuditSwitch     = "Audit Switch"
+let UserClearDuration   = "Clear Duration"
 let UserAllowExecList   = "Allow Exec List"
 let UserDenyExecList    = "Deny Exec List"
 let UserMuteFileByFile  = "File Paths for Filtering File"

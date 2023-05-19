@@ -27,14 +27,14 @@ extension ViewController: NuwaEventProcessProtocol {
                 }
                 
             case .NetAccess, .DNSQuery:
-                if PrefPathList.shared.procPathsForNetMute.contains(event.procPath) {
+                if userPref.procPathsForNetMute.contains(event.procPath) {
                     return
                 }
                 if event.eventType == .NetAccess {
                     guard let remoteIP = event.props[PropRemoteAddr]!.split(separator: " ").first?.lowercased() else {
                         return
                     }
-                    if PrefPathList.shared.ipAddrsForNetMute.contains(remoteIP) {
+                    if userPref.ipAddrsForNetMute.contains(remoteIP) {
                         return
                     }
                 }
