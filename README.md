@@ -16,6 +16,10 @@ It supports events as below
 - Process: create, exit (only os11.x+)
 - Network: connect, dns query
 
+## Recommendation
+
+If you want to monitor more event types, you can use [X-Monitor](https://github.com/lyq1996/X-Monitor). The project supports all events provided by Endpoint Security framework and will support the network/dns event in the future.
+
 ## Documentation
 
 NuwaStone supports macOS10.13+ with Kernel Extension (for os10.x) and System Extension (for os11.x+).
