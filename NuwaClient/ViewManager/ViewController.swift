@@ -106,7 +106,7 @@ class ViewController: NSViewController {
             displayTimer.invalidate()
             clearTimer.invalidate()
         }
-        configMenuStatus()
+        configMenuStatus(start: !isStarted, stop: isStarted)
     }
     
     @IBAction func scrollButtonClicked(_ sender: NSButton) {
@@ -200,10 +200,11 @@ extension ViewController {
     
     func establishConnection() {
         XPCConnection.shared.connectToDaemon(bundle: Bundle.main, delegate: self) { success in
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [self] in
                 if !success {
-                    self.controlButton.isEnabled = false
-                    self.alertWithError(error: "Unable to start monitoring for broken connection with daemon.")
+                    controlButton.isEnabled = false
+                    configMenuStatus(start: false, stop: false)
+                    alertWithError(error: "Unable to start monitoring for broken connection with daemon.")
                 }
             }
         }
@@ -326,11 +327,11 @@ extension ViewController {
         infoLabel.stringValue = ""
     }
     
-    func configMenuStatus() {
+    func configMenuStatus(start: Bool, stop: Bool) {
         guard let app = NSApplication.shared.delegate as? AppDelegate else {
             return
         }
-        app.setMenuStatus(start: !isStarted, stop: isStarted)
+        app.setMenuStatus(start: start, stop: stop)
     }
 }
 
