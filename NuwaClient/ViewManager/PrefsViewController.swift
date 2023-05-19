@@ -32,6 +32,8 @@ class PrefsViewController: NSViewController {
     @IBOutlet weak var processorArch: NSTextField!
     @IBOutlet weak var physicalMemory: NSTextField!
     @IBOutlet weak var batteryState: NSTextField!
+    @IBOutlet weak var clearInterval: NSTextField!
+    @IBOutlet weak var intervalSlider: NSSliderCell!
     
     private var nuwaLog = NuwaLog()
     private var userPref = Preferences()
@@ -66,6 +68,9 @@ class PrefsViewController: NSViewController {
         processorArch.stringValue = getProcessorArch()
         physicalMemory.stringValue = getPhysicalMemory()
         batteryState.stringValue = getBatteryState()
+        
+        intervalSlider.integerValue = Int(userPref.clearDuration) / 60
+        sliderValueChanged(intervalSlider)
     }
     
     private func updateCheckButton(choice: MuteChoice) {
@@ -109,6 +114,12 @@ class PrefsViewController: NSViewController {
         case .DenyProcExec:
             pathView.string = userPref.denyExecList.joined(separator: "\n")
         }
+    }
+    
+    @IBAction func sliderValueChanged(_ sender: NSSliderCell) {
+        let timeDuration = intervalSlider.integerValue
+        let minDesc = timeDuration == 1 ? "minute" : "minutes"
+        clearInterval.stringValue = "\(timeDuration) \(minDesc)"
     }
     
     @IBAction func fileButtonClicked(_ sender: NSButton) {
@@ -197,6 +208,10 @@ class PrefsViewController: NSViewController {
         }
         if status != userPref.auditSwitch {
             userPref.auditSwitch = status
+        }
+        if intervalSlider.doubleValue * 60 != userPref.clearDuration {
+            userPref.clearDuration = intervalSlider.doubleValue * 60
+            NotificationCenter.default.post(name: NSNotification.Name(DurationChanged), object: nil)
         }
     }
 }

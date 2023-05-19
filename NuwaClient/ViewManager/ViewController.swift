@@ -33,6 +33,7 @@ class ViewController: NSViewController {
     var searchText = ""
     var displayMode = DisplayMode.DisplayAll
     var displayTimer = Timer()
+    var clearTimer = Timer()
     
     let eventQueue = DispatchQueue(label: "com.nuwastone.eventview.queue", attributes: .concurrent)
     var eventCount = [UInt32](repeating: 0, count: DisplayMode.allCases.count)
@@ -58,25 +59,7 @@ class ViewController: NSViewController {
         eventView.delegate = self
         eventView.dataSource = self
         eventView.target = self
-        
-        displayTimer = Timer(timeInterval: 1.0, repeats: true) { [self] timer in
-            if !isStarted {
-                return
-            }
-            
-            self.reloadEventInfo()
-            for (index, _) in DisplayMode.allCases.enumerated() {
-                DispatchQueue.main.async(flags: .barrier) { [self] in
-                    graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), index: index)
-                    eventCountCopy[index] = eventCount[index]
-                }
-            }
-            graphView.draw(graphView.frame)
-            graphView.needsDisplay = true
-        }
-        RunLoop.current.add(displayTimer, forMode: .default)
-        displayTimer.fire()
-        
+        setupPrefs()
         establishConnection()
     }
 
@@ -87,22 +70,29 @@ class ViewController: NSViewController {
     }
     
     @IBAction func controlButtonClicked(_ sender: NSButton) {
-        isStarted = !isStarted
-        if isStarted {
-            let semaphore = DispatchSemaphore(value: 0)
-            DispatchQueue.global().async {
+        if !isStarted {
+            DispatchQueue.global().async { [self] in
                 ProcessCache.shared.initProcCache()
-                semaphore.signal()
-            }
-            semaphore.wait()
-            if !eventProvider!.startProvider() {
-                alertWithError(error: "Failed to connect extension.")
-                return
+                if !eventProvider!.startProvider() {
+                    DispatchQueue.main.sync {
+                        alertWithError(error: "Failed to connect extension.")
+                        controlButton.image = NSImage(named: "start")
+                        controlLabel.stringValue = "start"
+                        isStarted = false
+                    }
+                    return
+                }
+                
+                DispatchQueue.main.sync {
+                    initMutePaths()
+                    setupDisplayTimer()
+                    setupClearTimer()
+                }
             }
             
-            initMutePaths()
             controlButton.image = NSImage(named: "stop")
             controlLabel.stringValue = "stop"
+            isStarted = true
         }
         else {
             if !eventProvider!.stopProvider() {
@@ -112,6 +102,9 @@ class ViewController: NSViewController {
             
             controlButton.image = NSImage(named: "start")
             controlLabel.stringValue = "start"
+            isStarted = false
+            displayTimer.invalidate()
+            clearTimer.invalidate()
         }
         configMenuStatus()
     }
@@ -175,7 +168,7 @@ class ViewController: NSViewController {
     }
     
     @IBAction func uninstallMenuItemSelected(_ sender: NSMenuItem) {
-        if !self.controlButton.isEnabled {
+        if !controlButton.isEnabled {
             alertWithError(error: "Unable to uninstall for broken connection with daemon.")
             return
         }
@@ -223,6 +216,91 @@ extension ViewController {
         _ = eventProvider!.udpateMuteList(list: userPref.procPathsForFileMute, type: .FilterFileByProcPath)
     }
     
+    func setupDisplayTimer() {
+        displayTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [self] _ in
+            reloadEventInfo()
+            for (index, _) in DisplayMode.allCases.enumerated() {
+                DispatchQueue.main.async(flags: .barrier) { [self] in
+                    graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), index: index)
+                    eventCountCopy[index] = eventCount[index]
+                }
+            }
+            graphView.draw(graphView.frame)
+            graphView.needsDisplay = true
+        })
+    }
+    
+    func setupClearTimer() {
+        if userPref.clearDuration > 0 {
+            clearTimer = Timer.scheduledTimer(withTimeInterval: userPref.clearDuration, repeats: true, block: { [self] _ in
+                clearButtonClicked(clearButton)
+            })
+        }
+    }
+    
+    func setupPrefs() {
+        let name = Notification.Name(rawValue: DurationChanged)
+        NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { [self] _ in
+            if isStarted {
+                clearTimer.invalidate()
+                setupClearTimer()
+            }
+        }
+    }
+    
+    func shouldDisplayEvent(event: NuwaEventInfo) -> Bool {
+        switch event.eventType {
+        case .FileCreate, .FileDelete, .FileCloseModify, .FileRename:
+            if displayMode != .DisplayAll && displayMode != .DisplayFile {
+                return false
+            }
+
+        case .ProcessCreate, .ProcessExit:
+            if displayMode != .DisplayAll && displayMode != .DisplayProcess {
+                return false
+            }
+            
+        case .NetAccess, .DNSQuery:
+            if displayMode != .DisplayAll && displayMode != .DisplayNetwork {
+                return false
+            }
+            if userPref.procPathsForNetMute.contains(event.procPath) {
+                return false
+            }
+            if event.eventType == .NetAccess {
+                guard let remoteIP = event.props[PropRemoteAddr]!.split(separator: " ").first?.lowercased() else {
+                    return false
+                }
+                if userPref.ipAddrsForNetMute.contains(remoteIP) {
+                    return false
+                }
+            }
+
+        default:
+            Logger(.Warning, "Unknown event type occured.")
+            return false
+        }
+        
+        if !searchText.isEmpty && !event.desc.contains(searchText) {
+            return false
+        }
+        
+        return true
+    }
+    
+    func updateEventCount(type: NuwaEventType) {
+        switch type {
+        case .FileCreate, .FileDelete, .FileCloseModify, .FileRename:
+            eventCount[DisplayMode.DisplayFile.rawValue] += 1
+        case .ProcessCreate, .ProcessExit:
+            eventCount[DisplayMode.DisplayProcess.rawValue] += 1
+        case .NetAccess, .DNSQuery:
+            eventCount[DisplayMode.DisplayNetwork.rawValue] += 1
+        default:
+            break
+        }
+    }
+    
     func reloadEventInfo() {
         let index = eventView.selectedRowIndexes
         eventView.reloadData()
@@ -235,30 +313,10 @@ extension ViewController {
     func refreshDisplayedEvents() {
         eventQueue.async(flags: .barrier) {
             self.displayedItems.removeAll()
-            if self.displayMode == .DisplayAll && self.searchText.isEmpty {
-                self.displayedItems = self.reportedItems
-                return
-            }
         }
         
         for event in reportedItems {
-            switch displayMode {
-            case .DisplayAll:
-                ()
-            case .DisplayProcess:
-                if event.eventType != .ProcessCreate && event.eventType != .ProcessExit {
-                    continue
-                }
-            case .DisplayFile:
-                if event.eventType != .FileDelete && event.eventType != .FileRename && event.eventType != .FileCloseModify && event.eventType != .FileCreate {
-                    continue
-                }
-            case .DisplayNetwork:
-                if event.eventType != .NetAccess && event.eventType != .DNSQuery {
-                    continue
-                }
-            }
-            if searchText.isEmpty || event.desc.contains(searchText) {
+            if shouldDisplayEvent(event: event) {
                 eventQueue.async(flags: .barrier) {
                     self.displayedItems.append(event)
                 }

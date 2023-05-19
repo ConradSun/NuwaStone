@@ -27,12 +27,13 @@ enum NuwaEventType: String, Codable {
 }
 
 enum NuwaMuteType: UInt8 {
-    case FilterFileByFilePath   = 0
-    case FilterFileByProcPath   = 1
-    case FilterNetByProcPath    = 2
-    case FilterNetByIPAddr      = 3
-    case AllowProcExec          = 4
-    case DenyProcExec           = 5
+    case TypeNil
+    case FilterFileByFilePath
+    case FilterFileByProcPath
+    case FilterNetByProcPath
+    case FilterNetByIPAddr
+    case AllowProcExec
+    case DenyProcExec
 }
 
 protocol NuwaEventProcessProtocol {
@@ -46,7 +47,6 @@ protocol NuwaEventProviderProtocol {
     func startProvider() -> Bool
     func stopProvider() -> Bool
     func setLogLevel(level: UInt8) -> Bool
-    func setAuditSwitch(status: Bool) -> Bool
     func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool
     func udpateMuteList(list: [String], type: NuwaMuteType) -> Bool
 }

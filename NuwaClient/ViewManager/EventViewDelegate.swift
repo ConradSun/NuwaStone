@@ -13,44 +13,9 @@ extension ViewController: NuwaEventProcessProtocol {
             reportedItems.append(event)
             eventCount[DisplayMode.DisplayAll.rawValue] += 1
 
-            switch event.eventType {
-            case .FileCreate, .FileDelete, .FileCloseModify, .FileRename:
-                eventCount[DisplayMode.DisplayFile.rawValue] += 1
-                if displayMode != .DisplayAll && displayMode != .DisplayFile {
-                    return
-                }
-
-            case .ProcessCreate, .ProcessExit:
-                eventCount[DisplayMode.DisplayProcess.rawValue] += 1
-                if displayMode != .DisplayAll && displayMode != .DisplayProcess {
-                    return
-                }
-                
-            case .NetAccess, .DNSQuery:
-                if userPref.procPathsForNetMute.contains(event.procPath) {
-                    return
-                }
-                if event.eventType == .NetAccess {
-                    guard let remoteIP = event.props[PropRemoteAddr]!.split(separator: " ").first?.lowercased() else {
-                        return
-                    }
-                    if userPref.ipAddrsForNetMute.contains(remoteIP) {
-                        return
-                    }
-                }
-                eventCount[DisplayMode.DisplayNetwork.rawValue] += 1
-                if displayMode != .DisplayAll && displayMode != .DisplayNetwork {
-                    return
-                }
-
-            default:
-                Logger(.Warning, "Unknown event type occured.")
-                return
-            }
-            if searchText.isEmpty || event.desc.contains(searchText) {
-                eventQueue.async(flags: .barrier) {
-                    self.displayedItems.append(event)
-                }
+            if shouldDisplayEvent(event: event) {
+                displayedItems.append(event)
+                updateEventCount(type: event.eventType)
             }
         }
     }

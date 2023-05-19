@@ -138,20 +138,20 @@ class ClientManager {
     
     func dispatchEvent(event: NuwaEventInfo, message: UnsafePointer<es_message_t>) {
         if message.pointee.action_type == ES_ACTION_TYPE_AUTH {
-            authQueue.sync {
+            authQueue.sync { [self] in
                 guard let isWhite = ListManager.shared.shouldAllowProcExec(vnodeID: event.eventID) else {
                     if event.props[PropCodeSign] != nil {
-                        if !self.replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW) {
+                        if !replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW) {
                             Logger(.Error, "Failed to respond auth event [\(event.desc)].")
                         }
                         return
                     }
                     
-                    self.authCount += 1
-                    event.eventID = self.authCount
+                    authCount += 1
+                    event.eventID = authCount
                     if !XPCServer.shared.sendAuthEvent(event) {
                         Logger(.Warning, "Failed to send auth event [index: \(event.eventID)].")
-                        if !self.replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW) {
+                        if !replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW) {
                             Logger(.Error, "Failed to reply auth event [\(event.desc)].")
                         }
                     }
@@ -162,7 +162,7 @@ class ClientManager {
                 }
                 
                 let result = isWhite ? ES_AUTH_RESULT_ALLOW : ES_AUTH_RESULT_DENY
-                if !self.replyAuthEvent(message: message, result: result) {
+                if !replyAuthEvent(message: message, result: result) {
                     Logger(.Error, "Failed to respond auth event [\(event.desc)].")
                 }
                 Logger(.Info, "Process [\(event.procPath)] is contained in auth list.")
@@ -187,7 +187,7 @@ class ClientManager {
             return false
         }
         
-        let ret = es_respond_auth_result(self.esClient!, message, result, false)
+        let ret = es_respond_auth_result(esClient!, message, result, false)
         if ret != ES_RESPOND_RESULT_SUCCESS {
             Logger(.Error, "Failed to respond auth event with error [\(ret.rawValue)].")
             return false

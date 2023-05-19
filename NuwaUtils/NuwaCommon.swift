@@ -18,6 +18,8 @@ let KextService     = "DriverService"
 
 let MachServiceKey  = "MachServiceName"
 
+let DurationChanged = "Clear Duration Changed"
+
 let UserLogLevel        = "Log Level"
 let UserAuditSwitch     = "Audit Switch"
 let UserClearDuration   = "Clear Duration"

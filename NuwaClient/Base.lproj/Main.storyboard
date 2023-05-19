@@ -1112,6 +1112,62 @@ DQ
                                                     </view>
                                                     <color key="borderColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </box>
+                                                <box fixedFrame="YES" boxType="custom" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="eXQ-2N-bT0">
+                                                    <rect key="frame" x="57" y="55" width="400" height="58"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                    <view key="contentView" id="UuF-YL-22Q">
+                                                        <rect key="frame" x="1" y="1" width="398" height="56"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <subviews>
+                                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Rr2-sw-b1f">
+                                                                <rect key="frame" x="18" y="26" width="100" height="25"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="96" id="dzb-we-vVJ"/>
+                                                                    <constraint firstAttribute="width" constant="96" id="oZ2-XT-dbe"/>
+                                                                </constraints>
+                                                                <textFieldCell key="cell" lineBreakMode="clipping" title=" Clear Interval:" id="pIO-ot-rLE">
+                                                                    <font key="font" metaFont="system"/>
+                                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                </textFieldCell>
+                                                            </textField>
+                                                            <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="g7S-Zs-IiU">
+                                                                <rect key="frame" x="18" y="1" width="362" height="28"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="20" id="8Z8-ZA-IgL"/>
+                                                                </constraints>
+                                                                <sliderCell key="cell" state="on" alignment="left" maxValue="60" doubleValue="6" tickMarkPosition="above" numberOfTickMarks="61" allowsTickMarkValuesOnly="YES" sliderType="linear" id="TJm-lj-CFo">
+                                                                    <connections>
+                                                                        <action selector="sliderValueChanged:" target="aQv-ki-pXA" id="Vs1-aS-lUD"/>
+                                                                    </connections>
+                                                                </sliderCell>
+                                                            </slider>
+                                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KSo-3p-qFJ">
+                                                                <rect key="frame" x="280" y="26" width="100" height="25"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="96" id="Foh-2D-mhm"/>
+                                                                </constraints>
+                                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="6 minutes" id="Y89-sQ-M89">
+                                                                    <font key="font" metaFont="system"/>
+                                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                </textFieldCell>
+                                                            </textField>
+                                                        </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="Rr2-sw-b1f" firstAttribute="leading" secondItem="UuF-YL-22Q" secondAttribute="leading" constant="20" symbolic="YES" id="9bd-aq-i0b"/>
+                                                            <constraint firstAttribute="trailing" secondItem="KSo-3p-qFJ" secondAttribute="trailing" constant="20" symbolic="YES" id="AvC-zN-yPq"/>
+                                                            <constraint firstAttribute="bottom" secondItem="KSo-3p-qFJ" secondAttribute="bottom" constant="26" id="Lia-1t-o3D"/>
+                                                            <constraint firstAttribute="bottom" secondItem="g7S-Zs-IiU" secondAttribute="bottom" constant="7" id="SeG-fg-7df"/>
+                                                            <constraint firstItem="Rr2-sw-b1f" firstAttribute="top" secondItem="UuF-YL-22Q" secondAttribute="top" constant="5" id="bjM-r8-Yjm"/>
+                                                            <constraint firstAttribute="bottom" secondItem="Rr2-sw-b1f" secondAttribute="bottom" constant="26" id="hvK-WG-5l6"/>
+                                                            <constraint firstAttribute="trailing" secondItem="g7S-Zs-IiU" secondAttribute="trailing" constant="20" symbolic="YES" id="mTB-aW-TRx"/>
+                                                            <constraint firstItem="g7S-Zs-IiU" firstAttribute="leading" secondItem="UuF-YL-22Q" secondAttribute="leading" constant="20" symbolic="YES" id="rtv-CC-cdp"/>
+                                                            <constraint firstItem="KSo-3p-qFJ" firstAttribute="top" secondItem="UuF-YL-22Q" secondAttribute="top" constant="5" id="yv0-lq-B7a"/>
+                                                        </constraints>
+                                                    </view>
+                                                    <color key="borderColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </box>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="Wx9-kM-DRY" firstAttribute="leading" secondItem="ZZt-sD-qew" secondAttribute="leading" constant="57" id="2Kn-iy-ugE"/>
@@ -1231,7 +1287,7 @@ DQ
                                                     <rect key="frame" x="198" y="17" width="296" height="230"/>
                                                     <clipView key="contentView" drawsBackground="NO" id="ZCF-oM-BxY">
                                                         <rect key="frame" x="0.0" y="0.0" width="296" height="230"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
                                                         <subviews>
                                                             <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="Sup-Ew-PK8">
                                                                 <rect key="frame" x="0.0" y="0.0" width="296" height="230"/>
@@ -1582,9 +1638,11 @@ DQ
                         <outlet property="auditSwitchButton" destination="a8Y-lZ-LKO" id="dhg-0u-Shm"/>
                         <outlet property="availableStorage" destination="J5E-nA-Nsw" id="c01-u4-DWO"/>
                         <outlet property="batteryState" destination="pf8-3q-jhC" id="w1u-Xk-Sw9"/>
+                        <outlet property="clearInterval" destination="KSo-3p-qFJ" id="h5r-BC-uPa"/>
                         <outlet property="deviceName" destination="4Wu-J1-8NH" id="L6K-dA-hUy"/>
                         <outlet property="downRadioButton" destination="bFa-XX-y8p" id="nYS-LH-aFV"/>
                         <outlet property="fileCheckButton" destination="wRK-0T-Dat" id="GQ4-2a-4e7"/>
+                        <outlet property="intervalSlider" destination="TJm-lj-CFo" id="PVQ-u5-ZXy"/>
                         <outlet property="logLevelButton" destination="wq4-yv-HFY" id="7qc-Ii-FF5"/>
                         <outlet property="networkCheckButton" destination="mgx-xJ-w29" id="bTw-Tk-tni"/>
                         <outlet property="pathView" destination="Sup-Ew-PK8" id="0fX-CJ-TCC"/>
