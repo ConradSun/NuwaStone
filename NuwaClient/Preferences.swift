@@ -20,7 +20,7 @@ struct Preferences {
     var clearDuration: TimeInterval {
         get {
             let duration = UserDefaults.standard.double(forKey: UserClearDuration)
-            if duration > 0 {
+            if duration >= 0 {
                 return duration
             }
             return 360
