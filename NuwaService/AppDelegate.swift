@@ -12,7 +12,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         XPCConnection.shared.startListener()
         
-        if #available(macOS 10.16, *) {
+        if #available(macOS 11.0, *) {
             SextControl.shared.activateExtension()
         }
         else {

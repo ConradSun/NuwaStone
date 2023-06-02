@@ -135,6 +135,14 @@ func getProcArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void) 
         }
         begin += 1
     } while begin < argmax
+    
+    repeat {
+        if args[begin] != 0x0 {
+            break
+        }
+        begin += 1
+    } while begin < argmax
+    
     if begin == argmax {
         eventHandler(argv, EPERM)
         return
@@ -165,7 +173,7 @@ func getNameFromUid(_ uid: uid_t) -> String {
     return String(cString: name)
 }
 
-func getSignInfoFromPath(_ path: String) ->[String] {
+func getSignInfoFromPath(_ path: String) -> [String] {
     let fileUrl = URL(fileURLWithPath: path)
     var secCode: SecStaticCode?
     var status = SecStaticCodeCreateWithPath(fileUrl as CFURL, SecCSFlags(rawValue: 0), &secCode)
