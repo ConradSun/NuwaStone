@@ -3,12 +3,20 @@
 <p align="center">
     <div align="center"><img src=https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/nuwa.png width=138  /></div>
     <h2 align="center">NuwaStone</h2>
+    <div align="center">
+      <a href="https://github.com/ConradSun/Nuwastone/releases" target="_blank">
+        <img alt="GitHub downloads" src="https://img.shields.io/github/downloads/ConradSun/NuwaStone/total.svg?style=flat-square"></a>
+      <a href="https://github.com/ConradSun/NuwaStone/commits" target="_blank">
+        <img alt="GitHub commit" src="https://img.shields.io/github/commit-activity/m/ConradSun/NuwaStone?style=flat-square"></a>
+      <img alt="Minimum supported version" src="https://img.shields.io/badge/macOS-10.13%2B-orange?style=flat-square">
+      <img alt="License" src="https://img.shields.io/badge/license-GPL--3.0-green">
+      <a href="https://www.swift.org" target="_blank">
+        <img alt="Language" src="https://img.shields.io/badge/Language-swift-red.svg"></a>
+    </div>
     <div align="center">A macOS behavior audit system with scope of file, process and network events.</div>
 </p>
 
 <p align="center"><img src="https://raw.githubusercontent.com/ConradSun/NuwaStone/main/Docs/NuwaStone.png"></p>
-
-[![LICENSE](https://img.shields.io/badge/license-GPL--3.0-green)](https://github.com/ConradSun/NuwaStone/blob/main/LICENSE) [![Language](https://img.shields.io/badge/Language-swift-red.svg)](https://www.swift.org)
 
 It supports events as below
 
