@@ -118,6 +118,10 @@ class PrefsViewController: NSViewController {
     
     @IBAction func sliderValueChanged(_ sender: NSSliderCell) {
         let timeDuration = intervalSlider.integerValue
+        if timeDuration == 0 {
+            clearInterval.stringValue = "Never"
+            return
+        }
         let minDesc = timeDuration == 1 ? "minute" : "minutes"
         clearInterval.stringValue = "\(timeDuration) \(minDesc)"
     }
