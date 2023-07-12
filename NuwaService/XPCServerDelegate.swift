@@ -27,7 +27,14 @@ extension XPCConnection: DaemonXPCProtocol {
     }
     
     func launchUninstaller() {
-        Logger(.Info, "launchUninstaller")
+        Logger(.Info, "Begin to uninstall NuwaStone.")
+        
+        if #available(macOS 11.0, *) {
+            SextControl.shared.deactivateExtension()
+        } else {
+            _ = KextControl.shared.unloadExtension()
+        }
+        
         let url = URL(fileURLWithPath: "Contents/Resources/uninstall.sh", relativeTo: Bundle.main.bundleURL)
         let task = Process()
         task.arguments = ["-c", url.path]
