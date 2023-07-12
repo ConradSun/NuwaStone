@@ -37,8 +37,7 @@ extension SextManager: ManagerXPCProtocol {
         
         if event.eventType == .ProcessCreate {
             ProcessCache.shared.updateCache(event)
-        }
-        else {
+        } else {
             ProcessCache.shared.getFromCache(&event)
         }
         
@@ -53,8 +52,7 @@ extension SextManager: ManagerXPCProtocol {
         
         if userPref.auditSwitch {
             delegate?.processAuthEvent(event)
-        }
-        else {
+        } else {
             _ = replyAuthEvent(eventID: event.eventID, isAllowed: true)
         }
     }
@@ -77,8 +75,7 @@ extension SextManager: NuwaEventProviderProtocol {
             isConnected = success
             if !success {
                 self.delegate?.handleBrokenConnection()
-            }
-            else {
+            } else {
                 self.sextProxy = XPCServer.shared.connection?.remoteObjectProxy() as? SextXPCProtocol
             }
             semaphore.signal()

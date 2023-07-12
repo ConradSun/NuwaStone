@@ -50,8 +50,7 @@ class ViewController: NSViewController {
         
         if #available(macOS 11.0, *) {
             eventProvider = SextManager.shared
-        }
-        else {
+        } else {
             eventProvider = KextManager.shared
         }
         eventProvider!.processDelegate = self
@@ -93,8 +92,7 @@ class ViewController: NSViewController {
             controlButton.image = NSImage(named: "stop")
             controlLabel.stringValue = "stop"
             isStarted = true
-        }
-        else {
+        } else {
             if !eventProvider!.stopProvider() {
                 alertWithError(error: "Failed to disconnect extension.")
                 return
@@ -113,8 +111,7 @@ class ViewController: NSViewController {
         isScrollOn = !isScrollOn
         if isScrollOn {
             scrollButton.image = NSImage(named: "scroll-on")
-        }
-        else {
+        } else {
             scrollButton.image = NSImage(named: "scroll-off")
         }
     }
@@ -134,8 +131,7 @@ class ViewController: NSViewController {
         if isInfoOn {
             InfoButton.image = NSImage(named: "show-on")
             splitView.arrangedSubviews[1].isHidden = false
-        }
-        else {
+        } else {
             infoLabel.stringValue = ""
             InfoButton.image = NSImage(named: "show-off")
             splitView.arrangedSubviews[1].isHidden = true

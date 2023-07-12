@@ -84,8 +84,7 @@ bool ListManager::updateAuthProcessList(UInt64 *vnodeID, NuwaKextMuteType type) 
     if (type == kAllowAuthExec) {
         procType = kProcWhiteType;
         procList = m_allowProcList;
-    }
-    else {
+    } else {
         procType = kProcBlackType;
         procList = m_denyProcList;
     }

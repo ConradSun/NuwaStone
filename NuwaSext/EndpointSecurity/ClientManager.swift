@@ -154,8 +154,7 @@ class ClientManager {
                         if !replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW) {
                             Logger(.Error, "Failed to reply auth event [\(event.desc)].")
                         }
-                    }
-                    else {
+                    } else {
                         ResponseManager.shared.addAuthEvent(index: event.eventID, message: message)
                     }
                     return
@@ -167,8 +166,7 @@ class ClientManager {
                 }
                 Logger(.Info, "Process [\(event.procPath)] is contained in auth list.")
             }
-        }
-        else if message.pointee.action_type == ES_ACTION_TYPE_NOTIFY {
+        } else if message.pointee.action_type == ES_ACTION_TYPE_NOTIFY {
             notifyQueue.sync {
                 if event.eventType == .ProcessCreate || event.eventType == .ProcessExit {
                     XPCServer.shared.sendNotifyEvent(event)

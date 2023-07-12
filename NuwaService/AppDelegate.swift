@@ -14,8 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         if #available(macOS 11.0, *) {
             SextControl.shared.activateExtension()
-        }
-        else {
+        } else {
             if !KextControl.shared.loadExtension() {
                 Logger(.Error, "Failed to load kernel extension.")
                 exit(EXIT_FAILURE)

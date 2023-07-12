@@ -180,11 +180,10 @@ IOReturn DriverClient::updateMuteList(OSObject* target, void* reference, IOExter
     }
     
     NuwaKextMuteInfo *info = (NuwaKextMuteInfo *)arguments->structureInput;
+    // It's unsupported to filter file event by proc paths in kext for now.
     if (info->muteType == kAllowAuthExec || info->muteType == kDenyAuthExec) {
         me->m_listManager->updateAuthProcessList(info->vnodeID, info->muteType);
-    }
-    // It's unsupported to filter file event by proc paths in kext for now.
-    else if (info->muteType == kFilterFileByFilePath) {
+    } else if (info->muteType == kFilterFileByFilePath) {
         me->m_listManager->updateFilterFileList(info->vnodeID, info->muteType);
     }
     

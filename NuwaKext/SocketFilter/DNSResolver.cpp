@@ -147,8 +147,7 @@ bool DNSResolver::processReplyResult(const char *domain, const char *result, UIn
     
     if (type == kDNSType_CNAME) {
         return setDoaminMap(result, index);
-    }
-    else {
+    } else {
         size_t length = strlen(m_parseResults.results[index].queryResult);
         if (length + strlen(result) + 1 >= kMaxPathLength) {
             Logger(LOG_ERROR, "Reply info is too much.")
@@ -249,15 +248,13 @@ DNSResolveResults DNSResolver::getResults() {
             return m_parseResults;
         }
         m_parseIndex = 0;
-    }
-    else if (m_protocol == IPPROTO_TCP) {
+    } else if (m_protocol == IPPROTO_TCP) {
         if (m_packetSize <= sizeof(UInt16) + kDNSHeaderSize) {
             return m_parseResults;
         }
         // skip the length field of the header
         m_parseIndex = sizeof(UInt16);
-    }
-    else {
+    } else {
         return m_parseResults;
     }
     

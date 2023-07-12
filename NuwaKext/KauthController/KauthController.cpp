@@ -93,8 +93,7 @@ int KauthController::getDecisionFromClient(UInt64 vnodeID) {
     errCode = msleep((void *)vnodeID, nullptr, 0, "Wait for reply", &time);
     if (errCode == 0) {
         decision = m_cacheManager->obtainAuthResultCache(vnodeID);
-    }
-    else if (errCode == EWOULDBLOCK) {
+    } else if (errCode == EWOULDBLOCK) {
         decision = KAUTH_RESULT_DEFER;
         Logger(LOG_ERROR, "Reply event [%llu] timeout.", vnodeID)
     }

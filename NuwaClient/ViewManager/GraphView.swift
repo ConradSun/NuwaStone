@@ -34,8 +34,7 @@ class GraphView: NSView {
         if freqPointsArray[index].last!.x >= frame.size.width {
             freqPointsArray[index].removeAll(keepingCapacity: true)
             point.x = 0
-        }
-        else {
+        } else {
             point.x = freqPointsArray[index].last!.x + 1
         }
         

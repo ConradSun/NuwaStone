@@ -118,8 +118,7 @@ class NuwaEventInfo: Codable {
         inet_ntop(Int32(socketAddr.pointee.sa_family), &socketAddr.pointee.sa_data.2, &ip, socklen_t(MaxIPLength))
         if isLocal {
             props.updateValue("\(String(cString: ip)) : \(port)", forKey: PropLocalAddr)
-        }
-        else {
+        } else {
             props.updateValue("\(String(cString: ip)) : \(port)", forKey: PropRemoteAddr)
         }
     }

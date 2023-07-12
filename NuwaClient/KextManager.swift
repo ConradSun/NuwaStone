@@ -154,8 +154,7 @@ extension KextManager {
         
         if userPref.auditSwitch {
             delegate?.processAuthEvent(nuwaEvent)
-        }
-        else {
+        } else {
             _ = replyAuthEvent(eventID: nuwaEvent.eventID, isAllowed: true)
         }
     }
@@ -189,11 +188,9 @@ extension KextManager {
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.remoteAddr, isLocal: false)
             if event.netAccess.protocol == IPPROTO_TCP {
                 nuwaEvent.props[PropProtocol] = NuwaProtocolType.Tcp.rawValue
-            }
-            else if event.netAccess.protocol == IPPROTO_UDP {
+            } else if event.netAccess.protocol == IPPROTO_UDP {
                 nuwaEvent.props[PropProtocol] = NuwaProtocolType.Udp.rawValue
-            }
-            else {
+            } else {
                 nuwaEvent.props[PropProtocol] = NuwaProtocolType.Unsupport.rawValue
             }
         case kActionNotifyDnsQuery:
@@ -229,8 +226,7 @@ extension KextManager {
             nuwaEvent.fillBundleIdentifier()
             nuwaEvent.fillCodeSign()
             ProcessCache.shared.updateCache(nuwaEvent)
-        }
-        else {
+        } else {
             ProcessCache.shared.getFromCache(&nuwaEvent)
         }
         
@@ -294,8 +290,7 @@ extension KextManager: NuwaEventProviderProtocol {
         var result = KERN_SUCCESS
         if isAllowed {
             result = IOConnectCallScalarMethod(connection, kNuwaUserClientAllowBinary.rawValue, scalar, 1, nil, nil)
-        }
-        else {
+        } else {
             result = IOConnectCallScalarMethod(connection, kNuwaUserClientDenyBinary.rawValue, scalar, 1, nil, nil)
         }
         if result != KERN_SUCCESS {

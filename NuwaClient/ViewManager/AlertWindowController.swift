@@ -27,8 +27,7 @@ class AlertWindowController: NSWindowController {
         
         if #available(macOS 11.0, *) {
             eventProvider = SextManager.shared
-        }
-        else {
+        } else {
             eventProvider = KextManager.shared
         }
         
@@ -60,8 +59,7 @@ class AlertWindowController: NSWindowController {
             if isAllowed {
                 list.append(contentsOf: userPref.allowExecList)
                 userPref.allowExecList = list
-            }
-            else {
+            } else {
                 list.append(contentsOf: userPref.denyExecList)
                 userPref.denyExecList = list
             }

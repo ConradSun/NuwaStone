@@ -145,8 +145,7 @@ void SocketHandler::fillInfoFromCache(NuwaKextEvent *netEvent) {
             netEvent->mainProcess.pid = value >> 32;
             netEvent->mainProcess.ppid = (value << 32) >> 32;
         }
-    }
-    else if (netEvent->eventType == kActionNotifyDnsQuery) {
+    } else if (netEvent->eventType == kActionNotifyDnsQuery) {
         UInt64 addr = *(UInt64 *)&netEvent->netAccess.remoteAddr.sa_data[2];
         UInt64 value = m_cacheManager->obtainDnsOutCache(addr);
         netEvent->mainProcess.pid = value >> 32;

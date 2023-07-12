@@ -67,8 +67,7 @@ extension ClientManager {
         var dstPath = ""
         if message.pointee.event.rename.destination_type == ES_DESTINATION_TYPE_EXISTING_FILE {
             dstPath = getString(token: message.pointee.event.rename.destination.existing_file.pointee.path)
-        }
-        else {
+        } else {
             dstPath = getString(token: message.pointee.event.rename.destination.new_path.dir.pointee.path)
             dstPath = dstPath + "/" + getString(token: message.pointee.event.rename.destination.new_path.filename)
         }

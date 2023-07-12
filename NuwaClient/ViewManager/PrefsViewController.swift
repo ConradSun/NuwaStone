@@ -52,8 +52,7 @@ class PrefsViewController: NSViewController {
         
         if #available(macOS 11.0, *) {
             eventProvider = SextManager.shared
-        }
-        else {
+        } else {
             eventProvider = KextManager.shared
         }
         

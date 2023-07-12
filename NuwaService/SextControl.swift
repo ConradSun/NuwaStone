@@ -69,8 +69,7 @@ class SextControl: NSObject, OSSystemExtensionRequestDelegate {
             if !self.switchNEStatus(self.toActivate) {
                 Logger(.Error, "Failed to activate network extension.")
                 exit(EXIT_FAILURE)
-            }
-            else {
+            } else {
                 Logger(.Info, "Activate network extension successfully.")
             }
         }
@@ -114,8 +113,7 @@ extension SextControl {
                 manager.providerConfiguration = config
             }
             manager.isEnabled = true
-        }
-        else {
+        } else {
             Logger(.Info, "Deactivate network extension now...")
             manager.isEnabled = false
         }

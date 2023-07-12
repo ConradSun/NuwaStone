@@ -74,7 +74,8 @@ fileprivate func getProcArgs(pid: Int32, args: UnsafeMutablePointer<CChar>, size
 
 func getProcPpid(pid: Int32, eventHandler: @escaping (Int32, Int32) -> Void) {
     var info = proc_bsdinfo()
-    guard proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &info, Int32(MemoryLayout<proc_bsdinfo>.size)) > 0 else {
+    let infoSize = MemoryLayout<proc_bsdinfo>.size
+    guard proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &info, Int32(infoSize)) > 0 else {
         if errno != ESRCH {
             Logger(.Debug, "Failed to get proc [\(pid)] ppid for errno [\(errno)]")
         }
@@ -98,7 +99,8 @@ func getProcPath(pid: Int32, eventHandler: @escaping (String, Int32) -> Void) {
 
 func getProcCurrentDir(pid: Int32, eventHandler: @escaping (String, Int32) -> Void) {
     var info = proc_vnodepathinfo()
-    guard proc_pidinfo(pid, PROC_PIDVNODEPATHINFO, 0, &info, Int32(MemoryLayout<proc_vnodepathinfo>.size)) > 0 else {
+    let infoSize = MemoryLayout<proc_vnodepathinfo>.size
+    guard proc_pidinfo(pid, PROC_PIDVNODEPATHINFO, 0, &info, Int32(infoSize)) > 0 else {
         if errno != ESRCH {
             Logger(.Debug, "Failed to get proc [\(pid)] cwd for errno [\(errno)]")
         }

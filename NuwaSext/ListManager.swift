@@ -20,8 +20,7 @@ class ListManager {
             for vnode in vnodeID {
                 allowExecList.update(with: vnode)
             }
-        }
-        else {
+        } else {
             denyExecList.removeAll()
             for vnode in vnodeID {
                 denyExecList.update(with: vnode)
@@ -35,8 +34,7 @@ class ListManager {
             for vnode in vnodeID {
                 filePathsForFileMute.update(with: vnode)
             }
-        }
-        else {
+        } else {
             procPathsForFileMute.removeAll()
             for vnode in vnodeID {
                 procPathsForFileMute.update(with: vnode)
@@ -47,11 +45,9 @@ class ListManager {
     func shouldAllowProcExec(vnodeID: UInt64) -> Bool? {
         if allowExecList.contains(vnodeID) {
             return true
-        }
-        else if denyExecList.contains(vnodeID) {
+        } else if denyExecList.contains(vnodeID) {
             return false
-        }
-        else {
+        } else {
             return nil
         }
     }

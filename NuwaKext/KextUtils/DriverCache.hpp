@@ -80,8 +80,7 @@ public:
                 if (value == zero) {
                     if (last == nullptr) {
                         bucket->entry = current->next;
-                    }
-                    else {
+                    } else {
                         last->next = current->next;
                     }
                     IOFreeAligned(current, sizeof(Entry));
@@ -149,11 +148,9 @@ private:
         
         if (bucket->entry == nullptr) {
             bucket->entry = entry;
-        }
-        else if (last != nullptr) {
+        } else if (last != nullptr) {
             last->next = entry;
-        }
-        else {
+        } else {
             return false;
         }
         OSIncrementAtomic(&m_itemCount);

@@ -34,11 +34,9 @@ extension ContentFilter {
         
         if flow.socketProtocol == IPPROTO_UDP {
             event.props[PropProtocol] = NuwaProtocolType.Udp.rawValue
-        }
-        else if flow.socketProtocol == IPPROTO_TCP {
+        } else if flow.socketProtocol == IPPROTO_TCP {
             event.props[PropProtocol] = NuwaProtocolType.Tcp.rawValue
-        }
-        else {
+        } else {
             event.props[PropProtocol] = NuwaProtocolType.Unsupport.rawValue
         }
         

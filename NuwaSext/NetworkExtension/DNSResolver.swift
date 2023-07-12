@@ -220,14 +220,12 @@ class DNSResolver {
                 return
             }
             parseIndex = 0
-        }
-        else if proto == IPPROTO_TCP {
+        } else if proto == IPPROTO_TCP {
             if message.count <= headerSize + MemoryLayout<UInt16>.size {
                 return
             }
             parseIndex = MemoryLayout<UInt16>.size
-        }
-        else {
+        } else {
             return
         }
         originData = message
