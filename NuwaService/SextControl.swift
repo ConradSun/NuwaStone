@@ -30,16 +30,7 @@ class SextControl: NSObject, OSSystemExtensionRequestDelegate {
     }
     
     func getExtensionStatus() -> Bool {
-        let task = Process()
-        let pipe = Pipe()
-        
-        task.arguments = ["list"]
-        task.standardOutput = pipe
-        task.launchPath = "/usr/bin/systemextensionsctl"
-        task.launch()
-        
-        let output = try! pipe.fileHandleForReading.readToEnd()!
-        guard let result = String(data: output, encoding: .utf8) else {
+        guard let result = launchTask(path: "/usr/bin/systemextensionsctl", args: ["list"]) else {
             return false
         }
         

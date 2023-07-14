@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="22113.1" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22113.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -20,6 +20,12 @@
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Check for Updates..." id="0Cx-qH-f4K">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="updateMenuItemSelected:" target="Ady-hI-5gd" id="akL-kx-Raa"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
@@ -429,16 +435,16 @@
                                     <stackView distribution="fill" orientation="vertical" alignment="centerX" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="23e-qp-1Im">
                                         <rect key="frame" x="0.0" y="10" width="29" height="50"/>
                                         <subviews>
-                                            <button verticalHuggingPriority="750" placeholderIntrinsicWidth="26" placeholderIntrinsicHeight="26" verifyAmbiguity="ignoreSizes" translatesAutoresizingMaskIntoConstraints="NO" id="WfC-oh-h07">
+                                            <button verifyAmbiguity="ignoreSizes" verticalHuggingPriority="750" placeholderIntrinsicWidth="26" placeholderIntrinsicHeight="26" translatesAutoresizingMaskIntoConstraints="NO" id="WfC-oh-h07">
                                                 <rect key="frame" x="2" y="24" width="26" height="26"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="26" id="KP0-Pk-gSW"/>
-                                                    <constraint firstAttribute="width" constant="26" id="cIn-OO-IiL"/>
-                                                </constraints>
                                                 <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="start" imagePosition="only" alignment="center" imageScaling="proportionallyDown" inset="2" id="xt0-fy-GLm">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="26" id="KP0-Pk-gSW"/>
+                                                    <constraint firstAttribute="width" constant="26" id="cIn-OO-IiL"/>
+                                                </constraints>
                                                 <connections>
                                                     <action selector="controlButtonClicked:" target="XfG-lQ-9wD" id="8ad-2C-jQQ"/>
                                                 </connections>
@@ -466,14 +472,14 @@
                                         <subviews>
                                             <button verticalHuggingPriority="750" placeholderIntrinsicWidth="26" placeholderIntrinsicHeight="26" translatesAutoresizingMaskIntoConstraints="NO" id="eZH-FF-oFt">
                                                 <rect key="frame" x="0.0" y="24" width="26" height="26"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="26" id="b56-VZ-v3w"/>
-                                                    <constraint firstAttribute="height" constant="26" id="dDr-qY-oGW"/>
-                                                </constraints>
                                                 <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="scroll-on" imagePosition="only" alignment="center" imageScaling="proportionallyDown" inset="2" id="cgv-33-o7U">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="26" id="b56-VZ-v3w"/>
+                                                    <constraint firstAttribute="height" constant="26" id="dDr-qY-oGW"/>
+                                                </constraints>
                                                 <connections>
                                                     <action selector="scrollButtonClicked:" target="XfG-lQ-9wD" id="FaV-MW-M2K"/>
                                                 </connections>
@@ -501,14 +507,14 @@
                                         <subviews>
                                             <button verticalHuggingPriority="750" placeholderIntrinsicWidth="26" placeholderIntrinsicHeight="26" translatesAutoresizingMaskIntoConstraints="NO" id="TAg-pO-rUq">
                                                 <rect key="frame" x="2" y="24" width="26" height="26"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="26" id="hzz-yc-Ixr"/>
-                                                    <constraint firstAttribute="width" constant="26" id="pC5-y2-dcQ"/>
-                                                </constraints>
                                                 <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="clear" imagePosition="only" alignment="center" imageScaling="proportionallyDown" inset="2" id="LaM-KH-OvN">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="26" id="hzz-yc-Ixr"/>
+                                                    <constraint firstAttribute="width" constant="26" id="pC5-y2-dcQ"/>
+                                                </constraints>
                                                 <connections>
                                                     <action selector="clearButtonClicked:" target="XfG-lQ-9wD" id="m4F-WE-mzJ"/>
                                                 </connections>
@@ -536,14 +542,14 @@
                                         <subviews>
                                             <button verticalHuggingPriority="750" placeholderIntrinsicWidth="26" placeholderIntrinsicHeight="26" translatesAutoresizingMaskIntoConstraints="NO" id="ftX-rM-Smn">
                                                 <rect key="frame" x="0.0" y="24" width="26" height="26"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="26" id="GE9-eC-sp1"/>
-                                                    <constraint firstAttribute="width" constant="26" id="zm0-vn-rKQ"/>
-                                                </constraints>
                                                 <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="show-on" imagePosition="only" alignment="center" imageScaling="proportionallyDown" inset="2" id="3dX-CR-aeN">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="26" id="GE9-eC-sp1"/>
+                                                    <constraint firstAttribute="width" constant="26" id="zm0-vn-rKQ"/>
+                                                </constraints>
                                                 <connections>
                                                     <action selector="infoButtonClicked:" target="XfG-lQ-9wD" id="kol-t2-hew"/>
                                                 </connections>
@@ -1034,9 +1040,6 @@ DQ
                                                             </textField>
                                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wq4-yv-HFY">
                                                                 <rect key="frame" x="275" y="2" width="107" height="26"/>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="width" constant="100" id="Xge-fc-E5t"/>
-                                                                </constraints>
                                                                 <popUpButtonCell key="cell" type="push" title="Debug" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="5" imageScaling="proportionallyDown" inset="2" selectedItem="JIl-5S-agt" id="aCC-js-DHv">
                                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                                     <font key="font" size="14" name="HelveticaNeue"/>
@@ -1054,6 +1057,9 @@ DQ
                                                                         </items>
                                                                     </menu>
                                                                 </popUpButtonCell>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="100" id="Xge-fc-E5t"/>
+                                                                </constraints>
                                                             </popUpButton>
                                                         </subviews>
                                                         <constraints>
@@ -1086,9 +1092,6 @@ DQ
                                                             </textField>
                                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="a8Y-lZ-LKO">
                                                                 <rect key="frame" x="275" y="2" width="107" height="26"/>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="width" constant="100" id="Tnx-WO-Vi6"/>
-                                                                </constraints>
                                                                 <popUpButtonCell key="cell" type="push" title="On" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="1" imageScaling="proportionallyDown" inset="2" selectedItem="764-AC-xSN" id="mO4-Ds-uos">
                                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                                     <font key="font" size="14" name="HelveticaNeue"/>
@@ -1099,6 +1102,9 @@ DQ
                                                                         </items>
                                                                     </menu>
                                                                 </popUpButtonCell>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="100" id="Tnx-WO-Vi6"/>
+                                                                </constraints>
                                                             </popUpButton>
                                                         </subviews>
                                                         <constraints>
@@ -1200,13 +1206,13 @@ DQ
                                                                 <subviews>
                                                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Bo3-Vr-6hj">
                                                                         <rect key="frame" x="17" y="165" width="78" height="20"/>
-                                                                        <constraints>
-                                                                            <constraint firstAttribute="width" constant="78" id="KIk-37-oKH"/>
-                                                                        </constraints>
                                                                         <buttonCell key="cell" type="bevel" title="File" bezelStyle="regularSquare" image="file" imagePosition="left" alignment="center" inset="2" id="2va-L9-tiP">
                                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                             <font key="font" metaFont="system"/>
                                                                         </buttonCell>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="width" constant="78" id="KIk-37-oKH"/>
+                                                                        </constraints>
                                                                         <connections>
                                                                             <action selector="fileButtonClicked:" target="aQv-ki-pXA" id="NTY-zj-8xS"/>
                                                                         </connections>
@@ -1272,13 +1278,13 @@ DQ
                                                 </tabView>
                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9nD-WQ-jb5">
                                                     <rect key="frame" x="106" y="162" width="84" height="18"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="82" id="53Z-8p-y9t"/>
-                                                    </constraints>
                                                     <buttonCell key="cell" type="radio" title="Mute by..." bezelStyle="regularSquare" imagePosition="left" alignment="center" inset="2" id="Dok-Pl-DKM">
                                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                         <font key="font" metaFont="system"/>
                                                     </buttonCell>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="82" id="53Z-8p-y9t"/>
+                                                    </constraints>
                                                     <connections>
                                                         <action selector="upButtonClicked:" target="aQv-ki-pXA" id="B5s-NQ-vKC"/>
                                                     </connections>
@@ -1661,8 +1667,8 @@ DQ
         </scene>
     </scenes>
     <resources>
-        <image name="clear" width="32" height="32"/>
-        <image name="file" width="20" height="20"/>
+        <image name="clear" width="20" height="20"/>
+        <image name="file" width="23" height="18"/>
         <image name="network" width="20" height="20"/>
         <image name="process" width="20" height="20"/>
         <image name="scroll-on" width="32" height="32"/>

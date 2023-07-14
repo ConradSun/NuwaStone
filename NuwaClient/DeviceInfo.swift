@@ -34,34 +34,15 @@ func getPhysicalMemory() -> String {
 }
 
 func getSIPStatus() -> String {
-    let task = Process()
-    let pipe = Pipe()
-    task.arguments = ["status"]
-    task.standardOutput = pipe
-    
-    if #available(macOS 10.13, *) {
-        task.executableURL = URL(fileURLWithPath: "/usr/bin/csrutil")
-        try? task.run()
-    } else {
-        task.launchPath = "/usr/bin/csrutil"
-        task.launch()
+    guard let result = launchTask(path: "/usr/bin/csrutil", args: ["status"]) else {
+        return "Unknown"
     }
-    
-    var output = Data()
-    if #available(macOS 10.15.4, *) {
-        output = try! pipe.fileHandleForReading.readToEnd()!
-    } else {
-        output = pipe.fileHandleForReading.readDataToEndOfFile()
-    }
-    
-    let result = String(data: output, encoding: .utf8)
-    if result == "System Integrity Protection status: enabled.\n" {
+
+    if result.contains("enabled") {
         return "Enabled"
-    }
-    else if result == "System Integrity Protection status: disabled.\n" {
+    } else if result.contains("disabled") {
         return "Disabled"
-    }
-    else {
+    } else {
         return "Unknown"
     }
 }

@@ -34,26 +34,7 @@ class KextControl {
     }
     
     func getExtensionStatus() -> Bool {
-        let task = Process()
-        let pipe = Pipe()
-        task.standardOutput = pipe
-        
-        if #available(macOS 10.13, *) {
-            task.executableURL = URL(fileURLWithPath: "/usr/sbin/kextstat")
-            try? task.run()
-        } else {
-            task.launchPath = "/usr/sbin/kextstat"
-            task.launch()
-        }
-        
-        var output = Data()
-        if #available(macOS 10.15.4, *) {
-            output = try! pipe.fileHandleForReading.readToEnd()!
-        } else {
-            output = pipe.fileHandleForReading.readDataToEndOfFile()
-        }
-        
-        guard let result = String(data: output, encoding: .utf8) else {
+        guard let result = launchTask(path: "/usr/sbin/kextstat", args: []) else {
             return false
         }
         

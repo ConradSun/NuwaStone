@@ -216,3 +216,33 @@ func getFileVnodeID(_ path: String) -> UInt64 {
     let vnodeID = (dev << 32) | ino
     return vnodeID
 }
+
+func launchTask(path: String, args: [String]) -> String? {
+    let task = Process()
+    let pipe = Pipe()
+    task.arguments = args
+    task.standardOutput = pipe
+    
+    if #available(macOS 10.13, *) {
+        task.executableURL = URL(fileURLWithPath: path)
+        try? task.run()
+    } else {
+        task.launchPath = path
+        task.launch()
+    }
+    
+    var output = Data()
+    if #available(macOS 10.15.4, *) {
+        guard let value = try? pipe.fileHandleForReading.readToEnd() else {
+            return nil
+        }
+        output = value
+    } else {
+        output = pipe.fileHandleForReading.readDataToEndOfFile()
+    }
+    
+    guard let result = String(data: output, encoding: .utf8) else {
+        return nil
+    }
+    return result
+}
