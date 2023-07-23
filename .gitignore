@@ -2,5 +2,5 @@
 .DS_Store
 xcuserdata/
 
-Packge/*.app
-Packge/*.pkg
+Package/*.app
+Package/*.pkg
