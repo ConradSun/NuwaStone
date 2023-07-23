@@ -31,7 +31,6 @@ class ProcessCache {
     static let shared = ProcessCache()
     private var cacheDict = [Int32: ProcessCacheInfo]()
     let cacheQueue = DispatchQueue(label: "com.nuwastone.eventcache.queue", attributes: .concurrent)
-    private lazy var proxy = XPCConnection.shared.connection?.remoteObjectProxy as? DaemonXPCProtocol
     
     private func getActivePids() -> (UnsafeMutablePointer<Int32>, Int32) {
         var count = proc_listallpids(nil, 0)

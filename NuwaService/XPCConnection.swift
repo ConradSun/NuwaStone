@@ -52,6 +52,16 @@ class XPCConnection: NSObject {
         newConnection.exportedObject = delegate
         newConnection.exportedInterface = NSXPCInterface(with: ClientXPCProtocol.self)
         newConnection.remoteObjectInterface = NSXPCInterface(with: DaemonXPCProtocol.self)
+        newConnection.invalidationHandler = {
+            self.connection = nil
+            Logger(.Info, "Daemon disconnected.")
+            handler(false)
+        }
+        newConnection.interruptionHandler = {
+            self.connection = nil
+            Logger(.Error, "Daemon interrupted.")
+            handler(false)
+        }
         connection = newConnection
         newConnection.resume()
         
@@ -62,12 +72,18 @@ class XPCConnection: NSObject {
             handler(false)
         } as? DaemonXPCProtocol
         
-        proxy?.connectResponse(handler)
+        proxy!.connectResponse(handler)
+        handler(true)
     }
 }
 
 extension XPCConnection: NSXPCListenerDelegate {
     func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
+        guard connection == nil else {
+            Logger(.Warning, "Client connected already.")
+            return false
+        }
+        
         newConnection.exportedObject = self
         newConnection.exportedInterface = NSXPCInterface(with: DaemonXPCProtocol.self)
         newConnection.remoteObjectInterface = NSXPCInterface(with: ClientXPCProtocol.self)
@@ -80,6 +96,7 @@ extension XPCConnection: NSXPCListenerDelegate {
             Logger(.Info, "Client interrupted.")
         }
         
+        Logger(.Info, "Client connected successfully.")
         connection = newConnection
         newConnection.resume()
         return true

@@ -20,6 +20,10 @@ let MachServiceKey  = "MachServiceName"
 
 let DurationChanged = "Clear Duration Changed"
 
+let VersionInfoKey  = "CFBundleShortVersionString"
+let ReleaseURL      = "https://github.com/ConradSun/NuwaStone/releases/latest"
+let PackageURL      = "https://github.com/ConradSun/NuwaStone/releases/latest/download/NuwaStone.pkg"
+
 let UserLogLevel        = "Log Level"
 let UserAuditSwitch     = "Audit Switch"
 let UserClearDuration   = "Clear Duration"

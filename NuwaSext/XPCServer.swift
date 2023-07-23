@@ -75,11 +75,17 @@ class XPCServer: NSObject {
         } as? SextXPCProtocol
         
         proxy?.connectResponse(handler)
+        handler(true)
     }
 }
 
 extension XPCServer: NSXPCListenerDelegate {
     func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
+        guard connection == nil else {
+            Logger(.Warning, "Manager connected already.")
+            return false
+        }
+        
         newConnection.exportedObject = self
         newConnection.exportedInterface = NSXPCInterface(with: SextXPCProtocol.self)
         newConnection.remoteObjectInterface = NSXPCInterface(with: ManagerXPCProtocol.self)
@@ -92,6 +98,7 @@ extension XPCServer: NSXPCListenerDelegate {
             Logger(.Error, "Manager interrupted.")
         }
         
+        Logger(.Info, "Manager connected successfully.")
         connection = newConnection
         newConnection.resume()
         return true

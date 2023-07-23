@@ -152,14 +152,13 @@ class ViewController: NSViewController {
     }
     
     @IBAction func updateMenuItemSelected(_ sender: NSMenuItem) {
-        let infoDict = Bundle.main.infoDictionary
-        let currentVersion = infoDict!["CFBundleShortVersionString"] as! String
         var latestVersion = String()
+        let currentVersion = Bundle.main.object(forInfoDictionaryKey: VersionInfoKey) as! String
         
         let infoView = NSAlert()
         infoView.alertStyle = .informational
         
-        guard let result = launchTask(path: "/usr/bin/curl", args: ["-I", "https://github.com/ConradSun/NuwaStone/releases/latest"]) else {
+        guard let result = launchTask(path: "/usr/bin/curl", args: ["-I", ReleaseURL]) else {
             return
         }
         
@@ -189,8 +188,8 @@ class ViewController: NSViewController {
         }
         let resp = infoView.runModal()
         if resp == .alertSecondButtonReturn {
-            let siteAddr = URL(string: "https://github.com/ConradSun/NuwaStone/releases/latest/download/NuwaStone.pkg")
-            NSWorkspace.shared.open(siteAddr!)
+            let downloadAddr = URL(string: PackageURL)
+            NSWorkspace.shared.open(downloadAddr!)
         }
     }
     
@@ -223,6 +222,7 @@ class ViewController: NSViewController {
         if result == .alertSecondButtonReturn {
             let proxy = XPCConnection.shared.connection?.remoteObjectProxy as! DaemonXPCProtocol
             proxy.launchUninstaller()
+            NSRunningApplication.current.terminate()
         }
     }
 }
@@ -244,6 +244,8 @@ extension ViewController {
                     controlButton.isEnabled = false
                     configMenuStatus(start: false, stop: false)
                     alertWithError(error: "Unable to start monitoring for broken connection with daemon.")
+                } else {
+                    Logger(.Info, "Connect to daemon successfully.")
                 }
             }
         }
