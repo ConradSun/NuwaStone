@@ -15,7 +15,7 @@ class KextManager {
     private lazy var proxy = XPCConnection.shared.connection?.remoteObjectProxy as? DaemonXPCProtocol
     static let shared = KextManager()
     var connection: io_connect_t = 0
-    var isConnected: Bool = false
+    var isConnected = false
     var nuwaLog = NuwaLog()
     var userPref = Preferences()
     var delegate: NuwaEventProcessProtocol?
@@ -244,6 +244,12 @@ extension KextManager: NuwaEventProviderProtocol {
         }
     }
     
+    var isExtConnected: Bool {
+        get {
+            return isConnected
+        }
+    }
+    
     func startProvider() -> Bool {
         guard let service = IOServiceMatching(KextService.cString(using: .utf8)) else {
             return false
@@ -254,7 +260,7 @@ extension KextManager: NuwaEventProviderProtocol {
         
         listenRequestsForType(type: kQueueTypeAuth.rawValue)
         listenRequestsForType(type: kQueueTypeNotify.rawValue)
-        return true
+        return isConnected
     }
     
     func stopProvider() -> Bool {

@@ -50,10 +50,10 @@ class ProcessCache {
     }
     
     init() {
-        Timer.scheduledTimer(timeInterval: 1800, target: self, selector: #selector(runloopTask), userInfo: nil, repeats: true)
+        Timer.scheduledTimer(timeInterval: 1800, target: self, selector: #selector(cleanExitedProcs), userInfo: nil, repeats: true)
     }
     
-    @objc func runloopTask() {
+    @objc func cleanExitedProcs() {
         let (pidArray, count) = getActivePids()
         defer {
             pidArray.deallocate()

@@ -26,9 +26,6 @@ public:
     // Called by the kernel when the kext is unloaded
     void stop(IOService *provider) override;
     
-    KauthController *getKauthController() const;
-    SocketFilter *getSocketFilter() const;
-    
 private:
     void clearInstances();
     
@@ -37,7 +34,6 @@ private:
     KauthController *m_kauthController;
     SocketFilter *m_socketFilter;
     EventDispatcher *m_eventDispatcher;
-    bool m_kextUnloadProtect;
 };
 
 #endif /* DriverService_hpp */

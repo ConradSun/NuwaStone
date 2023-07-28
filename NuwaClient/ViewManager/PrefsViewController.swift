@@ -35,6 +35,8 @@ class PrefsViewController: NSViewController {
     @IBOutlet weak var clearInterval: NSTextField!
     @IBOutlet weak var intervalSlider: NSSliderCell!
     
+    @IBOutlet weak var updateButton: NSButtonCell!
+    
     private var nuwaLog = NuwaLog()
     private var userPref = Preferences()
     private var isUpButtonChoosed = true
@@ -55,6 +57,8 @@ class PrefsViewController: NSViewController {
         } else {
             eventProvider = KextManager.shared
         }
+        
+        updateButton.isEnabled = eventProvider!.isExtConnected
         
         logLevelButton.selectItem(withTag: Int(nuwaLog.logLevel))
         auditSwitchButton.selectItem(withTag: (userPref.auditSwitch ? 1 : 0))

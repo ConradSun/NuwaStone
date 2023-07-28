@@ -44,6 +44,7 @@ protocol NuwaEventProcessProtocol {
 
 protocol NuwaEventProviderProtocol {
     var processDelegate: NuwaEventProcessProtocol? { get set }
+    var isExtConnected: Bool { get }
     func startProvider() -> Bool
     func stopProvider() -> Bool
     func setLogLevel(level: UInt8) -> Bool

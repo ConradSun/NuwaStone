@@ -74,11 +74,3 @@ void DriverService::stop(IOService *provider) {
     IOService::stop(provider);
     Logger(LOG_INFO, "Kext unloaded successfully.")
 }
-
-KauthController *DriverService::getKauthController() const {
-    return m_kauthController;
-}
-
-SocketFilter *DriverService::getSocketFilter() const {
-    return m_socketFilter;
-}

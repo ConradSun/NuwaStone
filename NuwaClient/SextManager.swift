@@ -10,6 +10,7 @@ import Foundation
 class SextManager {
     private var sextProxy: SextXPCProtocol?
     static let shared = SextManager()
+    var isConnected = false
     var nuwaLog = NuwaLog()
     var userPref = Preferences()
     var delegate: NuwaEventProcessProtocol?
@@ -68,11 +69,16 @@ extension SextManager: NuwaEventProviderProtocol {
         }
     }
     
+    var isExtConnected: Bool {
+        get {
+            return isConnected
+        }
+    }
+    
     func startProvider() -> Bool {
-        var isConnected = false
         let semaphore = DispatchSemaphore(value: 0)
         XPCServer.shared.connectToSext(bundle: Bundle.main, delegate: self) { success in
-            isConnected = success
+            self.isConnected = success
             if !success {
                 self.delegate?.handleBrokenConnection()
             } else {
@@ -93,6 +99,7 @@ extension SextManager: NuwaEventProviderProtocol {
         conn?.invalidationHandler = nil
         conn?.invalidate()
         sextProxy = nil
+        isConnected = false
         
         return true
     }
