@@ -58,10 +58,10 @@ class SextControl: NSObject, OSSystemExtensionRequestDelegate {
         Logger(.Info, "Request to control \(request.identifier) succeeded [\(result)].")
         controlQueue.async {
             if !self.switchNEStatus(self.toActivate) {
-                Logger(.Error, "Failed to activate network extension.")
+                Logger(.Error, "Failed to set network extension.")
                 exit(EXIT_FAILURE)
             } else {
-                Logger(.Info, "Activate network extension successfully.")
+                Logger(.Info, "Set network extension successfully.")
             }
         }
     }

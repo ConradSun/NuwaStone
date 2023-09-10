@@ -31,14 +31,6 @@ class XPCServer: NSObject {
         return machServiceName ?? ""
     }
     
-    func startListener() {
-        let newListener = NSXPCListener(machServiceName: SextBundle)
-        newListener.delegate = self
-        newListener.resume()
-        listener = newListener
-        Logger(.Info, "Start XPC listener successfully.")
-    }
-    
     func connectToSext(bundle: Bundle, delegate: ManagerXPCProtocol, handler: @escaping (Bool) -> Void) {
         guard connection == nil else {
             Logger(.Info, "Manager already connected.")
@@ -76,31 +68,5 @@ class XPCServer: NSObject {
         
         proxy?.connectResponse(handler)
         handler(true)
-    }
-}
-
-extension XPCServer: NSXPCListenerDelegate {
-    func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
-        guard connection == nil else {
-            Logger(.Warning, "Manager connected already.")
-            return false
-        }
-        
-        newConnection.exportedObject = self
-        newConnection.exportedInterface = NSXPCInterface(with: SextXPCProtocol.self)
-        newConnection.remoteObjectInterface = NSXPCInterface(with: ManagerXPCProtocol.self)
-        newConnection.invalidationHandler = {
-            self.connection = nil
-            Logger(.Info, "Manager disconnected.")
-        }
-        newConnection.interruptionHandler = {
-            self.connection = nil
-            Logger(.Error, "Manager interrupted.")
-        }
-        
-        Logger(.Info, "Manager connected successfully.")
-        connection = newConnection
-        newConnection.resume()
-        return true
     }
 }

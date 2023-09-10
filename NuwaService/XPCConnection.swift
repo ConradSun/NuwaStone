@@ -29,14 +29,6 @@ class XPCConnection: NSObject {
         return machServiceName ?? ""
     }
     
-    func startListener() {
-        let newListener = NSXPCListener(machServiceName: DaemonBundle)
-        newListener.delegate = self
-        newListener.resume()
-        listener = newListener
-        Logger(.Info, "Start XPC listener successfully.")
-    }
-    
     func connectToDaemon(bundle: Bundle, delegate: ClientXPCProtocol, handler: @escaping (Bool) -> Void) {
         guard connection == nil else {
             Logger(.Info, "Client already connected.")
@@ -74,31 +66,5 @@ class XPCConnection: NSObject {
         
         proxy!.connectResponse(handler)
         handler(true)
-    }
-}
-
-extension XPCConnection: NSXPCListenerDelegate {
-    func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
-        guard connection == nil else {
-            Logger(.Warning, "Client connected already.")
-            return false
-        }
-        
-        newConnection.exportedObject = self
-        newConnection.exportedInterface = NSXPCInterface(with: DaemonXPCProtocol.self)
-        newConnection.remoteObjectInterface = NSXPCInterface(with: ClientXPCProtocol.self)
-        newConnection.invalidationHandler = {
-            self.connection = nil
-            Logger(.Info, "Client disconnected.")
-        }
-        newConnection.interruptionHandler = {
-            self.connection = nil
-            Logger(.Info, "Client interrupted.")
-        }
-        
-        Logger(.Info, "Client connected successfully.")
-        connection = newConnection
-        newConnection.resume()
-        return true
     }
 }

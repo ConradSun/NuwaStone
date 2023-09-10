@@ -7,6 +7,42 @@
 
 import Foundation
 
+extension XPCConnection: NSXPCListenerDelegate {
+    func startListener() {
+        let newListener = NSXPCListener(machServiceName: DaemonBundle)
+        newListener.delegate = self
+        newListener.resume()
+        listener = newListener
+        Logger(.Info, "Start XPC listener successfully.")
+    }
+    
+    func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
+        guard connection == nil else {
+            Logger(.Warning, "Client connected already.")
+            return false
+        }
+        
+        newConnection.exportedObject = self
+        newConnection.exportedInterface = NSXPCInterface(with: DaemonXPCProtocol.self)
+        newConnection.remoteObjectInterface = NSXPCInterface(with: ClientXPCProtocol.self)
+        newConnection.invalidationHandler = {
+            self.disableNetworkExtension()
+            self.connection = nil
+            Logger(.Info, "Client disconnected.")
+        }
+        newConnection.interruptionHandler = {
+            self.disableNetworkExtension()
+            self.connection = nil
+            Logger(.Info, "Client interrupted.")
+        }
+        
+        Logger(.Info, "Client connected successfully.")
+        connection = newConnection
+        newConnection.resume()
+        return true
+    }
+}
+
 extension XPCConnection: DaemonXPCProtocol {
     func connectResponse(_ handler: @escaping (Bool) -> Void) {
         Logger(.Info, "Client connected.")
@@ -55,10 +91,17 @@ extension XPCConnection: DaemonXPCProtocol {
             if !SextControl.shared.getExtensionStatus() {
                 SextControl.shared.activateExtension()
             }
+            _ = SextControl.shared.switchNEStatus(true)
         } else {
             if !KextControl.shared.getExtensionStatus() {
                 _ = KextControl.shared.loadExtension()
             }
+        }
+    }
+    
+    func disableNetworkExtension() {
+        if #available(macOS 11.0, *) {
+            _ = SextControl.shared.switchNEStatus(false)
         }
     }
 }

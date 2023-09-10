@@ -8,6 +8,14 @@
 import Foundation
 
 extension XPCServer {
+    func startListener() {
+        let newListener = NSXPCListener(machServiceName: SextBundle)
+        newListener.delegate = self
+        newListener.resume()
+        listener = newListener
+        Logger(.Info, "Start XPC listener successfully.")
+    }
+    
     func encodeEventInfo(_ event: NuwaEventInfo) -> String {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
@@ -42,6 +50,32 @@ extension XPCServer {
         if !json.isEmpty {
             proxy?.reportNotifyEvent(notifyEvent: json)
         }
+    }
+}
+
+extension XPCServer: NSXPCListenerDelegate {
+    func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
+        guard connection == nil else {
+            Logger(.Warning, "Manager connected already.")
+            return false
+        }
+        
+        newConnection.exportedObject = self
+        newConnection.exportedInterface = NSXPCInterface(with: SextXPCProtocol.self)
+        newConnection.remoteObjectInterface = NSXPCInterface(with: ManagerXPCProtocol.self)
+        newConnection.invalidationHandler = {
+            self.connection = nil
+            Logger(.Info, "Manager disconnected.")
+        }
+        newConnection.interruptionHandler = {
+            self.connection = nil
+            Logger(.Error, "Manager interrupted.")
+        }
+        
+        Logger(.Info, "Manager connected successfully.")
+        connection = newConnection
+        newConnection.resume()
+        return true
     }
 }
 
