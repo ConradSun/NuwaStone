@@ -26,12 +26,10 @@ extension XPCConnection: NSXPCListenerDelegate {
         newConnection.exportedInterface = NSXPCInterface(with: DaemonXPCProtocol.self)
         newConnection.remoteObjectInterface = NSXPCInterface(with: ClientXPCProtocol.self)
         newConnection.invalidationHandler = {
-            self.disableNetworkExtension()
             self.connection = nil
             Logger(.Info, "Client disconnected.")
         }
         newConnection.interruptionHandler = {
-            self.disableNetworkExtension()
             self.connection = nil
             Logger(.Info, "Client interrupted.")
         }
@@ -96,12 +94,6 @@ extension XPCConnection: DaemonXPCProtocol {
             if !KextControl.shared.getExtensionStatus() {
                 _ = KextControl.shared.loadExtension()
             }
-        }
-    }
-    
-    func disableNetworkExtension() {
-        if #available(macOS 11.0, *) {
-            _ = SextControl.shared.switchNEStatus(false)
         }
     }
 }
