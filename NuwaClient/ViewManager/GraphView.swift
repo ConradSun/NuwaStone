@@ -7,29 +7,28 @@
 
 import Cocoa
 
+/// Trend chart of the number of events
 class GraphView: NSView {
     var displayMode = DisplayMode.DisplayAll
     private var freqPointsArray = [[NSPoint]](repeating: [NSPoint(x: 0, y: 0)], count: DisplayMode.allCases.count)
-    private var colorArray = [NSColor.black.cgColor, NSColor.red.cgColor, NSColor.blue.cgColor, NSColor.green.cgColor]
+    private var colorArray = [NSColor.black, NSColor.red, NSColor.blue, NSColor.green]
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        guard let context = NSGraphicsContext.current?.cgContext else {
-            return
-        }
         
         NSColor.white.setFill()
         let frame = self.bounds
         
-        let path = NSBezierPath()
-        path.appendRoundedRect(frame, xRadius: 8, yRadius: 8)
-        path.fill()
-        drawFrepLines(context)
+        let canvas = NSBezierPath()
+        canvas.appendRoundedRect(frame, xRadius: 8, yRadius: 8)
+        canvas.fill()
+        drawFrepLines()
     }
     
     func addPointToLine(_ yValue: CGFloat, index: Int) {
         var point = NSPoint()
-        point.y = yValue / 100 * frame.size.height
+        var rate = yValue > 100 ? 1.0 : yValue / 100.0
+        point.y = rate * frame.size.height
         
         if freqPointsArray[index].last!.x >= frame.size.width {
             freqPointsArray[index].removeAll(keepingCapacity: true)
@@ -41,7 +40,7 @@ class GraphView: NSView {
         freqPointsArray[index].append(point)
     }
     
-    func drawFrepLines(_ context: CGContext) {
+    func drawFrepLines() {
         for (index, array) in freqPointsArray.enumerated() {
             if displayMode != .DisplayAll && displayMode.rawValue != index {
                 continue
@@ -50,17 +49,15 @@ class GraphView: NSView {
                 continue
             }
             
-            let path = CGMutablePath()
+            let path = NSBezierPath()
             let color = colorArray[index]
             
             path.move(to: CGPoint(x: 0, y: 0))
             for point in array {
-                path.addLine(to: point)
+                path.line(to: point)
             }
-            context.setLineWidth(1.0)
-            context.setStrokeColor(color)
-            context.addPath(path)
-            context.drawPath(using: .fillStroke)
+            color.set()
+            path.stroke()
         }
     }
 }
