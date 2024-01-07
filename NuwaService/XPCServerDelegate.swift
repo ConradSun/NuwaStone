@@ -5,6 +5,7 @@
 //  Created by ConradSun on 2023/5/16.
 //
 
+import AppKit
 import Foundation
 
 extension XPCConnection: NSXPCListenerDelegate {
@@ -19,6 +20,11 @@ extension XPCConnection: NSXPCListenerDelegate {
     func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
         guard connection == nil else {
             Logger(.Warning, "Client connected already.")
+            return false
+        }
+        
+        if !verifyXPCPeer(pid: newConnection.processIdentifier) {
+            Logger(.Error, "Failed to verify the peer.")
             return false
         }
         
@@ -38,6 +44,27 @@ extension XPCConnection: NSXPCListenerDelegate {
         connection = newConnection
         newConnection.resume()
         return true
+    }
+    
+    private func verifyXPCPeer(pid: pid_t) -> Bool {
+        guard let peerAPP = NSRunningApplication(processIdentifier: pid) else {
+            return false
+        }
+        guard let bundleURL = peerAPP.bundleURL else {
+            return false
+        }
+        guard let peerBundle = Bundle(url: bundleURL) else {
+            return false
+        }
+        
+        let peerName = getMachServiceName(from: peerBundle)
+        return peerName == ClientBundle
+    }
+    
+    private func getMachServiceName(from bundle: Bundle) -> String {
+        let clientKeys = bundle.object(forInfoDictionaryKey: ClientName) as? [String: Any]
+        let machServiceName = clientKeys?[MachServiceKey] as? String
+        return machServiceName ?? ""
     }
 }
 

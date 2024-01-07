@@ -90,6 +90,7 @@ int KauthController::getDecisionFromClient(UInt64 vnodeID) {
         .tv_nsec = (kMaxAuthWaitTime - time.tv_sec * 1000) * 1000000
     };
     
+    // Will wake up from sleep when receive decision in func updateAuthResultCache.
     errCode = msleep((void *)vnodeID, nullptr, 0, "Wait for reply", &time);
     if (errCode == 0) {
         decision = m_cacheManager->obtainAuthResultCache(vnodeID);
@@ -131,6 +132,7 @@ int KauthController::vnodeCallback(const vfs_context_t ctx, const vnode_t vp, in
     }
     
     if (response == KAUTH_RESULT_DEFER || response == KAUTH_RESULT_ALLOW) {
+        // Notify exec event may obtain ppid as pid, so cache info here.
         UInt64 value = ((UInt64)event->mainProcess.pid << 32) | event->mainProcess.ppid;
         m_cacheManager->updateAuthExecCache(event->vnodeID, value);
     }
@@ -175,6 +177,7 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
     errCode = fillEventInfo(event, procCtx, fileCtx, vp);
     if (action == KAUTH_FILEOP_EXEC) {
         UInt64 result = m_cacheManager->obtainAuthExecCache(event->vnodeID);
+        // Notify exec event may obtain outdated pid, here modify it with cache info.
         if ((result >> 32) != event->mainProcess.pid) {
             event->mainProcess.pid = result >> 32;
             event->mainProcess.ppid = (result << 32) >> 32;

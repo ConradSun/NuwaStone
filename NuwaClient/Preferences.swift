@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// User preferences based on UserDefaults
 struct Preferences {
     var auditSwitch: Bool {
         get {

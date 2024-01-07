@@ -93,6 +93,7 @@ bool ListManager::updateAuthProcessList(UInt64 *vnodeID, NuwaKextMuteType type) 
         if (!procList->setObject(vnodeID[i], procType)) {
             Logger(LOG_WARN, "Failed to update item for auth process.")
         }
+        i++;
     }
     
     return true;
@@ -109,6 +110,7 @@ bool ListManager::updateFilterFileList(UInt64 *vnodeID, NuwaKextMuteType type) {
         if (!m_muteFileList->setObject(vnodeID[i], true)) {
             Logger(LOG_WARN, "Failed to update item for filtering file event.")
         }
+        i++;
     }
     
     return true;

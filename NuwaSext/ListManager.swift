@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// List manager for event filtering
 class ListManager {
     static let shared = ListManager()
     private var allowExecList = Set<UInt64>()

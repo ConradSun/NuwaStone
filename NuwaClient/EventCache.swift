@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Cache info used by ProcessCache
 struct ProcessCacheInfo {
     var user: String
     var ppid: Int32
@@ -27,6 +28,7 @@ struct ProcessCacheInfo {
     }
 }
 
+/// Process cache used for fill proc info
 class ProcessCache {
     static let shared = ProcessCache()
     private var cacheDict = [Int32: ProcessCacheInfo]()
@@ -114,6 +116,8 @@ class ProcessCache {
         }
         
         if info == nil {
+            // Cache are not updated here, as ProcessCreate events may be reported later than other types
+            // This is followed by the required ProcessCreate events to update the cache
             Logger(.Debug, "Failed to find proc [\(event.pid)] info in cache.")
             // fillCacheInfo(&event)
             // updateCache(event)

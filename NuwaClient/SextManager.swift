@@ -32,7 +32,7 @@ extension SextManager: ManagerXPCProtocol {
     
     func reportNotifyEvent(notifyEvent: String) {
         guard var event = decodeEventInfo(event: notifyEvent) else {
-            Logger(.Warning, "Failed to decode notify event.")
+            Logger(.Warning, "Failed to decode notify event [\(notifyEvent)].")
             return
         }
         
@@ -47,7 +47,7 @@ extension SextManager: ManagerXPCProtocol {
     
     func reportAuthEvent(authEvent: String) {
         guard let event = decodeEventInfo(event: authEvent) else {
-            Logger(.Warning, "Failed to decode auth event.")
+            Logger(.Warning, "Failed to decode auth event [\(authEvent)].")
             return
         }
         
@@ -77,7 +77,7 @@ extension SextManager: NuwaEventProviderProtocol {
     
     func startProvider() -> Bool {
         let semaphore = DispatchSemaphore(value: 0)
-        XPCServer.shared.connectToSext(bundle: Bundle.main, delegate: self) { success in
+        XPCServer.shared.connectToSext(delegate: self) { success in
             self.isConnected = success
             if !success {
                 self.delegate?.handleBrokenConnection()
@@ -87,6 +87,7 @@ extension SextManager: NuwaEventProviderProtocol {
             semaphore.signal()
         }
         
+        // The XPC method is called on the other thread, so we need to wait for the operation to be finished.
         semaphore.wait()
         isConnected = sextProxy != nil
         return isConnected

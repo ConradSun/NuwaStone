@@ -7,6 +7,25 @@
 
 import Cocoa
 
+extension ViewController {
+    static func displayWithWindow(text: String, style: NSAlert.Style) {
+        let alert = NSAlert()
+        alert.informativeText = text
+        alert.alertStyle = style
+        switch style {
+        case .informational:
+            alert.messageText = "Info"
+        case .warning:
+            alert.messageText = "Warning"
+        case .critical:
+            alert.messageText = "Error"
+        @unknown default:
+            alert.messageText = "Tips"
+        }
+        alert.runModal()
+    }
+}
+
 extension ViewController: NuwaEventProcessProtocol {
     func displayNotifyEvent(_ event: NuwaEventInfo) {
         eventQueue.async(flags: .barrier) { [self] in
@@ -33,7 +52,7 @@ extension ViewController: NuwaEventProcessProtocol {
     func handleBrokenConnection() {
         DispatchQueue.main.sync {
             controlButtonClicked(controlButton)
-            alertWithError(error: "Connection with extension is broken.")
+            ViewController.displayWithWindow(text: "Connection with extension is broken.", style: .critical)
         }
     }
 }

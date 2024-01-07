@@ -31,6 +31,7 @@ void EventDispatcher::free() {
     m_authDataQueue->setNotificationPort(nullptr);
     m_authDataQueue->release();
     m_authDataQueue = nullptr;
+    m_notifyDataQueue->setNotificationPort(nullptr);
     m_notifyDataQueue->release();
     m_notifyDataQueue = nullptr;
 }

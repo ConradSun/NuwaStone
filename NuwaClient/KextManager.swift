@@ -145,11 +145,10 @@ extension KextManager {
         nuwaEvent.fillBundleIdentifier()
         nuwaEvent.fillCodeSign()
         
-        if nuwaEvent.eventType == .ProcessCreate {
-            if nuwaEvent.props[PropCodeSign] != nil {
-                _ = replyAuthEvent(eventID: event.vnodeID, isAllowed: true)
-                return
-            }
+        // Only the ProcessCreate event is auth type for now.
+        if nuwaEvent.props[PropCodeSign] != nil {
+            _ = replyAuthEvent(eventID: event.vnodeID, isAllowed: true)
+            return
         }
         
         if userPref.auditSwitch {
@@ -309,20 +308,16 @@ extension KextManager: NuwaEventProviderProtocol {
     func udpateMuteList(list: [String], type: NuwaMuteType) -> Bool {
         var result = KERN_SUCCESS
         var muteInfo = NuwaKextMuteInfo()
-        var vnodePtr = withUnsafeMutablePointer(to: &muteInfo.vnodeID) { pointer in
-            pointer.withMemoryRebound(to: UInt64.self, capacity: MemoryLayout.size(ofValue: pointer)) { pointer in
-                return pointer
-            }
-        }
-        
-        for i in 0 ..< list.count {
-            if i >= kMaxCacheItems {
-                break
-            }
-            vnodePtr.pointee = getFileVnodeID(list[i])
-            vnodePtr += 1
-        }
         muteInfo.muteType.rawValue = UInt32(type.rawValue)
+        withUnsafeMutablePointer(to: &muteInfo.vnodeIDs) { pointer in
+            let vnodePtr = UnsafeMutableRawPointer(pointer).assumingMemoryBound(to: UInt64.self)
+            for i in 0 ..< list.count {
+                if i >= kMaxCacheItems {
+                    break
+                }
+                vnodePtr[i] = getFileVnodeID(list[i])
+            }
+        }
         
         result = IOConnectCallStructMethod(connection, kNuwaUserClientUpdateMuteList.rawValue, &muteInfo, MemoryLayout<NuwaKextMuteInfo>.size, nil, nil)
         if result != KERN_SUCCESS {

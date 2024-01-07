@@ -11,7 +11,7 @@
 #include "KextCommon.hpp"
 
 /**
- *  desc：structure of DNS packet
+ *  desc：Structure of DNS packet
  *  UInt16      Transaction ID
  *  UInt16      Flags
  *  UInt16      Questions
@@ -53,7 +53,7 @@ typedef enum {
 #pragma pack(1)
 
 /**
-* @berif header of DNS message
+* @berif Header of DNS message
 */
 typedef struct {
     UInt16 transID;
@@ -65,7 +65,7 @@ typedef struct {
 } DNSMessageHeader;
 
 /**
-* @berif info of DNS query
+* @berif Info of DNS query
 */
 typedef struct {
     UInt16 DNSType;
@@ -73,7 +73,7 @@ typedef struct {
 } DNSQueryInfo;
 
 /**
-* @berif info of DNS response
+* @berif Info of DNS response
 */
 typedef struct {
     UInt16 DNSType;
@@ -85,7 +85,7 @@ typedef struct {
 #pragma pack()
 
 /**
-* @berif parse result of one item of DNS response
+* @berif Parse result of one item of DNS response
 */
 typedef struct {
     UInt16 replyCode;
@@ -95,7 +95,7 @@ typedef struct {
 } DNSParseResult;
 
 /**
-* @berif parse results of DNS message
+* @berif Parse results of DNS message
 */
 typedef struct {
     UInt16 count;

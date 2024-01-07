@@ -164,7 +164,7 @@ IOReturn DriverClient::setLogLevel(OSObject* target, void* reference, IOExternal
     
     UInt32 level = (UInt32)arguments->scalarInput[0];
     if (g_logLevel != level) {
-        Logger(LOG_INFO, "Log level setted to be %d", level)
+        Logger(LOG_INFO, "Log level is setted to be %d", level)
         g_logLevel = level;
     }
     return kIOReturnSuccess;
@@ -182,9 +182,9 @@ IOReturn DriverClient::updateMuteList(OSObject* target, void* reference, IOExter
     NuwaKextMuteInfo *info = (NuwaKextMuteInfo *)arguments->structureInput;
     // It's unsupported to filter file event by proc paths in kext for now.
     if (info->muteType == kAllowAuthExec || info->muteType == kDenyAuthExec) {
-        me->m_listManager->updateAuthProcessList(info->vnodeID, info->muteType);
+        me->m_listManager->updateAuthProcessList(info->vnodeIDs, info->muteType);
     } else if (info->muteType == kFilterFileByFilePath) {
-        me->m_listManager->updateFilterFileList(info->vnodeID, info->muteType);
+        me->m_listManager->updateFilterFileList(info->vnodeIDs, info->muteType);
     }
     
     return kIOReturnSuccess;
@@ -195,7 +195,7 @@ IOReturn DriverClient::updateMuteList(OSObject* target, void* reference, IOExter
 IOReturn DriverClient::externalMethod(UInt32 selector, IOExternalMethodArguments *arguments,
                                       IOExternalMethodDispatch *dispatch, OSObject *target, void *reference) {
     // Array of methods callable by clients.
-    static IOExternalMethodDispatch sMethods[kNuwaUserClientNMethods] = {
+    static IOExternalMethodDispatch methods[kNuwaUserClientMethodsNumber] = {
         // Function ptr, input scalar count, input struct size, output scalar count, output struct size
         { &DriverClient::open, 0, 0, 0, 0 },
         { &DriverClient::allowBinary, 1, 0, 0, 0 },
@@ -204,12 +204,12 @@ IOReturn DriverClient::externalMethod(UInt32 selector, IOExternalMethodArguments
         { &DriverClient::updateMuteList, 0, sizeof(NuwaKextMuteInfo), 0, 0 }
     };
 
-    if (selector >= static_cast<UInt32>(kNuwaUserClientNMethods)) {
+    if (selector >= static_cast<UInt32>(kNuwaUserClientMethodsNumber)) {
         return kIOReturnBadArgument;
     }
 
-    dispatch = &(sMethods[selector]);
-    if (!target) {
+    dispatch = &(methods[selector]);
+    if (target == nullptr) {
         target = this;
     }
     return IOUserClient::externalMethod(selector, arguments, dispatch, target, reference);

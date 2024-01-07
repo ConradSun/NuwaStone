@@ -52,9 +52,9 @@ extension AppDelegate {
         getMainWindow(NSApplication.shared)?.makeKeyAndOrderFront(self)
     }
     
-    func getMainWindow(_ sender: NSApplication) -> NSWindow? {
-        for window: AnyObject in sender.windows {
-            if window.frameAutosaveName == "NuwaStoneMainWindow" {
+    func getMainWindow(_ app: NSApplication) -> NSWindow? {
+        for window: AnyObject in app.windows {
+            if window.frameAutosaveName == MainWindowName {
                 return window as? NSWindow
             }
         }

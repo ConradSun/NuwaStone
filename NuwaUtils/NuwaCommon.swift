@@ -16,6 +16,8 @@ let SextBundle      = "com.nuwastone.service.eps"
 let KextBundle      = "com.nuwastone.service.eps"
 let KextService     = "DriverService"
 
+let MainWindowName  = "NuwaStoneMainWindow"
+
 let MachServiceKey  = "MachServiceName"
 
 let DurationChanged = "Clear Duration Changed"
@@ -49,6 +51,7 @@ let PropReplyResult = "Reply"
 let MaxIPLength     = 41
 let MaxWaitTime     = 20000 //   ms
 
+/// Error for ESClient init
 enum ESClientError: Error {
     case Success
     case MissingEntitlements
@@ -57,6 +60,8 @@ enum ESClientError: Error {
     case FailedSubscription
 }
 
+/// Called to get argmax by sysctl, used for func getProcArgs
+/// - Returns: Max number of arguments
 fileprivate func getSysctlArgmax() -> Int {
     var argmax: Int = 0
     var mib: [Int32] = [CTL_KERN, KERN_ARGMAX]
@@ -68,6 +73,12 @@ fileprivate func getSysctlArgmax() -> Int {
     return argmax
 }
 
+/// Called to get process arguments, used for func getProcArgs
+/// - Parameters:
+///   - pid: Process ID
+///   - args: CChar array to store arguments
+///   - size: Max number of arguments
+/// - Returns: Whether succeed or not
 fileprivate func getProcArgs(pid: Int32, args: UnsafeMutablePointer<CChar>, size: UnsafeMutablePointer<Int>) -> Bool {
     var mib: [Int32] = [CTL_KERN, KERN_PROCARGS2, pid]
     guard sysctl(&mib, 3, args, size, nil, 0) >= 0 else {
@@ -76,6 +87,10 @@ fileprivate func getProcArgs(pid: Int32, args: UnsafeMutablePointer<CChar>, size
     return true
 }
 
+/// Called to get process parent pid
+/// - Parameters:
+///   - pid: Process ID
+///   - eventHandler: Code block to process result and error
 func getProcPpid(pid: Int32, eventHandler: @escaping (Int32, Int32) -> Void) {
     var info = proc_bsdinfo()
     let infoSize = MemoryLayout<proc_bsdinfo>.size
@@ -89,6 +104,10 @@ func getProcPpid(pid: Int32, eventHandler: @escaping (Int32, Int32) -> Void) {
     eventHandler(Int32(info.pbi_ppid), 0)
 }
 
+/// Called to get process path
+/// - Parameters:
+///   - pid: Process ID
+///   - eventHandler: Code block to process result and error
 func getProcPath(pid: Int32, eventHandler: @escaping (String, Int32) -> Void) {
     var buffer = [CChar](repeating: 0, count: Int(PROC_PIDPATHINFO_SIZE))
     guard proc_pidpath(pid, &buffer, UInt32(buffer.count)) > 0 else {
@@ -101,6 +120,10 @@ func getProcPath(pid: Int32, eventHandler: @escaping (String, Int32) -> Void) {
     eventHandler(String(cString: buffer), 0)
 }
 
+/// Called to get process current working directory
+/// - Parameters:
+///   - pid: Process ID
+///   - eventHandler: Code block to process result and error
 func getProcCurrentDir(pid: Int32, eventHandler: @escaping (String, Int32) -> Void) {
     var info = proc_vnodepathinfo()
     let infoSize = MemoryLayout<proc_vnodepathinfo>.size
@@ -116,6 +139,10 @@ func getProcCurrentDir(pid: Int32, eventHandler: @escaping (String, Int32) -> Vo
     eventHandler(String(data: data, encoding: .utf8)!, 0)
 }
 
+/// Called to get process arguments
+/// - Parameters:
+///   - pid: Process ID
+///   - eventHandler: Code block to process result and error
 func getProcArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void) {
     var argc: Int32 = 0
     var argv = [String]()
@@ -172,6 +199,10 @@ func getProcArgs(pid: Int32, eventHandler: @escaping ([String], Int32) -> Void) 
     eventHandler(argv, 0)
 }
 
+
+/// Called to get user name by uid
+/// - Parameter uid: user ID
+/// - Returns: User name
 func getNameFromUid(_ uid: uid_t) -> String {
     guard let name = getpwuid(uid)?.pointee.pw_name else {
         return ""
@@ -179,6 +210,9 @@ func getNameFromUid(_ uid: uid_t) -> String {
     return String(cString: name)
 }
 
+/// Called to get process codesign by process path
+/// - Parameter path: Process path
+/// - Returns: Code signature
 func getSignInfoFromPath(_ path: String) -> [String] {
     let fileUrl = URL(fileURLWithPath: path)
     var secCode: SecStaticCode?
@@ -212,6 +246,9 @@ func getSignInfoFromPath(_ path: String) -> [String] {
     return signInfo
 }
 
+/// Called to get file vnode ID (dev|ino) by file path
+/// - Parameter path: File path
+/// - Returns: Vnode ID
 func getFileVnodeID(_ path: String) -> UInt64 {
     var fileStat = stat()
     stat(path.cString(using: .utf8), &fileStat)
@@ -221,6 +258,11 @@ func getFileVnodeID(_ path: String) -> UInt64 {
     return vnodeID
 }
 
+/// Called to execute custom process
+/// - Parameters:
+///   - path: Process path
+///   - args: Arguments for execution
+/// - Returns: Process running results, nil means execution failure
 func launchTask(path: String, args: [String]) -> String? {
     let task = Process()
     let pipe = Pipe()

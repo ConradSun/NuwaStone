@@ -220,5 +220,6 @@ class PrefsViewController: NSViewController {
             userPref.clearDuration = intervalSlider.doubleValue * 60
             NotificationCenter.default.post(name: NSNotification.Name(DurationChanged), object: nil)
         }
+        ViewController.displayWithWindow(text: "The changes are saved.", style: .informational)
     }
 }

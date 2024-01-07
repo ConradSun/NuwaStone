@@ -10,6 +10,9 @@
 
 #include <IOKit/IOLib.h>
 
+/**
+* @berif Log level for NuwaKext
+*/
 typedef enum {
     LOG_OFF     = 1,
     LOG_ERROR   = 2,

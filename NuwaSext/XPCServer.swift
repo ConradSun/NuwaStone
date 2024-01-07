@@ -7,11 +7,14 @@
 
 import Foundation
 
+
+/// Protocol to be implemented by xpc client (nuwaclient)
 @objc protocol ManagerXPCProtocol {
     func reportAuthEvent(authEvent: String)
     func reportNotifyEvent(notifyEvent: String)
 }
 
+/// Protocol to be implemented by xpc server (nuwasext)
 @objc protocol SextXPCProtocol {
     func connectResponse(_ handler: @escaping (Bool) -> Void)
     func setLogLevel(_ level: UInt8)
@@ -19,26 +22,21 @@ import Foundation
     func updateMuteList(vnodeID: [UInt64], type: UInt8)
 }
 
+/// XPC class to be used by nuwasext and nuwaclient
 class XPCServer: NSObject {
     static let shared = XPCServer()
     var nuwaLog = NuwaLog()
     var listener: NSXPCListener?
     var connection: NSXPCConnection?
     
-    private func getMachServiceName(from bundle: Bundle) -> String {
-        let clientKeys = bundle.object(forInfoDictionaryKey: ClientName) as? [String: Any]
-        let machServiceName = clientKeys?[MachServiceKey] as? String
-        return machServiceName ?? ""
-    }
-    
-    func connectToSext(bundle: Bundle, delegate: ManagerXPCProtocol, handler: @escaping (Bool) -> Void) {
+    /// Called to send request to connect to the sext (only called by the xpc client)
+    /// - Parameters:
+    ///   - delegate: Delegate to process sext request
+    ///   - handler: Code block to process result
+    func connectToSext(delegate: ManagerXPCProtocol, handler: @escaping (Bool) -> Void) {
         guard connection == nil else {
             Logger(.Info, "Manager already connected.")
             handler(true)
-            return
-        }
-        guard getMachServiceName(from: bundle) == ClientBundle else {
-            handler(false)
             return
         }
         

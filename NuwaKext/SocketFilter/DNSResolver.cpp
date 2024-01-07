@@ -89,6 +89,7 @@ bool DNSResolver::parseDomainName(const char *nameBegin, char *domainName, UInt1
     }
     
     while (parseBegin < parseEnd && *parseBegin != endSymbol) {
+        // The delimiter '.' is encountered when meet the offset symbol in loop.
         if (*parseBegin == offsetSymbol) {
             domainName[nameLen++] = '.';
             occupyCount = occupyCount == 0 ? (parseBegin - nameBegin + 1) : occupyCount;
@@ -97,6 +98,7 @@ bool DNSResolver::parseDomainName(const char *nameBegin, char *domainName, UInt1
         }
         
         UInt8 count = *parseBegin++;
+        // The delimiter '.' is encountered when enter this loop not the first time. e.g. google.com
         if (nameLen != 0) {
             domainName[nameLen++] = '.';
         }

@@ -7,6 +7,7 @@
 
 import Cocoa
 
+/// Type for event displaying
 enum DisplayMode: Int, CaseIterable {
     case DisplayAll
     case DisplayProcess
@@ -72,9 +73,10 @@ class ViewController: NSViewController {
         if !isStarted {
             DispatchQueue.global().async { [self] in
                 ProcessCache.shared.initProcCache()
+                // Failed to start monitoring, reset status
                 if !eventProvider!.startProvider() {
                     DispatchQueue.main.sync {
-                        alertWithError(error: "Failed to connect extension.")
+                        ViewController.displayWithWindow(text: "Failed to connect extension.", style: .critical)
                         controlButton.image = NSImage(named: "start")
                         controlLabel.stringValue = "start"
                         isStarted = false
@@ -82,6 +84,7 @@ class ViewController: NSViewController {
                     return
                 }
                 
+                // Start monitoring successfully, set status to wait for stop
                 DispatchQueue.main.sync {
                     initMutePaths()
                     setupDisplayTimer()
@@ -94,10 +97,11 @@ class ViewController: NSViewController {
             isStarted = true
         } else {
             if !eventProvider!.stopProvider() {
-                alertWithError(error: "Failed to disconnect extension.")
+                ViewController.displayWithWindow(text: "Failed to disconnect extension.", style: .critical)
                 return
             }
             
+            // Stop monitoring successfully, set status to wait for start
             controlButton.image = NSImage(named: "start")
             controlLabel.stringValue = "start"
             isStarted = false
@@ -207,7 +211,7 @@ class ViewController: NSViewController {
     
     @IBAction func uninstallMenuItemSelected(_ sender: NSMenuItem) {
         if !controlButton.isEnabled {
-            alertWithError(error: "Unable to uninstall for broken connection with daemon.")
+            ViewController.displayWithWindow(text: "Unable to uninstall for broken connection with daemon.", style: .critical)
             return
         }
         
@@ -228,22 +232,13 @@ class ViewController: NSViewController {
 }
 
 extension ViewController {
-    func alertWithError(error: String) {
-        let alert = NSAlert()
-        Logger(.Error, error)
-        alert.informativeText = error
-        alert.alertStyle = .critical
-        alert.messageText = "Error"
-        alert.runModal()
-    }
-    
     func establishConnection() {
-        XPCConnection.shared.connectToDaemon(bundle: Bundle.main, delegate: self) { success in
+        XPCConnection.shared.connectToDaemon(delegate: self) { success in
             DispatchQueue.main.async { [self] in
                 if !success {
                     controlButton.isEnabled = false
                     configMenuStatus(start: false, stop: false)
-                    alertWithError(error: "Unable to start monitoring for broken connection with daemon.")
+                    ViewController.displayWithWindow(text: "Unable to start monitoring for broken connection with daemon.", style: .critical)
                 } else {
                     Logger(.Info, "Connect to daemon successfully.")
                 }
@@ -267,7 +262,6 @@ extension ViewController {
                     eventCountCopy[index] = eventCount[index]
                 }
             }
-            graphView.draw(graphView.frame)
             graphView.needsDisplay = true
         })
     }

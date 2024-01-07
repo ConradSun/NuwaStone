@@ -17,12 +17,14 @@ lck_grp_t *g_driverLockGrp = lck_grp_alloc_init("nuwa-locks", g_driverLockGrpAtt
 CacheManager* CacheManager::m_sharedInstance = nullptr;
 
 bool CacheManager::init() {
+    // Pair VnodeID: Auth Result
     m_authResultCache = new DriverCache<UInt64, UInt8>(kMaxCacheItems);
     if (m_authResultCache == nullptr) {
         return false;
     }
     m_authResultCache->zero = 0;
     
+    // Pair VnodeID: pid-32bit|ppid-32bit
     m_authExecCache = new DriverCache<UInt64, UInt64>(kMaxCacheItems);
     if (m_authExecCache == nullptr) {
         free();
@@ -30,6 +32,7 @@ bool CacheManager::init() {
     }
     m_authExecCache->zero = 0;
     
+    // Pair Port: pid-32bit|ppid-32bit
     m_portBindCache = new DriverCache<UInt16, UInt64>(kMaxCacheItems);
     if (m_portBindCache == nullptr) {
         free();
@@ -37,6 +40,7 @@ bool CacheManager::init() {
     }
     m_portBindCache->zero = 0;
     
+    // Pair Addr: pid-32bit|ppid-32bit
     m_dnsOutCache = new DriverCache<UInt64, UInt64>(kMaxCacheItems);
     if (m_dnsOutCache == nullptr) {
         free();
@@ -95,6 +99,7 @@ bool CacheManager::updateAuthResultCache(UInt64 vnodeID, UInt8 result) {
     }
     
     if (m_authResultCache->setObject(vnodeID, result)) {
+        // Wake up from sleep in vnode callback
         wakeup((void *)vnodeID);
         return true;
     }

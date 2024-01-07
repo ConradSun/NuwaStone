@@ -18,7 +18,16 @@ extern lck_grp_t *g_driverLockGrp;
 static const UInt8 kDefaultBucketCapacity = 4;
 
 template <typename KeyType>
+
+/**
+ * @brief Calculate the hash value of the cache
+ 
+ * @param key   key must be numeric type
+ * @param count number of buckets
+ * @return      hash value
+ */
 static UInt64 cacheHasher(KeyType const &key, UInt64 count) {
+    // 11400714819323198549 is the largest 64-bit prime number. Use prime numbers to reduce hash collisions.
     UInt64 hash = (UInt64)key * 11400714819323198549UL;
     return hash % count;
 };
@@ -35,6 +44,7 @@ public:
         }
         m_capacity = capacity;
         m_itemCount = 0;
+        // Make sure the number of buckets is even
         m_bucketCount = (((capacity + kDefaultBucketCapacity) / kDefaultBucketCapacity) >> 1) << 1;
         m_buckets = (Bucket *)IOMallocAligned(sizeof(Bucket)*m_bucketCount, 2);
         bzero(m_buckets, sizeof(Bucket)*m_bucketCount);

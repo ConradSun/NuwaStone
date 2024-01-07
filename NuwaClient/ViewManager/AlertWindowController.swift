@@ -7,6 +7,7 @@
 
 import Cocoa
 
+/// Alert risky process to be executed
 class AlertWindowController: NSWindowController {
     @IBOutlet weak var procIconView: NSImageView!
     @IBOutlet weak var procInfoText: NSTextFieldCell!
@@ -38,7 +39,7 @@ class AlertWindowController: NSWindowController {
         eventDescLabel.stringValue = authEvent!.desc
         decisionCheckbox.title = "Only this time (pid: \(authEvent!.pid))"
         
-        let waitTime = DispatchTime.now() + .milliseconds(MaxWaitTime-500)
+        let waitTime = DispatchTime.now() + .milliseconds(MaxWaitTime)
         DispatchQueue.main.asyncAfter(deadline: waitTime) {
             self.submitButtonClicked(self.submitButton)
         }

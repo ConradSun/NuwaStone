@@ -5,9 +5,11 @@
 //  Created by ConradSun on 2022/8/18.
 //
 
+import AppKit
 import Foundation
 
 extension XPCServer {
+    /// Called to start the xpc listener
     func startListener() {
         let newListener = NSXPCListener(machServiceName: SextBundle)
         newListener.delegate = self
@@ -16,6 +18,9 @@ extension XPCServer {
         Logger(.Info, "Start XPC listener successfully.")
     }
     
+    /// Called to encode event info into json
+    /// - Parameter event: Event to be encoded
+    /// - Returns: Event json
     func encodeEventInfo(_ event: NuwaEventInfo) -> String {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
@@ -32,6 +37,9 @@ extension XPCServer {
         return json
     }
     
+    /// Called to send auth event to the nuwa client
+    /// - Parameter event: Event to be sent
+    /// - Returns: false for failed, true for succeed
     func sendAuthEvent(_ event: NuwaEventInfo) ->Bool {
         guard let proxy = connection?.remoteObjectProxy as? ManagerXPCProtocol else {
             return false
@@ -44,6 +52,8 @@ extension XPCServer {
         return false
     }
     
+    /// Called to send notify event to the nuwa client
+    /// - Parameter event: Event to be sent
     func sendNotifyEvent(_ event: NuwaEventInfo) {
         let proxy = connection?.remoteObjectProxy as? ManagerXPCProtocol
         let json = encodeEventInfo(event)
@@ -54,9 +64,19 @@ extension XPCServer {
 }
 
 extension XPCServer: NSXPCListenerDelegate {
+    /// Called when a new incoming connection request received
+    /// - Parameters:
+    ///   - listener: XPC listener (unused)
+    ///   - newConnection: Connection to be configured/accepted/resumed
+    /// - Returns: false when not accepted, true when accepted
     func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
         guard connection == nil else {
             Logger(.Warning, "Manager connected already.")
+            return false
+        }
+        
+        if !verifyXPCPeer(pid: newConnection.processIdentifier) {
+            Logger(.Error, "Failed to verify the peer.")
             return false
         }
         
@@ -76,6 +96,33 @@ extension XPCServer: NSXPCListenerDelegate {
         connection = newConnection
         newConnection.resume()
         return true
+    }
+    
+    /// Called to verify the xpc peer
+    /// - Parameter pid: Peer pid
+    /// - Returns: false for not passing the verification, true for passing
+    private func verifyXPCPeer(pid: pid_t) -> Bool {
+        guard let peerAPP = NSRunningApplication(processIdentifier: pid) else {
+            return false
+        }
+        guard let bundleURL = peerAPP.bundleURL else {
+            return false
+        }
+        guard let peerBundle = Bundle(url: bundleURL) else {
+            return false
+        }
+        
+        let peerName = getMachServiceName(from: peerBundle)
+        return peerName == ClientBundle
+    }
+    
+    /// Called to get mach service name
+    /// - Parameter bundle: APP bundle
+    /// - Returns: Mach service name
+    private func getMachServiceName(from bundle: Bundle) -> String {
+        let clientKeys = bundle.object(forInfoDictionaryKey: ClientName) as? [String: Any]
+        let machServiceName = clientKeys?[MachServiceKey] as? String
+        return machServiceName ?? ""
     }
 }
 

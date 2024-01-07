@@ -28,7 +28,7 @@ func getProcessorArch() -> String {
 
 func getPhysicalMemory() -> String {
     let memory = ProcessInfo.processInfo.physicalMemory
-    let memFloat = Double(memory) / 1000000000.0
+    let memFloat = Double(memory) / (1024*1024*1024.0)
     let memoryInfo = String(format: "%.2f G", memFloat)
     return memoryInfo
 }
@@ -54,7 +54,7 @@ func getTotalRAM() -> String {
         return ""
     }
     
-    let totalSpace = Double(totalSize) / 1000000000.0
+    let totalSpace = Double(totalSize) / (1024*1024*1024.0)
     let totalMem = String(format: "%.2f G", totalSpace)
     return totalMem
 }
@@ -66,7 +66,7 @@ func getAvailableRAM() -> String {
         return ""
     }
     
-    let freeSpace = Double(freeSize) / 1000000000.0
+    let freeSpace = Double(freeSize) / (1024*1024*1024.0)
     let avaliableMem = String(format: "%.2f G", freeSpace)
     return avaliableMem
 }

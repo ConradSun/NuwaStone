@@ -7,9 +7,12 @@
 
 import Foundation
 
+/// Protocol to be implemented by xpc client (nuwaclient)
 @objc protocol ClientXPCProtocol {
 }
 
+
+/// Protocol to be implemented by xpc server (nuwadaemon)
 @objc protocol DaemonXPCProtocol {
     func connectResponse(_ handler: @escaping (Bool) -> Void)
     func getProcessPath(pid: Int32, eventHandler: @escaping (String, Int32) -> Void)
@@ -18,25 +21,16 @@ import Foundation
     func launchUninstaller()
 }
 
+/// XPC class to be used by nuwadaemon and nuwaclient
 class XPCConnection: NSObject {
     static let shared = XPCConnection()
     var listener: NSXPCListener?
     var connection: NSXPCConnection?
     
-    private func getMachServiceName(from bundle: Bundle) -> String {
-        let clientKeys = bundle.object(forInfoDictionaryKey: ClientName) as? [String: Any]
-        let machServiceName = clientKeys?[MachServiceKey] as? String
-        return machServiceName ?? ""
-    }
-    
-    func connectToDaemon(bundle: Bundle, delegate: ClientXPCProtocol, handler: @escaping (Bool) -> Void) {
+    func connectToDaemon(delegate: ClientXPCProtocol, handler: @escaping (Bool) -> Void) {
         guard connection == nil else {
             Logger(.Info, "Client already connected.")
             handler(true)
-            return
-        }
-        guard getMachServiceName(from: bundle) == ClientBundle else {
-            handler(false)
             return
         }
         

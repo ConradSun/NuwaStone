@@ -177,6 +177,7 @@ void SocketHandler::notifySocketCallback(socket_t socket, sflt_event_t event) {
     }
     
     bzero(netEvent, sizeof(NuwaKextEvent));
+    // Process info cann't be obtained in this callback, so the info cached in bind/connect callback.
     if (fillNetEventInfo(netEvent, kActionNotifyNetworkAccess) == 0) {
         fillInfoFromCache(netEvent);
         m_eventDispatcher->postToNotifyQueue(netEvent);
@@ -227,6 +228,7 @@ void SocketHandler::inboundSocketCallback(socket_t socket, mbuf_t *data, const s
             continue;
         }
         bzero(netEvent, sizeof(NuwaKextEvent));
+        // Process info cann't be obtained in this callback, so the info cached in outbound callback.
         if (fillBasicInfo(netEvent, kActionNotifyDnsQuery) == 0) {
             fillInfoFromCache(netEvent);
             netEvent->dnsQuery.queryStatus = results.results[i].replyCode;
