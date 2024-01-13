@@ -133,15 +133,24 @@ class KextManager {
 }
 
 extension KextManager {
+    private func getString<T>(tuple: T) -> String {
+        let pathStr = withUnsafePointer(to: tuple) { pointer in
+            pointer.withMemoryRebound(to: UInt8.self, capacity: MemoryLayout.size(ofValue: pointer)) { ptr in
+                String(cString: ptr)
+            }
+        }
+        
+        return pathStr
+    }
+    
     func processAuthEvent(_ event: inout NuwaKextEvent) {
         let nuwaEvent = NuwaEventInfo()
-        let data = Data(bytes: &event.processCreate.path.0, count: Int(kMaxPathLength/2))
         nuwaEvent.eventID = event.vnodeID
         nuwaEvent.eventType = .ProcessCreate
         nuwaEvent.eventTime = event.eventTime
         nuwaEvent.pid = event.mainProcess.pid
         nuwaEvent.ppid = event.mainProcess.ppid
-        nuwaEvent.procPath = String(data: data, encoding: .utf8)!
+        nuwaEvent.procPath = getString(tuple: event.processCreate.path)
         nuwaEvent.fillBundleIdentifier()
         nuwaEvent.fillCodeSign()
         
@@ -165,22 +174,17 @@ extension KextManager {
         switch event.eventType {
         case kActionNotifyProcessCreate:
             nuwaEvent.eventType = .ProcessCreate
-            data = Data(bytes: &event.processCreate.path.0, count: Int(kMaxPathLength/2))
-            nuwaEvent.procPath = String(data: data, encoding: .utf8)!
+            nuwaEvent.procPath = getString(tuple: event.processCreate.path)
         case kActionNotifyFileCloseModify:
             nuwaEvent.eventType = .FileCloseModify
-            data = Data(bytes: &event.fileCloseModify.path.0, count: Int(kMaxPathLength/2))
-            nuwaEvent.props[PropFilePath] = String(data: data, encoding: .utf8)!
+            nuwaEvent.props[PropFilePath] = getString(tuple: event.fileCloseModify.path)
         case kActionNotifyFileRename:
             nuwaEvent.eventType = .FileRename
-            data = Data(bytes: &event.fileRename.srcFile.path.0, count: Int(kMaxPathLength/2))
-            nuwaEvent.props[PropSrcPath] = String(data: data, encoding: .utf8)!
-            data = Data(bytes: &event.fileRename.newPath.0, count: Int(kMaxPathLength/2))
-            nuwaEvent.props[PropDstPath] = String(data: data, encoding: .utf8)!
+            nuwaEvent.props[PropSrcPath] = getString(tuple: event.fileRename.srcFile.path)
+            nuwaEvent.props[PropDstPath] = getString(tuple: event.fileRename.newPath)
         case kActionNotifyFileDelete:
             nuwaEvent.eventType = .FileDelete
-            data = Data(bytes: &event.fileDelete.path.0, count: Int(kMaxPathLength/2))
-            nuwaEvent.props[PropFilePath] = String(data: data, encoding: .utf8)!
+            nuwaEvent.props[PropFilePath] = getString(tuple: event.fileDelete.path)
         case kActionNotifyNetworkAccess:
             nuwaEvent.eventType = .NetAccess
             nuwaEvent.convertSocketAddr(socketAddr: &event.netAccess.localAddr, isLocal: true)
@@ -194,10 +198,8 @@ extension KextManager {
             }
         case kActionNotifyDnsQuery:
             nuwaEvent.eventType = .DNSQuery
-            data = Data(bytes: &event.dnsQuery.domainName.0, count: Int(kMaxNameLength/2))
-            nuwaEvent.props[PropDomainName] = String(data: data, encoding: .utf8)!
-            data = Data(bytes: &event.dnsQuery.queryResult.0, count: Int(kMaxPathLength/2))
-            nuwaEvent.props[PropReplyResult] = String(data: data, encoding: .utf8)!
+            nuwaEvent.props[PropDomainName] = getString(tuple: event.dnsQuery.domainName)
+            nuwaEvent.props[PropReplyResult] = getString(tuple: event.dnsQuery.queryResult)
         default:
             break
         }
