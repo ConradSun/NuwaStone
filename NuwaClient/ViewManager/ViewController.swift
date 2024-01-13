@@ -186,7 +186,7 @@ class ViewController: NSViewController {
             infoView.informativeText = "NuwaStone \(currentVersion) is the latest version."
         } else {
             infoView.messageText = "You're out-of-date!"
-            infoView.informativeText = "Newer version \(currentVersion) is currently avaliable."
+            infoView.informativeText = "Newer version \(latestVersion) is currently avaliable."
             infoView.addButton(withTitle: "Ignore")
             infoView.addButton(withTitle: "Update")
         }
