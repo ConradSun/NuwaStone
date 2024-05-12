@@ -155,48 +155,6 @@ class ViewController: NSViewController {
         refreshDisplayedEvents()
     }
     
-    @IBAction func updateMenuItemSelected(_ sender: NSMenuItem) {
-        var latestVersion = String()
-        let currentVersion = Bundle.main.object(forInfoDictionaryKey: VersionInfoKey) as! String
-        
-        let infoView = NSAlert()
-        infoView.alertStyle = .informational
-        
-        guard let result = launchTask(path: "/usr/bin/curl", args: ["-I", ReleaseURL]) else {
-            return
-        }
-        
-        let contentList = result.split(separator: "\r\n")
-        for contentItem in contentList {
-            if contentItem.contains("location") {
-                let tag = contentItem.split(separator: "/").last!
-                if tag.first == "v" {
-                    Logger(.Info, "The latest version is \(tag).")
-                    latestVersion = tag.dropFirst().lowercased()
-                }
-            }
-        }
-        
-        if latestVersion.isEmpty {
-            infoView.alertStyle = .critical
-            infoView.messageText = "Error"
-            infoView.informativeText = "Failed to get latest info for NuwaStone."
-        } else if latestVersion == currentVersion {
-            infoView.messageText = "You're up-to-date!"
-            infoView.informativeText = "NuwaStone \(currentVersion) is the latest version."
-        } else {
-            infoView.messageText = "You're out-of-date!"
-            infoView.informativeText = "Newer version \(latestVersion) is currently avaliable."
-            infoView.addButton(withTitle: "Ignore")
-            infoView.addButton(withTitle: "Update")
-        }
-        let resp = infoView.runModal()
-        if resp == .alertSecondButtonReturn {
-            let downloadAddr = URL(string: PackageURL)
-            NSWorkspace.shared.open(downloadAddr!)
-        }
-    }
-    
     @IBAction func startMenuItemSelected(_ sender: NSMenuItem) {
         controlButtonClicked(controlButton)
     }

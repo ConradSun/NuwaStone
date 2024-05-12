@@ -10,6 +10,7 @@
 		3A01FEED28D8452100A1F30F /* ListManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A01FEEB28D8452100A1F30F /* ListManager.cpp */; };
 		3A01FEEE28D8452100A1F30F /* ListManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3A01FEEC28D8452100A1F30F /* ListManager.hpp */; };
 		3A01FEF128D86E3200A1F30F /* XPCServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6088F228A4A84500061A42 /* XPCServer.swift */; };
+		3A221D862BF07FF800E24836 /* UpdateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A221D852BF07FF800E24836 /* UpdateViewController.swift */; };
 		3A2305CB28ADD96E00F85A82 /* AlertWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2305C928ADD96E00F85A82 /* AlertWindowController.swift */; };
 		3A2305CC28ADD96E00F85A82 /* Alert.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A2305CA28ADD96E00F85A82 /* Alert.xib */; };
 		3A2305CE28AE257F00F85A82 /* XPCServerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */; };
@@ -124,6 +125,7 @@
 /* Begin PBXFileReference section */
 		3A01FEEB28D8452100A1F30F /* ListManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ListManager.cpp; sourceTree = "<group>"; };
 		3A01FEEC28D8452100A1F30F /* ListManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ListManager.hpp; sourceTree = "<group>"; };
+		3A221D852BF07FF800E24836 /* UpdateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateViewController.swift; sourceTree = "<group>"; };
 		3A2305C928ADD96E00F85A82 /* AlertWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertWindowController.swift; sourceTree = "<group>"; };
 		3A2305CA28ADD96E00F85A82 /* Alert.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Alert.xib; sourceTree = "<group>"; };
 		3A2305CD28AE257F00F85A82 /* XPCServerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCServerDelegate.swift; sourceTree = "<group>"; };
@@ -238,6 +240,7 @@
 				3AAA18962887BC4000C1BDAF /* EventViewDelegate.swift */,
 				3A2305C928ADD96E00F85A82 /* AlertWindowController.swift */,
 				3AFFBBB928D725C5001D421C /* PrefsViewController.swift */,
+				3A221D852BF07FF800E24836 /* UpdateViewController.swift */,
 			);
 			path = ViewManager;
 			sourceTree = "<group>";
@@ -662,6 +665,7 @@
 				3A2305CB28ADD96E00F85A82 /* AlertWindowController.swift in Sources */,
 				3ABAFF832879C0D900928C22 /* AppDelegate.swift in Sources */,
 				3AED3F5B288953FD00FCA79A /* GraphView.swift in Sources */,
+				3A221D862BF07FF800E24836 /* UpdateViewController.swift in Sources */,
 				3A01FEF128D86E3200A1F30F /* XPCServer.swift in Sources */,
 				3AAA18972887BC4000C1BDAF /* EventViewDelegate.swift in Sources */,
 				3AA1B8D52A0CEB01001F0FC5 /* DeviceInfo.swift in Sources */,

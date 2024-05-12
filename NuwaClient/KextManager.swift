@@ -169,7 +169,6 @@ extension KextManager {
     
     func processNotifyEvent(_ event: inout NuwaKextEvent) {
         var nuwaEvent = NuwaEventInfo()
-        var data = Data()
         
         switch event.eventType {
         case kActionNotifyProcessCreate:

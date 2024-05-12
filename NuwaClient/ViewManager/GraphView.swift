@@ -27,7 +27,7 @@ class GraphView: NSView {
     
     func addPointToLine(_ yValue: CGFloat, index: Int) {
         var point = NSPoint()
-        var rate = yValue > 100 ? 1.0 : yValue / 100.0
+        let rate = yValue > 100 ? 1.0 : yValue / 100.0
         point.y = rate * frame.size.height
         
         if freqPointsArray[index].last!.x >= frame.size.width {

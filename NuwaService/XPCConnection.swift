@@ -58,7 +58,7 @@ class XPCConnection: NSObject {
             handler(false)
         } as? DaemonXPCProtocol
         
-        proxy!.connectResponse(handler)
+        proxy?.connectResponse(handler)
         handler(true)
     }
 }
