@@ -184,7 +184,6 @@ class ViewController: NSViewController {
         if result == .alertSecondButtonReturn {
             let proxy = XPCConnection.shared.connection?.remoteObjectProxy as! DaemonXPCProtocol
             proxy.launchUninstaller()
-            NSRunningApplication.current.terminate()
         }
     }
 }
