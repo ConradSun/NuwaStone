@@ -21,9 +21,6 @@ class UpdateViewController: NSViewController {
         let icon = NSImage(named: "AppIcon")
         icon?.size = NSMakeSize(80, 80)
         iconImageView.image = icon
-        
-        launchProgressIndicator.isIndeterminate = true
-        launchProgressIndicator.style = .bar
         launchProgressIndicator.startAnimation(nil)
         
         checkInfoWindow = NSAlert()
@@ -56,6 +53,20 @@ class UpdateViewController: NSViewController {
                     NSWorkspace.shared.open(downloadAddr!)
                 }
             }
+        }
+    }
+    
+    override func viewDidAppear() {
+        super.viewDidAppear()
+
+        if let window = view.window, let screen = NSScreen.main {
+            let screenRect = screen.visibleFrame
+            let windowRect = window.frame
+
+            window.setFrameOrigin(NSPoint(
+                x: screenRect.midX - windowRect.width / 2,
+                y: screenRect.midY - windowRect.height / 2
+            ))
         }
     }
     
