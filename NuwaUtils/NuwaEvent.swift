@@ -109,7 +109,20 @@ class NuwaEventInfo: Codable {
     
     /// Called to get code signature for the main process
     func fillCodeSign() {
-        let signInfo = getSignInfoFromPath(procPath)
+        let semaphore = DispatchSemaphore(value: 0)
+        var signInfo: [String] = []
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            signInfo = getSignInfoFromPath(self.procPath)
+            semaphore.signal()
+        }
+        
+        let timeout = semaphore.wait(timeout: .now() + 3)
+        if timeout == .timedOut {
+            Logger(.Warning, "Operation timed out while getting code sign for path [\(procPath)].")
+            return
+        }
+        
         if signInfo.count > 0 {
             props[PropCodeSign] = signInfo[0]
         }
