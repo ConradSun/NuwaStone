@@ -174,6 +174,9 @@ extension KextManager {
         case kActionNotifyProcessCreate:
             nuwaEvent.eventType = .ProcessCreate
             nuwaEvent.procPath = getString(tuple: event.processCreate.path)
+        case kActionNotifyFileOpen:
+            nuwaEvent.eventType = .FileOpen
+            nuwaEvent.props[PropFilePath] = getString(tuple: event.fileOpen.path)
         case kActionNotifyFileCloseModify:
             nuwaEvent.eventType = .FileCloseModify
             nuwaEvent.props[PropFilePath] = getString(tuple: event.fileCloseModify.path)

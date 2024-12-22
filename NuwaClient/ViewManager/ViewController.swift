@@ -243,7 +243,7 @@ extension ViewController {
     
     func shouldDisplayEvent(event: NuwaEventInfo) -> Bool {
         switch event.eventType {
-        case .FileCreate, .FileDelete, .FileCloseModify, .FileRename:
+        case .FileOpen, .FileCreate, .FileDelete, .FileCloseModify, .FileRename:
             if displayMode != .DisplayAll && displayMode != .DisplayFile {
                 return false
             }
@@ -283,7 +283,7 @@ extension ViewController {
     
     func updateEventCount(type: NuwaEventType) {
         switch type {
-        case .FileCreate, .FileDelete, .FileCloseModify, .FileRename:
+        case .FileOpen, .FileCreate, .FileDelete, .FileCloseModify, .FileRename:
             eventCount[DisplayMode.DisplayFile.rawValue] += 1
         case .ProcessCreate, .ProcessExit:
             eventCount[DisplayMode.DisplayProcess.rawValue] += 1

@@ -18,6 +18,7 @@ enum NuwaProtocolType: String {
 /// Event types now supported to monitor
 enum NuwaEventType: String, Codable {
     case TypeNil
+    case FileOpen
     case FileCreate
     case FileDelete
     case FileCloseModify
@@ -110,6 +111,7 @@ class NuwaEventInfo: Codable {
     /// Called to get code signature for the main process
     func fillCodeSign() {
         let semaphore = DispatchSemaphore(value: 0)
+        let wait = DispatchTimeInterval.milliseconds(MaxSignWaitTime)
         var signInfo: [String] = []
         
         DispatchQueue.global(qos: .userInitiated).async {
@@ -117,7 +119,7 @@ class NuwaEventInfo: Codable {
             semaphore.signal()
         }
         
-        let timeout = semaphore.wait(timeout: .now() + 3)
+        let timeout = semaphore.wait(timeout: .now() + wait)
         if timeout == .timedOut {
             Logger(.Warning, "Operation timed out while getting code sign for path [\(procPath)].")
             return

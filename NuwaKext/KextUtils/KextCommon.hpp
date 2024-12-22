@@ -59,6 +59,7 @@ typedef enum {
     
     kActionNotifyBegin  = 0x200,
     kActionNotifyProcessCreate,
+    kActionNotifyFileOpen,
     kActionNotifyFileCloseModify,
     kActionNotifyFileRename,
     kActionNotifyFileDelete,
@@ -119,6 +120,7 @@ typedef struct {
     NuwaKextProc mainProcess;
 
     union {
+        NuwaKextFile fileOpen;
         NuwaKextFile fileDelete;
         NuwaKextFile fileCloseModify;
         NuwaKextFile processCreate;

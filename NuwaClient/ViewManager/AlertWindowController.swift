@@ -39,7 +39,7 @@ class AlertWindowController: NSWindowController {
         eventDescLabel.stringValue = authEvent!.desc
         decisionCheckbox.title = "Only this time (pid: \(authEvent!.pid))"
         
-        let waitTime = DispatchTime.now() + .milliseconds(MaxWaitTime)
+        let waitTime = DispatchTime.now() + .milliseconds(MaxAuthWaitTime)
         DispatchQueue.main.asyncAfter(deadline: waitTime) {
             self.submitButtonClicked(self.submitButton)
         }

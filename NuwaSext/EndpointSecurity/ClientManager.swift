@@ -19,6 +19,7 @@ class ClientManager {
         ES_EVENT_TYPE_AUTH_EXEC,
         ES_EVENT_TYPE_NOTIFY_EXEC,
         ES_EVENT_TYPE_NOTIFY_EXIT,
+        ES_EVENT_TYPE_NOTIFY_OPEN,
         ES_EVENT_TYPE_NOTIFY_CREATE,
         ES_EVENT_TYPE_NOTIFY_UNLINK,
         ES_EVENT_TYPE_NOTIFY_RENAME,
@@ -29,6 +30,7 @@ class ClientManager {
         ES_EVENT_TYPE_AUTH_EXEC.rawValue: "AuthExec",
         ES_EVENT_TYPE_NOTIFY_EXEC.rawValue: "NotifyExec",
         ES_EVENT_TYPE_NOTIFY_EXIT.rawValue: "NotifyExit",
+        ES_EVENT_TYPE_NOTIFY_OPEN.rawValue: "NotifyOpen",
         ES_EVENT_TYPE_NOTIFY_CREATE.rawValue: "NotifyCreate",
         ES_EVENT_TYPE_NOTIFY_UNLINK.rawValue: "NotifyUnlink",
         ES_EVENT_TYPE_NOTIFY_RENAME.rawValue: "NotifyRename",
@@ -129,6 +131,9 @@ class ClientManager {
         case ES_EVENT_TYPE_NOTIFY_EXIT:
             nuwaEvent.eventType = .ProcessExit
             parseExitEvent(message: message, event: &nuwaEvent)
+        case ES_EVENT_TYPE_NOTIFY_OPEN:
+            nuwaEvent.eventType = .FileOpen
+            parseOpenEvent(message: message, event: &nuwaEvent)
         case ES_EVENT_TYPE_NOTIFY_CREATE:
             nuwaEvent.eventType = .FileCreate
             parseCreateEvent(message: message, event: &nuwaEvent)

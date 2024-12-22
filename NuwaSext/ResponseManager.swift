@@ -47,7 +47,7 @@ class ResponseManager {
             self.underwayEvent[index] = message
         }
                 
-        let waitTime = DispatchTime.now() + .milliseconds(MaxWaitTime)
+        let waitTime = DispatchTime.now() + .milliseconds(MaxAuthWaitTime)
         replyQueue.asyncAfter(deadline: waitTime) {
             self.replyAuthEvent(index: index, isAllowed: true)
         }

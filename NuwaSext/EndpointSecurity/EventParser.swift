@@ -53,6 +53,11 @@ extension ClientManager {
         event.props[PropExitCode] = String(message.pointee.event.exit.stat)
     }
     
+    func parseOpenEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
+        event.eventID = getVnodeID(fileStat: message.pointee.event.open.file.pointee.stat)
+        event.props[PropFilePath] = getString(token: message.pointee.event.open.file.pointee.path)
+    }
+    
     func parseCreateEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
         event.eventID = getVnodeID(fileStat: message.pointee.event.create.destination.existing_file.pointee.stat)
         event.props[PropFilePath] = getString(token: message.pointee.event.create.destination.existing_file.pointee.path)

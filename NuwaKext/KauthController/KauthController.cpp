@@ -152,6 +152,10 @@ void KauthController::fileOpCallback(kauth_action_t action, const vnode_t vp, co
     vfs_context_t procCtx = vfs_context_create(nullptr);
     vfs_context_t fileCtx = vfs_context_create(nullptr);
     switch (action) {
+        case KAUTH_FILEOP_OPEN:
+            event->eventType = kActionNotifyFileOpen;
+            strlcpy(event->fileOpen.path, srcPath, kMaxPathLength);
+            break;
         case KAUTH_FILEOP_CLOSE:
             event->eventType = kActionNotifyFileCloseModify;
             strlcpy(event->fileCloseModify.path, srcPath, kMaxPathLength);
@@ -283,6 +287,7 @@ errno_t KauthController::fillEventInfo(NuwaKextEvent *event, const vfs_context_t
     switch (event->eventType) {
         case kActionAuthProcessCreate:
         case kActionNotifyProcessCreate:
+        case kActionNotifyFileOpen:
         case kActionNotifyFileCloseModify:
         case kActionNotifyFileDelete:
             fileInfo = &event->fileDelete;
@@ -360,6 +365,7 @@ int fileop_scope_callback(kauth_cred_t credential, void *idata, kauth_action_t a
                 return KAUTH_RESULT_DEFER;
             }
             
+        case KAUTH_FILEOP_OPEN:
         case KAUTH_FILEOP_DELETE:
         case KAUTH_FILEOP_EXEC:
             break;
