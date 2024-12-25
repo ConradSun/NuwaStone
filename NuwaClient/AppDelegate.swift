@@ -72,7 +72,7 @@ extension AppDelegate {
         statusMenu.addItem(withTitle: "Show App Window", action: #selector(showDockIcon), keyEquivalent: "")
         statusMenu.addItem(withTitle: "Quit NuwaStone", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         
-        menuBar.button!.image = NSImage(named: NSImage.Name("MenuIcon"))
+        menuBar.button!.image = NSImage(named: NSImage.Name("WhiteIcon"))
         menuBar.button!.toolTip = "NuwaStone"
         menuBar.menu = statusMenu
     }
