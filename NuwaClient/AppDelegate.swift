@@ -21,7 +21,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
     }
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
@@ -72,7 +71,9 @@ extension AppDelegate {
         statusMenu.addItem(withTitle: "Show App Window", action: #selector(showDockIcon), keyEquivalent: "")
         statusMenu.addItem(withTitle: "Quit NuwaStone", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         
-        menuBar.button!.image = NSImage(named: NSImage.Name("WhiteIcon"))
+        let icon = NSImage(named: NSImage.Name("MenuIcon"))
+        icon!.isTemplate = true
+        menuBar.button!.image = icon
         menuBar.button!.toolTip = "NuwaStone"
         menuBar.menu = statusMenu
     }
