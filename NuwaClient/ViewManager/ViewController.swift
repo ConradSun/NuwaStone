@@ -168,8 +168,13 @@ class ViewController: NSViewController {
     }
     
     @IBAction func uninstallMenuItemSelected(_ sender: NSMenuItem) {
-        if !controlButton.isEnabled {
+        guard let connection = XPCConnection.shared.connection else {
             ViewController.displayWithWindow(text: "Unable to uninstall for broken connection with daemon.", style: .critical)
+            return
+        }
+        
+        guard let proxy = connection.remoteObjectProxy as? DaemonXPCProtocol else {
+            ViewController.displayWithWindow(text: "Unable to get daemon proxy for uninstallation.", style: .critical)
             return
         }
         
@@ -182,7 +187,6 @@ class ViewController: NSViewController {
         let result = confirmView.runModal()
         
         if result == .alertSecondButtonReturn {
-            let proxy = XPCConnection.shared.connection?.remoteObjectProxy as! DaemonXPCProtocol
             proxy.launchUninstaller()
         }
     }
@@ -328,5 +332,19 @@ extension ViewController {
 }
 
 extension ViewController: ClientXPCProtocol {
+    func connectionDidInterrupt() {
+        DispatchQueue.main.async { [self] in
+            controlButton.isEnabled = false
+            configMenuStatus(start: false, stop: false)
+            ViewController.displayWithWindow(text: "Connection to daemon was interrupted.", style: .critical)
+        }
+    }
     
+    func connectionDidInvalidate() {
+        DispatchQueue.main.async { [self] in
+            controlButton.isEnabled = false
+            configMenuStatus(start: false, stop: false)
+            ViewController.displayWithWindow(text: "Connection to daemon was invalidated.", style: .critical)
+        }
+    }
 }

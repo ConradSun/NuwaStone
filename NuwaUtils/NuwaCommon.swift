@@ -56,9 +56,16 @@ let MaxSignWaitTime = 3000  //   ms
 enum ESClientError: Error {
     case Success
     case MissingEntitlements
+    case PermissionDenied
+    case NotPrivileged
     case AlreadyEnabled
     case NewClientError
     case FailedSubscription
+    case CacheClearError
+    case InvalidClient
+    case ConnectionError
+    case TimeoutError
+    case UnknownError
 }
 
 /// Called to get argmax by sysctl, used for func getProcArgs

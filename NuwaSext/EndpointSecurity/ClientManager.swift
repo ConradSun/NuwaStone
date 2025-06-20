@@ -38,34 +38,59 @@ class ClientManager {
     ]
     
     func startMonitoring() {
+        if esClient != nil {
+            Logger(.Warning, "ES client already exists.")
+            initError = .AlreadyEnabled
+            return
+        }
+        
         var client: OpaquePointer?
         let eventQueue = DispatchQueue(label: "com.nuwastone.sext.eventqueue")
+        
         let result = es_new_client(&client) { _, message in
             eventQueue.sync {
                 self.processMessage(message)
             }
         }
         
-        if result != ES_NEW_CLIENT_RESULT_SUCCESS {
-            if result == ES_NEW_CLIENT_RESULT_ERR_NOT_ENTITLED {
-                Logger(.Error, "Failed to find Endpoint Security entitlement.")
-                initError = .MissingEntitlements
-            }
-            
-            Logger(.Error, "Failed to create ES client [\(result)].")
+        switch result {
+        case ES_NEW_CLIENT_RESULT_SUCCESS:
+            break
+        case ES_NEW_CLIENT_RESULT_ERR_NOT_ENTITLED:
+            Logger(.Error, "Failed to find Endpoint Security entitlement. Please check entitlements and system settings.")
+            initError = .MissingEntitlements
+            return
+        case ES_NEW_CLIENT_RESULT_ERR_NOT_PERMITTED:
+            Logger(.Error, "Endpoint Security permission denied. Please check System Settings > Privacy & Security > Endpoint Security.")
+            initError = .PermissionDenied
+            return
+        case ES_NEW_CLIENT_RESULT_ERR_NOT_PRIVILEGED:
+            Logger(.Error, "Not running with sufficient privileges for Endpoint Security.")
+            initError = .NotPrivileged
+            return
+        default:
+            Logger(.Error, "Failed to create ES client with error code: \(result)")
+            initError = .NewClientError
             return
         }
-        es_clear_cache(client!)
+        
+        if es_clear_cache(client!) != ES_CLEAR_CACHE_RESULT_SUCCESS {
+            Logger(.Error, "Failed to clear ES cache.")
+            es_delete_client(client)
+            initError = .CacheClearError
+            return
+        }
+        
         if es_subscribe(client!, subTypes, UInt32(subTypes.count)) != ES_RETURN_SUCCESS {
+            Logger(.Error, "Failed to subscribe to event sources.")
             es_delete_client(client)
             initError = .FailedSubscription
-            Logger(.Error, "Failed to subscribe event source.")
             return
         }
         
         esClient = client
         initError = .Success
-        Logger(.Debug, "Create esclient successfully.")
+        Logger(.Info, "ES client created and subscribed successfully.")
     }
     
     func stopMonitoring() {
