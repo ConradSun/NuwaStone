@@ -55,13 +55,12 @@ class ResponseManager {
     
     /// Called to reply all events in queue
     func replyAllEvents() {
-        dictQueue.sync {
-            for item in underwayEvent {
-                if !ClientManager.shared.replyAuthEvent(message: item.value, result: ES_AUTH_RESULT_ALLOW) {}
-                Logger(.Error, "Failed to reply auth event [index: \(item.key)].")
-            }
-        }
         dictQueue.async(flags: .barrier) {
+            for item in self.underwayEvent {
+                if !ClientManager.shared.replyAuthEvent(message: item.value, result: ES_AUTH_RESULT_ALLOW) {
+                    Logger(.Error, "Failed to reply auth event [index: \(item.key)].")
+                }
+            }
             self.underwayEvent.removeAll()
         }
     }

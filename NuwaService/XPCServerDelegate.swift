@@ -29,8 +29,18 @@ extension XPCConnection: NSXPCListenerDelegate {
         }
         
         newConnection.exportedObject = self
-        newConnection.exportedInterface = NSXPCInterface(with: DaemonXPCProtocol.self)
-        newConnection.remoteObjectInterface = NSXPCInterface(with: ClientXPCProtocol.self)
+        
+        let daemonInterface = NSXPCInterface(with: DaemonXPCProtocol.self)
+        let allowedClasses = NSSet(array: [
+            NSArray.self,
+            NSString.self
+        ])
+        daemonInterface.setClasses(allowedClasses as! Set<AnyHashable>, for: #selector(DaemonXPCProtocol.getProcessArgs(pid:eventHandler:)), argumentIndex: 0, ofReply: true)
+        newConnection.exportedInterface = daemonInterface
+        
+        let clientInterface = NSXPCInterface(with: ClientXPCProtocol.self)
+        newConnection.remoteObjectInterface = clientInterface
+        
         newConnection.invalidationHandler = {
             self.connection = nil
             Logger(.Info, "Client disconnected.")
@@ -116,7 +126,13 @@ extension XPCConnection: DaemonXPCProtocol {
             if !SextControl.shared.getExtensionStatus() {
                 SextControl.shared.activateExtension()
             }
-            _ = SextControl.shared.switchNEStatus(true)
+            SextControl.shared.switchNEStatus(true){ success in
+                if !success {
+                    Logger(.Error, "Failed to set network extension.")
+                } else {
+                    Logger(.Info, "Set network extension successfully.")
+                }
+            }
         } else {
             if !KextControl.shared.getExtensionStatus() {
                 _ = KextControl.shared.loadExtension()

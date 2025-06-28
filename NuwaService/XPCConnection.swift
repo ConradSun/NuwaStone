@@ -39,8 +39,16 @@ class XPCConnection: NSObject {
         clientDelegate = delegate
         let newConnection = NSXPCConnection(machServiceName: DaemonBundle)
         newConnection.exportedObject = delegate
-        newConnection.exportedInterface = NSXPCInterface(with: ClientXPCProtocol.self)
-        newConnection.remoteObjectInterface = NSXPCInterface(with: DaemonXPCProtocol.self)
+        let clientInterface = NSXPCInterface(with: ClientXPCProtocol.self)
+        newConnection.exportedInterface = clientInterface
+        
+        let daemonInterface = NSXPCInterface(with: DaemonXPCProtocol.self)
+        let allowedClasses = NSSet(array: [
+            NSArray.self,
+            NSString.self
+        ])
+        daemonInterface.setClasses(allowedClasses as! Set<AnyHashable>, for: #selector(DaemonXPCProtocol.getProcessArgs(pid:eventHandler:)), argumentIndex: 0, ofReply: true)
+        newConnection.remoteObjectInterface = daemonInterface
         
         newConnection.invalidationHandler = { [weak self] in
             guard let self = self else { return }

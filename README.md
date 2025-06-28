@@ -34,6 +34,23 @@ NuwaStone supports macOS10.13+ with Kernel Extension (for os10.x) and System Ext
 The kext uses Kauth & SocketFilter for event collection and behavior auditing.
 The sext uses Endpoint Security & Network Extension for event collection and behavior auditing.
 
+## Project Architecture
+
+NuwaStone adopts a modular, multi-process architecture to provide comprehensive behavior auditing on macOS. The main components and their responsibilities are as follows:
+
+- **NuwaClient**: The user-facing application, providing the main UI, event display, and user preferences. It communicates with backend services to receive and present audit events.
+- **NuwaService**: A privileged background service responsible for managing system extensions, kernel extensions, and facilitating secure communication between the client and lower-level components via XPC (inter-process communication).
+- **NuwaKext**: A kernel extension (Kext) used on macOS 10.x systems. It leverages Kauth and SocketFilter to monitor file, process, and network events at the kernel level, ensuring deep system visibility.
+- **NuwaSext**: A system extension (Sext) for macOS 11.x and above, utilizing Endpoint Security and Network Extension frameworks to collect security events in a more modern and secure way, without requiring kernel-level privileges.
+- **NuwaUtils**: Shared utility code, data models, and logging facilities used across the project.
+
+**Communication Flow:**
+- On macOS 10.x, NuwaClient interacts with NuwaService, which manages NuwaKext for event collection.
+- On macOS 11.x+, NuwaClient interacts with NuwaService, which manages NuwaSext for event collection.
+- All event data is securely transmitted via XPC, ensuring process isolation and system security.
+
+This architecture allows NuwaStone to support both legacy and modern macOS systems, providing robust, extensible, and secure behavior auditing capabilities.
+
 ## Installation
 
 > 1.  Disable SIP by following [here](https://developer.apple.com/documentation/security/disabling_and_enabling_system_integrity_protection).

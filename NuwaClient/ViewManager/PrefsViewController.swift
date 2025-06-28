@@ -37,7 +37,6 @@ class PrefsViewController: NSViewController {
     
     @IBOutlet weak var updateButton: NSButtonCell!
     
-    private var nuwaLog = NuwaLog()
     private var userPref = Preferences()
     private var isUpButtonChoosed = true
     private var muteChoice = MuteChoice.FilterFile
@@ -45,6 +44,7 @@ class PrefsViewController: NSViewController {
     private var eventProvider: NuwaEventProviderProtocol?
     
     override func viewDidLoad() {
+        Preferences.registerDefaults()
         super.viewDidLoad()
         fileCheckButton.isHidden = true
         networkCheckButton.isHidden = true
@@ -60,7 +60,7 @@ class PrefsViewController: NSViewController {
         
         updateButton.isEnabled = eventProvider!.isExtConnected
         
-        logLevelButton.selectItem(withTag: Int(nuwaLog.logLevel))
+        logLevelButton.selectItem(withTag: Int(NuwaLog.logLevel.rawValue))
         auditSwitchButton.selectItem(withTag: (userPref.auditSwitch ? 1 : 0))
         
         deviceName.stringValue = getDeviceName()
@@ -174,47 +174,43 @@ class PrefsViewController: NSViewController {
     }
     
     @IBAction func updateButtonClicked(_ sender: NSButton) {
-        let inputs = pathView.string.components(separatedBy: "\n")
-        let level = logLevelButton.selectedItem!.tag
-        let status = auditSwitchButton.selectedItem!.tag > 0
+        let inputs = pathView.string.components(separatedBy: "\n").filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        guard let eventProvider = eventProvider else {
+            ViewController.displayWithWindow(text: "Event provider is not available.", style: .critical)
+            return
+        }
+        guard let level = logLevelButton.selectedItem?.tag,
+            let status = auditSwitchButton.selectedItem?.tag else {
+            ViewController.displayWithWindow(text: "Please select log level and audit switch.", style: .critical)
+            return
+        }
         
         switch muteType {
         case .TypeNil:
             break
-            
         case .FilterFileByFilePath:
             userPref.filePathsForFileMute = inputs
         case .FilterFileByProcPath:
             userPref.procPathsForFileMute = inputs
-            
         case .FilterNetByProcPath:
-            var procPaths = Set<String>()
-            for path in inputs {
-                procPaths.update(with: path)
-            }
-            userPref.procPathsForNetMute = procPaths
+            userPref.procPathsForNetMute = Set(inputs)
         case .FilterNetByIPAddr:
-            var ipAddrs = Set<String>()
-            for path in inputs {
-                ipAddrs.update(with: path)
-            }
-            userPref.ipAddrsForNetMute = ipAddrs
-            
+            userPref.ipAddrsForNetMute = Set(inputs)
         case .AllowProcExec:
             userPref.allowExecList = inputs
         case .DenyProcExec:
             userPref.denyExecList = inputs
         }
         if (muteType != .TypeNil) {
-            _ = eventProvider!.udpateMuteList(list: inputs, type: muteType)
+            _ = eventProvider.udpateMuteList(list: inputs, type: muteType)
         }
-        
-        if level != nuwaLog.logLevel {
-            nuwaLog.logLevel = UInt8(level)
-            _ = eventProvider!.setLogLevel(level: UInt8(level))
+        if level != NuwaLog.logLevel.rawValue {
+            let newLevel = NuwaLogLevel.from(UInt8(level))
+            NuwaLog.logLevel = newLevel
+            _ = eventProvider.setLogLevel(level: newLevel)
         }
-        if status != userPref.auditSwitch {
-            userPref.auditSwitch = status
+        if (status > 0) != userPref.auditSwitch {
+            userPref.auditSwitch = (status > 0)
         }
         if intervalSlider.doubleValue * 60 != userPref.clearDuration {
             userPref.clearDuration = intervalSlider.doubleValue * 60

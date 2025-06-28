@@ -34,10 +34,10 @@ class SextControl: NSObject, OSSystemExtensionRequestDelegate {
             return false
         }
         
-        let sextList = result.split(separator: "\n")
-        for sextItem in sextList {
-            let sextInfo = sextItem.lowercased()
-            if sextInfo.contains(SextBundle) && sextInfo.hasSuffix("[activated enabled]") {
+        let lines = result.split(separator: "\n")
+        for line in lines {
+            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            if trimmedLine.contains(SextBundle.lowercased()) && trimmedLine.contains("[activated enabled]") {
                 return true
             }
         }
@@ -57,72 +57,60 @@ class SextControl: NSObject, OSSystemExtensionRequestDelegate {
     func request(_ request: OSSystemExtensionRequest, didFinishWithResult result: OSSystemExtensionRequest.Result) {
         Logger(.Info, "Request to control \(request.identifier) succeeded [\(result)].")
         controlQueue.async {
-            if !self.switchNEStatus(self.toActivate) {
-                Logger(.Error, "Failed to set network extension.")
-                exit(EXIT_FAILURE)
-            } else {
-                Logger(.Info, "Set network extension successfully.")
+            SextControl.shared.switchNEStatus(self.toActivate) { success in
+                if !success {
+                    Logger(.Error, "Failed to set network extension.")
+                } else {
+                    Logger(.Info, "Set network extension successfully.")
+                }
             }
         }
     }
     
     func request(_ request: OSSystemExtensionRequest, didFailWithError error: Error) {
-        Logger(.Info, "Request to control \(request.identifier) failed [\(error)].")
-        exit(EXIT_FAILURE)
+        Logger(.Error, "Request to control \(request.identifier) failed [\(error)].")
     }
 }
 
 @available(macOS 11.0, *)
 extension SextControl {
-    func switchNEStatus(_ enable: Bool) -> Bool {
+    func switchNEStatus(_ enable: Bool, completion: @escaping (Bool) -> Void) {
         let manager = NEFilterManager.shared()
-        let semaphore = DispatchSemaphore(value: 0)
-        let managerQueue = DispatchQueue(label: "com.nuwastone.necontrol.queue", qos: .background)
-        var isError = false
+        let managerQueue = DispatchQueue.global(qos: .userInitiated)
         
         managerQueue.async {
             manager.loadFromPreferences { error in
-                if error != nil {
-                    isError = true
-                    Logger(.Error, "Failed to load preferences for network extension [\(error!)]")
+                if let error = error {
+                    Logger(.Error, "Failed to load preferences for network extension [\(error)]")
+                    completion(false)
+                    return
                 }
-                semaphore.signal()
-            }
-        }
-        if semaphore.wait(timeout: .distantFuture) == .timedOut || isError {
-            return false
-        }
-        
-        if enable {
-            Logger(.Info, "Activate network extension now...")
-            if manager.providerConfiguration == nil {
-                let config = NEFilterProviderConfiguration()
-                config.username = "NuwaService"
-                config.organization = "NuwaStone"
-                config.filterPackets = false
-                config.filterSockets = true
-                manager.providerConfiguration = config
-            }
-            manager.isEnabled = true
-        } else {
-            Logger(.Info, "Deactivate network extension now...")
-            manager.isEnabled = false
-        }
-        
-        isError = false
-        managerQueue.async {
-            manager.saveToPreferences { error in
-                if error != nil {
-                    isError = true
-                    Logger(.Error, "Failed to save preferences for network extension [\(error!)]")
+                
+                if enable {
+                    Logger(.Info, "Activate network extension now...")
+                    if manager.providerConfiguration == nil {
+                        let config = NEFilterProviderConfiguration()
+                        config.username = "NuwaService"
+                        config.organization = "NuwaStone"
+                        config.filterPackets = false
+                        config.filterSockets = true
+                        manager.providerConfiguration = config
+                    }
+                    manager.isEnabled = true
+                } else {
+                    Logger(.Info, "Deactivate network extension now...")
+                    manager.isEnabled = false
                 }
-                semaphore.signal()
+                
+                manager.saveToPreferences { error in
+                    if let error = error {
+                        Logger(.Error, "Failed to save preferences for network extension [\(error)]")
+                        completion(false)
+                    } else {
+                        completion(true)
+                    }
+                }
             }
         }
-        if semaphore.wait(timeout: .distantFuture) == .timedOut || isError {
-            return false
-        }
-        
-        return true
     }
 }

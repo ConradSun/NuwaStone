@@ -51,6 +51,7 @@ let PropReplyResult = "Reply"
 let MaxIPLength     = 41
 let MaxAuthWaitTime = 30000 //   ms
 let MaxSignWaitTime = 3000  //   ms
+let MaxNEWaitTime   = 30000 //   ms
 
 /// Error for ESClient init
 enum ESClientError: Error {
@@ -142,9 +143,12 @@ func getProcCurrentDir(pid: Int32, eventHandler: @escaping (String, Int32) -> Vo
         eventHandler("", errno)
         return
     }
-    
     let data = Data(bytes: &info.pvi_cdir.vip_path.0, count: MemoryLayout.size(ofValue: info.pvi_cdir.vip_path)/2)
-    eventHandler(String(data: data, encoding: .utf8)!, 0)
+    if let cwd = String(data: data, encoding: .utf8), !cwd.isEmpty {
+        eventHandler(cwd, 0)
+    } else {
+        eventHandler("", EIO)
+    }
 }
 
 /// Called to get process arguments
@@ -259,7 +263,11 @@ func getSignInfoFromPath(_ path: String) -> [String] {
 /// - Returns: Vnode ID
 func getFileVnodeID(_ path: String) -> UInt64 {
     var fileStat = stat()
-    stat(path.cString(using: .utf8), &fileStat)
+    let result = stat(path.cString(using: .utf8), &fileStat)
+    if result != 0 {
+        Logger(.Warning, "Failed to stat file [\(path)] for vnodeID, errno: \(errno)")
+        return 0
+    }
     let dev = UInt64(truncating: fileStat.st_dev as NSNumber)
     let ino = UInt64(truncating: fileStat.st_ino as NSNumber)
     let vnodeID = (dev << 32) | ino

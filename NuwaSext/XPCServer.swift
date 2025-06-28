@@ -10,8 +10,8 @@ import Foundation
 
 /// Protocol to be implemented by xpc client (nuwaclient)
 @objc protocol ManagerXPCProtocol {
-    func reportAuthEvent(authEvent: String)
-    func reportNotifyEvent(notifyEvent: String)
+    func reportAuthEvent(authEvent: Data)
+    func reportNotifyEvent(notifyEvent: Data)
 }
 
 /// Protocol to be implemented by xpc server (nuwasext)
@@ -25,7 +25,6 @@ import Foundation
 /// XPC class to be used by nuwasext and nuwaclient
 class XPCServer: NSObject {
     static let shared = XPCServer()
-    var nuwaLog = NuwaLog()
     var listener: NSXPCListener?
     var connection: NSXPCConnection?
     

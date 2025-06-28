@@ -31,10 +31,10 @@ extension ViewController: NuwaEventProcessProtocol {
         eventQueue.async(flags: .barrier) { [self] in
             reportedItems.append(event)
             eventCount[DisplayMode.DisplayAll.rawValue] += 1
+            updateEventCount(type: event.eventType)
 
             if shouldDisplayEvent(event: event) {
                 displayedItems.append(event)
-                updateEventCount(type: event.eventType)
             }
         }
     }
@@ -73,6 +73,13 @@ extension ViewController: NSTableViewDelegate {
 }
 
 extension ViewController: NSTableViewDataSource {
+    private static let sharedDateFormatter: DateFormatter = {
+        let format = DateFormatter()
+        format.dateFormat = "MM-dd HH:mm:ss"
+        format.timeZone = .current
+        return format
+    }()
+    
     func numberOfRows(in tableView: NSTableView) -> Int {
         return eventQueue.sync {
             displayedItems.count
@@ -83,41 +90,34 @@ extension ViewController: NSTableViewDataSource {
         let itemCount = eventQueue.sync {
             displayedItems.count
         }
-        if eventView.numberOfRows == 0 || row >= eventView.numberOfRows || row >= itemCount {
+        if row >= itemCount {
             return nil
         }
         guard let identity = tableColumn?.identifier else {
             return nil
         }
-        
         let event = eventQueue.sync {
             displayedItems[row]
         }
-        let format = DateFormatter()
-        format.dateFormat = "MM-dd HH:mm:ss"
-        format.timeZone = .current
         var text = ""
-        
-        switch tableColumn {
-        case eventView.tableColumns[0]:
+        switch identity.rawValue {
+        case "time":
             let date = Date(timeIntervalSince1970: TimeInterval(event.eventTime))
-            text = format.string(from: date)
-        case eventView.tableColumns[1]:
+            text = ViewController.sharedDateFormatter.string(from: date)
+        case "pid":
             text = String(event.pid)
-        case eventView.tableColumns[2]:
+        case "type":
             text = String(format: "\(event.eventType)")
-        case eventView.tableColumns[3]:
+        case "process":
             text = event.procPath
-        case eventView.tableColumns[4]:
+        case "props":
             text = String(format: "\(event.props)")
         default:
             break
         }
-        
         guard let cell = eventView.makeView(withIdentifier: identity, owner: self) as? NSTableCellView else {
             return nil
         }
-        
         cell.textField?.stringValue = text
         return cell
     }

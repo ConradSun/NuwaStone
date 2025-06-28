@@ -21,20 +21,15 @@ extension XPCServer {
     /// Called to encode event info into json
     /// - Parameter event: Event to be encoded
     /// - Returns: Event json
-    func encodeEventInfo(_ event: NuwaEventInfo) -> String {
+    func encodeEventInfo(_ event: NuwaEventInfo) -> Data? {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         
         guard let data = try? encoder.encode(event) else {
             Logger(.Warning, "Failed to seralize event.")
-            return ""
+            return nil
         }
-        guard let json = String(data: data, encoding: .utf8) else {
-            Logger(.Warning, "Failed to encode event json.")
-            return ""
-        }
-        
-        return json
+        return data
     }
     
     /// Called to send auth event to the nuwa client
@@ -44,9 +39,8 @@ extension XPCServer {
         guard let proxy = connection?.remoteObjectProxy as? ManagerXPCProtocol else {
             return false
         }
-        let json = encodeEventInfo(event)
-        if !json.isEmpty {
-            proxy.reportAuthEvent(authEvent: json)
+        if let eventData = encodeEventInfo(event) {
+            proxy.reportAuthEvent(authEvent: eventData)
             return true
         }
         return false
@@ -56,9 +50,8 @@ extension XPCServer {
     /// - Parameter event: Event to be sent
     func sendNotifyEvent(_ event: NuwaEventInfo) {
         let proxy = connection?.remoteObjectProxy as? ManagerXPCProtocol
-        let json = encodeEventInfo(event)
-        if !json.isEmpty {
-            proxy?.reportNotifyEvent(notifyEvent: json)
+        if let eventData = encodeEventInfo(event) {
+            proxy?.reportNotifyEvent(notifyEvent: eventData)
         }
     }
 }
@@ -81,8 +74,18 @@ extension XPCServer: NSXPCListenerDelegate {
         }
         
         newConnection.exportedObject = self
-        newConnection.exportedInterface = NSXPCInterface(with: SextXPCProtocol.self)
-        newConnection.remoteObjectInterface = NSXPCInterface(with: ManagerXPCProtocol.self)
+        
+        let sextInterface = NSXPCInterface(with: SextXPCProtocol.self)
+        let allowedClasses = NSSet(array: [
+            NSArray.self,
+            NSNumber.self
+        ])
+        sextInterface.setClasses(allowedClasses as! Set<AnyHashable>, for: #selector(SextXPCProtocol.updateMuteList(vnodeID:type:)), argumentIndex: 0, ofReply: false)
+        newConnection.exportedInterface = sextInterface
+        
+        let managerInterface = NSXPCInterface(with: ManagerXPCProtocol.self)
+        newConnection.remoteObjectInterface = managerInterface
+        
         newConnection.invalidationHandler = {
             self.connection = nil
             Logger(.Info, "Manager disconnected.")
@@ -133,8 +136,8 @@ extension XPCServer: SextXPCProtocol {
     }
     
     func setLogLevel(_ level: UInt8) {
-        nuwaLog.logLevel = level
-        Logger(.Info, "Log level is setted to \(nuwaLog.logLevel)")
+        NuwaLog.logLevel = NuwaLogLevel.from(level)
+        Logger(.Info, "Log level is setted to \(NuwaLog.logLevel)")
     }
     
     func replyAuthEvent(index: UInt64, isAllowed: Bool) {

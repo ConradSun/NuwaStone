@@ -53,7 +53,7 @@ protocol NuwaEventProviderProtocol {
     var isExtConnected: Bool { get }
     func startProvider() -> Bool
     func stopProvider() -> Bool
-    func setLogLevel(level: UInt8) -> Bool
+    func setLogLevel(level: NuwaLogLevel) -> Bool
     func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool
     func udpateMuteList(list: [String], type: NuwaMuteType) -> Bool
 }
@@ -61,6 +61,7 @@ protocol NuwaEventProviderProtocol {
 /// Event info for sext reporting and NuwaClient displaying
 class NuwaEventInfo: Codable {
     static var userName = [UInt32(0): "root"]
+    static var codeSignCache = [String: String]()
     var eventID: UInt64
     var eventType: NuwaEventType
     var eventTime: UInt64
@@ -110,6 +111,10 @@ class NuwaEventInfo: Codable {
     
     /// Called to get code signature for the main process
     func fillCodeSign() {
+        if let cached = NuwaEventInfo.codeSignCache[procPath] {
+            props[PropCodeSign] = cached
+            return
+        }
         let semaphore = DispatchSemaphore(value: 0)
         let wait = DispatchTimeInterval.milliseconds(MaxSignWaitTime)
         var signInfo: [String] = []
@@ -122,17 +127,23 @@ class NuwaEventInfo: Codable {
         let timeout = semaphore.wait(timeout: .now() + wait)
         if timeout == .timedOut {
             Logger(.Warning, "Operation timed out while getting code sign for path [\(procPath)].")
+            props[PropCodeSign] = ""
             return
         }
         
         if signInfo.count > 0 {
             props[PropCodeSign] = signInfo[0]
+            NuwaEventInfo.codeSignCache[procPath] = signInfo[0]
         }
     }
     
     /// Called to get bundle identifier for the main process
     func fillBundleIdentifier() {
-        props[PropBundleID] = NSRunningApplication.init(processIdentifier: pid)?.bundleIdentifier
+        if let bundleID = NSRunningApplication(processIdentifier: pid)?.bundleIdentifier {
+            props[PropBundleID] = bundleID
+        } else {
+            props[PropBundleID] = ""
+        }
     }
     
     /// Called to convert sockaddr to ip:port address
@@ -140,15 +151,29 @@ class NuwaEventInfo: Codable {
     ///   - socketAddr: Socket addr to be converted
     ///   - isLocal: Whether addr is local or remote
     func convertSocketAddr(socketAddr: UnsafeMutablePointer<sockaddr>, isLocal: Bool) {
-        var ip = [CChar](repeating: 0x0, count: MaxIPLength)
-        let data0 = UInt8(bitPattern: socketAddr.pointee.sa_data.0)
-        let data1 = UInt8(bitPattern: socketAddr.pointee.sa_data.1)
-        let port = (UInt16(data0) << 8) | UInt16(data1)
-        inet_ntop(Int32(socketAddr.pointee.sa_family), &socketAddr.pointee.sa_data.2, &ip, socklen_t(MaxIPLength))
-        if isLocal {
-            props.updateValue("\(String(cString: ip)):\(port)", forKey: PropLocalAddr)
+        let family = Int32(socketAddr.pointee.sa_family)
+        var ip = [CChar](repeating: 0, count: MaxIPLength)
+        var port: UInt16 = 0
+        var addrPtr: UnsafeRawPointer?
+        if family == AF_INET {
+            addrPtr = UnsafeRawPointer(socketAddr).advanced(by: 4)
+            let data = socketAddr.withMemoryRebound(to: sockaddr_in.self, capacity: 1) { $0.pointee }
+            port = UInt16(bigEndian: data.sin_port)
+        } else if family == AF_INET6 {
+            addrPtr = UnsafeRawPointer(socketAddr).advanced(by: 8)
+            let data = socketAddr.withMemoryRebound(to: sockaddr_in6.self, capacity: 1) { $0.pointee }
+            port = UInt16(bigEndian: data.sin6_port)
         } else {
-            props.updateValue("\(String(cString: ip)):\(port)", forKey: PropRemoteAddr)
+            return
+        }
+        if let addrPtr = addrPtr {
+            inet_ntop(family, addrPtr, &ip, socklen_t(MaxIPLength))
+            let value = "\(String(cString: ip)):\(port)"
+            if isLocal {
+                props[PropLocalAddr] = value
+            } else {
+                props[PropRemoteAddr] = value
+            }
         }
     }
     

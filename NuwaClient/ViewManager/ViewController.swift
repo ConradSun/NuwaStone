@@ -217,9 +217,11 @@ extension ViewController {
     func setupDisplayTimer() {
         displayTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [self] _ in
             reloadEventInfo()
-            for (index, _) in DisplayMode.allCases.enumerated() {
+            // Only update for specific event types (exclude DisplayAll)
+            for index in 1..<DisplayMode.allCases.count {
                 DispatchQueue.main.async(flags: .barrier) { [self] in
-                    graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), index: index)
+                    // index-1: 0=Process, 1=File, 2=Network
+                    graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), index: index-1)
                     eventCountCopy[index] = eventCount[index]
                 }
             }

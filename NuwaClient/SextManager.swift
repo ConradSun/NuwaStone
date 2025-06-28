@@ -11,28 +11,23 @@ class SextManager {
     private var sextProxy: SextXPCProtocol?
     static let shared = SextManager()
     var isConnected = false
-    var nuwaLog = NuwaLog()
     var userPref = Preferences()
     var delegate: NuwaEventProcessProtocol?
+    private let jsonDecoder = JSONDecoder()
 }
 
 extension SextManager: ManagerXPCProtocol {
-    private func decodeEventInfo(event: String) -> NuwaEventInfo? {
-        let decoder = JSONDecoder()
-        guard let data = event.data(using: .utf8) else {
-            Logger(.Warning, "Failed to seralize event.")
-            return nil
-        }
-        guard let event = try? decoder.decode(NuwaEventInfo.self, from: data) else {
+    private func decodeEventInfo(eventData: Data) -> NuwaEventInfo? {
+        guard let event = try? jsonDecoder.decode(NuwaEventInfo.self, from: eventData) else {
             Logger(.Warning, "Failed to decode event.")
             return nil
         }
         return event
     }
     
-    func reportNotifyEvent(notifyEvent: String) {
-        guard var event = decodeEventInfo(event: notifyEvent) else {
-            Logger(.Warning, "Failed to decode notify event [\(notifyEvent)].")
+    func reportNotifyEvent(notifyEvent: Data) {
+        guard var event = decodeEventInfo(eventData: notifyEvent) else {
+            Logger(.Warning, "Failed to decode notify event.")
             return
         }
         
@@ -45,9 +40,9 @@ extension SextManager: ManagerXPCProtocol {
         delegate?.displayNotifyEvent(event)
     }
     
-    func reportAuthEvent(authEvent: String) {
-        guard let event = decodeEventInfo(event: authEvent) else {
-            Logger(.Warning, "Failed to decode auth event [\(authEvent)].")
+    func reportAuthEvent(authEvent: Data) {
+        guard let event = decodeEventInfo(eventData: authEvent) else {
+            Logger(.Warning, "Failed to decode auth event.")
             return
         }
         
@@ -105,9 +100,14 @@ extension SextManager: NuwaEventProviderProtocol {
         return true
     }
     
-    func setLogLevel(level: UInt8) -> Bool {
-        sextProxy!.setLogLevel(level)
-        Logger(.Info, "Log level is setted to \(nuwaLog.logLevel)")
+    func setLogLevel(level: NuwaLogLevel) -> Bool {
+        guard let proxy = sextProxy else {
+            Logger(.Error, "Failed to set log level for sext, since the proxy is nil.")
+            return false
+        }
+        proxy.setLogLevel(level.rawValue)
+        NuwaLog.logLevel = level
+        Logger(.Info, "Log level is setted to \(NuwaLog.logLevel)")
         return true
     }
     

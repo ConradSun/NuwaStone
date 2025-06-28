@@ -40,41 +40,44 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 extension AppDelegate {
-    @objc func hideDockIcon() {
+    @objc private func hideDockIcon() {
         NSApp.setActivationPolicy(.accessory)
         getMainWindow(NSApplication.shared)?.close()
     }
     
-    @objc func showDockIcon() {
+    @objc private func showDockIcon() {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
         getMainWindow(NSApplication.shared)?.makeKeyAndOrderFront(self)
     }
     
-    func getMainWindow(_ app: NSApplication) -> NSWindow? {
-        for window: AnyObject in app.windows {
+    private func getMainWindow(_ app: NSApplication) -> NSWindow? {
+        for window in app.windows {
             if window.frameAutosaveName == MainWindowName {
-                return window as? NSWindow
+                return window
             }
         }
         return nil
     }
     
-    func setMenuStatus(start: Bool, stop: Bool) {
-        startMenuItem.isEnabled = start
-        stopMenuItem.isEnabled = stop
-    }
-    
-    func setupMenuBar() {
+    private func setupMenuBar() {
         let statusMenu = NSMenu()
         statusMenu.addItem(withTitle: "Run in Background", action: #selector(hideDockIcon), keyEquivalent: "")
         statusMenu.addItem(withTitle: "Show App Window", action: #selector(showDockIcon), keyEquivalent: "")
         statusMenu.addItem(withTitle: "Quit NuwaStone", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         
-        let icon = NSImage(named: NSImage.Name("MenuIcon"))
-        icon!.isTemplate = true
-        menuBar.button!.image = icon
-        menuBar.button!.toolTip = "NuwaStone"
+        if let icon = NSImage(named: NSImage.Name("MenuIcon")) {
+            icon.isTemplate = true
+            if let button = menuBar.button {
+                button.image = icon
+                button.toolTip = "NuwaStone"
+            }
+        }
         menuBar.menu = statusMenu
+    }
+    
+    func setMenuStatus(start: Bool, stop: Bool) {
+        startMenuItem.isEnabled = start
+        stopMenuItem.isEnabled = stop
     }
 }

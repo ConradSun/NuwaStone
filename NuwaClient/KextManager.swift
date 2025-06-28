@@ -16,7 +16,6 @@ class KextManager {
     static let shared = KextManager()
     var connection: io_connect_t = 0
     var isConnected = false
-    var nuwaLog = NuwaLog()
     var userPref = Preferences()
     var delegate: NuwaEventProcessProtocol?
     
@@ -278,14 +277,15 @@ extension KextManager: NuwaEventProviderProtocol {
         return true
     }
     
-    func setLogLevel(level: UInt8) -> Bool {
-        let scalar = [UInt64(level)]
+    func setLogLevel(level: NuwaLogLevel) -> Bool {
+        let scalar: [UInt64] = [UInt64(level.rawValue)]
         let result = IOConnectCallScalarMethod(connection, kNuwaUserClientSetLogLevel.rawValue, scalar, 1, nil, nil)
+        NuwaLog.logLevel = level
         if result != KERN_SUCCESS {
             Logger(.Error, "Failed to set log level for kext [\(String.init(format: "0x%x", result))].")
             return false
         }
-        Logger(.Info, "Log level is setted to \(nuwaLog.logLevel)")
+        Logger(.Info, "Log level is setted to \(NuwaLog.logLevel)")
         return true
     }
     
