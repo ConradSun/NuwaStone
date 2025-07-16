@@ -1,0 +1,44 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  analyze:
+    name: Analyze (Swift & C++)
+    runs-on: macos-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'swift', 'cpp' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: swift,cpp
+
+    - name: Build with xcodebuild (Swift)
+      run: |
+        xcodebuild -scheme NuwaClient -project NuwaStone.xcodeproj -configuration Release build
+
+    - name: Build C++ kernel extension (if needed)
+      run: |
+        cd NuwaKext
+        make || true
+      continue-on-error: true
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2 
