@@ -13,7 +13,7 @@ class ClientManager {
     var authCount = UInt64(0)
     var esClient: OpaquePointer?
     var initError = ESClientError.NewClientError
-    let authQueue = DispatchQueue(label: "com.nuwastone.sext.authqueue", attributes: .concurrent)
+    let authQueue = DispatchQueue(label: "com.nuwastone.sext.authqueue")
     let notifyQueue = DispatchQueue(label: "com.nuwastone.sext.notifyqueue")
     let subTypes = [
         ES_EVENT_TYPE_AUTH_EXEC,

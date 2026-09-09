@@ -42,7 +42,7 @@
 		3A60897828A64DEE00061A42 /* SextControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6088FA28A4FCE500061A42 /* SextControl.swift */; };
 		3A60897928A64E1200061A42 /* NuwaLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABAFFAC2879C47800928C22 /* NuwaLogger.swift */; };
 		3A60897A28A64E1C00061A42 /* NuwaCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB9B37E289268690078B45D /* NuwaCommon.swift */; };
-		3A60897F28A6562200061A42 /* com.nuwastone.service.eps.systemextension in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 3A6088DC28A49B0D00061A42 /* com.nuwastone.service.eps.systemextension */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		3A60897F28A6562200061A42 /* com.nuwastone.service.es.systemextension in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = 3A6088DC28A49B0D00061A42 /* com.nuwastone.service.es.systemextension */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3A6EAD8F28B8CA0400174980 /* ContentFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6EAD8E28B8CA0400174980 /* ContentFilter.swift */; };
 		3A78B8DF2A13AA38001C0EBD /* XPCServerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A78B8DE2A13AA38001C0EBD /* XPCServerDelegate.swift */; };
 		3A7F472028CB36DC00540EF1 /* com.nuwastone.service.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3A7F471F28CB36DC00540EF1 /* com.nuwastone.service.plist */; };
@@ -115,7 +115,7 @@
 			dstPath = "$(SYSTEM_EXTENSIONS_FOLDER_PATH)";
 			dstSubfolderSpec = 16;
 			files = (
-				3A60897F28A6562200061A42 /* com.nuwastone.service.eps.systemextension in Embed System Extensions */,
+				3A60897F28A6562200061A42 /* com.nuwastone.service.es.systemextension in Embed System Extensions */,
 			);
 			name = "Embed System Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -141,7 +141,7 @@
 		3A5F3314287B145400A8F76E /* KauthController.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = KauthController.hpp; sourceTree = "<group>"; };
 		3A5F643728C72A460013C60E /* DNSResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DNSResolver.swift; sourceTree = "<group>"; };
 		3A605AE928A9F88300059F9E /* SextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SextManager.swift; sourceTree = "<group>"; };
-		3A6088DC28A49B0D00061A42 /* com.nuwastone.service.eps.systemextension */ = {isa = PBXFileReference; explicitFileType = "wrapper.system-extension"; includeInIndex = 0; path = com.nuwastone.service.eps.systemextension; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A6088DC28A49B0D00061A42 /* com.nuwastone.service.es.systemextension */ = {isa = PBXFileReference; explicitFileType = "wrapper.system-extension"; includeInIndex = 0; path = com.nuwastone.service.es.systemextension; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A6088DD28A49B0D00061A42 /* libEndpointSecurity.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libEndpointSecurity.tbd; path = usr/lib/libEndpointSecurity.tbd; sourceTree = SDKROOT; };
 		3A6088E028A49B0D00061A42 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		3A6088E228A49B0D00061A42 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -338,7 +338,7 @@
 			children = (
 				3ABAFF7F2879C0D900928C22 /* NuwaClient.app */,
 				3ABAFF962879C1BC00928C22 /* NuwaStone.kext */,
-				3A6088DC28A49B0D00061A42 /* com.nuwastone.service.eps.systemextension */,
+				3A6088DC28A49B0D00061A42 /* com.nuwastone.service.es.systemextension */,
 				3A60896528A64C1B00061A42 /* NuwaService.app */,
 			);
 			name = Products;
@@ -478,7 +478,7 @@
 			);
 			name = NuwaSext;
 			productName = NuwaSext;
-			productReference = 3A6088DC28A49B0D00061A42 /* com.nuwastone.service.eps.systemextension */;
+			productReference = 3A6088DC28A49B0D00061A42 /* com.nuwastone.service.es.systemextension */;
 			productType = "com.apple.product-type.system-extension";
 		};
 		3A60896428A64C1B00061A42 /* NuwaService */ = {
@@ -736,17 +736,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NuwaSext/NuwaSext.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = YYE5WQ4M88;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaSext/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NuwaSext;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "";
+				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "NuwaStone uses this extension to help protect your Mac by monitoring process and file activity for security purposes.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -754,9 +756,10 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 2.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service.eps;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service.es;
 				PRODUCT_NAME = "$(inherited)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = NuwaStoneEps;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NuwaUtils/NuwaBridge.hpp";
@@ -768,17 +771,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NuwaSext/NuwaSext.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = YYE5WQ4M88;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaSext/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NuwaSext;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "";
+				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "NuwaStone uses this extension to help protect your Mac by monitoring process and file activity for security purposes.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -786,9 +791,10 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 2.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service.eps;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service.es;
 				PRODUCT_NAME = "$(inherited)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = NuwaStoneEps;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NuwaUtils/NuwaBridge.hpp";
@@ -802,19 +808,23 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = NuwaService/NuwaService.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = YYE5WQ4M88;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaService/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NuwaService;
+				INFOPLIST_KEY_LSBackgroundOnly = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "NuwaStone uses this extension to help protect your Mac by monitoring process and file activity for security purposes.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -824,6 +834,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = NuwaStoneService;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NuwaUtils/NuwaBridge.hpp";
 				SWIFT_VERSION = 5.0;
@@ -836,19 +847,23 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = NuwaService/NuwaService.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = YYE5WQ4M88;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaService/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NuwaService;
+				INFOPLIST_KEY_LSBackgroundOnly = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "NuwaStone uses this extension to help protect your Mac by monitoring process and file activity for security purposes.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -858,6 +873,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = NuwaStoneService;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NuwaUtils/NuwaBridge.hpp";
 				SWIFT_VERSION = 5.0;
@@ -922,6 +938,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -978,6 +995,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -990,12 +1008,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_ENTITLEMENTS = NuwaClient/NuwaClient.entitlements;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YYE5WQ4M88;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaClient/Info.plist;
@@ -1026,12 +1044,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_ENTITLEMENTS = NuwaClient/NuwaClient.entitlements;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YYE5WQ4M88;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaClient/Info.plist;
@@ -1060,11 +1078,12 @@
 			buildSettings = {
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YYE5WQ4M88;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaKext/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NuwaKext;
@@ -1075,7 +1094,12 @@
 				MODULE_START = 0;
 				MODULE_STOP = 0;
 				MODULE_VERSION = 1.0.0d1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service.eps;
+				OTHER_CFLAGS = "-Wno-deprecated-declarations";
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-w",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service.es;
 				PRODUCT_NAME = NuwaStone;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -1090,11 +1114,12 @@
 			buildSettings = {
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YYE5WQ4M88;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NuwaKext/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NuwaKext;
@@ -1105,7 +1130,12 @@
 				MODULE_START = 0;
 				MODULE_STOP = 0;
 				MODULE_VERSION = 1.0.0d1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service.eps;
+				OTHER_CFLAGS = "-Wno-deprecated-declarations";
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-w",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nuwastone.service.es;
 				PRODUCT_NAME = NuwaStone;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;

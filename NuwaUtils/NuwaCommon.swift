@@ -12,8 +12,8 @@ let ClientName      = "NuwaClient"
 let DaemonBundle    = "com.nuwastone.service"
 let ClientBundle    = "com.nuwastone.client"
 
-let SextBundle      = "com.nuwastone.service.eps"
-let KextBundle      = "com.nuwastone.service.eps"
+let SextBundle      = "com.nuwastone.service.es"
+let KextBundle      = "com.nuwastone.service.es"
 let KextService     = "DriverService"
 
 let MainWindowName  = "NuwaStoneMainWindow"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1640"
+   LastUpgradeVersion = "2660"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3A6088DB28A49B0D00061A42"
-               BuildableName = "com.nuwastone.service.eps.systemextension"
+               BuildableName = "com.nuwastone.service.es.systemextension"
                BlueprintName = "NuwaSext"
                ReferencedContainer = "container:NuwaStone.xcodeproj">
             </BuildableReference>
@@ -51,7 +51,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3A6088DB28A49B0D00061A42"
-            BuildableName = "com.nuwastone.service.eps.systemextension"
+            BuildableName = "com.nuwastone.service.es.systemextension"
             BlueprintName = "NuwaSext"
             ReferencedContainer = "container:NuwaStone.xcodeproj">
          </BuildableReference>
