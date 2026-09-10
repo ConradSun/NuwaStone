@@ -111,11 +111,15 @@ class ClientManager {
     }
     
     func replyAuthEvent(message: UnsafePointer<es_message_t>, result: es_auth_result_t) ->Bool {
-        if message.pointee.action_type != ES_ACTION_TYPE_AUTH {
-            Logger(.Warning, "Event [type: \(typeDict[message.pointee.event_type.rawValue]!)] to be replied is not auth type.")
+        guard esClient != nil else {
+            Logger(.Warning, "ES client has been destroyed, cannot reply auth event.")
             return false
         }
-        
+        if message.pointee.action_type != ES_ACTION_TYPE_AUTH {
+            Logger(.Warning, "Event [type: \(typeDict[message.pointee.event_type.rawValue] ?? "Unknown")] to be replied is not auth type.")
+            return false
+        }
+
         let ret = es_respond_auth_result(esClient!, message, result, false)
         if ret != ES_RESPOND_RESULT_SUCCESS {
             Logger(.Error, "Failed to respond auth event with error [\(ret.rawValue)].")
@@ -144,9 +148,15 @@ class ClientManager {
         
         switch message.pointee.event_type {
         case ES_EVENT_TYPE_AUTH_EXEC:
-            // Allow another esclient starting.
+            // Allow another esclient starting. The message is invalid after replying,
+            // so report the process creation as a notify event instead of dispatching
+            // it through the auth flow which would respond again.
             if message.pointee.event.exec.target.pointee.is_es_client {
                 _ = replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW)
+                nuwaEvent.eventType = .ProcessCreate
+                parseExecEvent(message: message, event: &nuwaEvent)
+                XPCServer.shared.sendNotifyEvent(nuwaEvent)
+                return
             }
             nuwaEvent.eventType = .ProcessCreate
             parseExecEvent(message: message, event: &nuwaEvent)

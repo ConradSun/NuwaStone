@@ -62,6 +62,7 @@ protocol NuwaEventProviderProtocol {
 class NuwaEventInfo: Codable {
     static var userName = [UInt32(0): "root"]
     static var codeSignCache = [String: String]()
+    static let codeSignQueue = DispatchQueue(label: "com.nuwastone.event.codesign", attributes: .concurrent)
     var eventID: UInt64
     var eventType: NuwaEventType
     var eventTime: UInt64
@@ -111,29 +112,35 @@ class NuwaEventInfo: Codable {
     
     /// Called to get code signature for the main process
     func fillCodeSign() {
-        if let cached = NuwaEventInfo.codeSignCache[procPath] {
+        if let cached = NuwaEventInfo.codeSignQueue.sync(execute: { NuwaEventInfo.codeSignCache[procPath] }) {
             props[PropCodeSign] = cached
             return
         }
         let semaphore = DispatchSemaphore(value: 0)
         let wait = DispatchTimeInterval.milliseconds(MaxSignWaitTime)
         var signInfo: [String] = []
-        
+
+        // The fetching runs to completion in background and caches the result,
+        // so the next event for the same path won't wait again even if this caller timed out.
         DispatchQueue.global(qos: .userInitiated).async {
             signInfo = getSignInfoFromPath(self.procPath)
+            if signInfo.count > 0 {
+                NuwaEventInfo.codeSignQueue.async(flags: .barrier) {
+                    NuwaEventInfo.codeSignCache[self.procPath] = signInfo[0]
+                }
+            }
             semaphore.signal()
         }
-        
+
         let timeout = semaphore.wait(timeout: .now() + wait)
         if timeout == .timedOut {
             Logger(.Warning, "Operation timed out while getting code sign for path [\(procPath)].")
             props[PropCodeSign] = ""
             return
         }
-        
+
         if signInfo.count > 0 {
             props[PropCodeSign] = signInfo[0]
-            NuwaEventInfo.codeSignCache[procPath] = signInfo[0]
         }
     }
     

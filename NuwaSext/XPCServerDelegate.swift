@@ -88,10 +88,14 @@ extension XPCServer: NSXPCListenerDelegate {
         
         newConnection.invalidationHandler = {
             self.connection = nil
+            // Flush pending auth events immediately so they don't wait
+            // for the fallback timeout while exec is blocked.
+            ResponseManager.shared.replyAllEvents()
             Logger(.Info, "Manager disconnected.")
         }
         newConnection.interruptionHandler = {
             self.connection = nil
+            ResponseManager.shared.replyAllEvents()
             Logger(.Error, "Manager interrupted.")
         }
         
