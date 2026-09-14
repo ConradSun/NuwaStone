@@ -36,6 +36,15 @@ extension ViewController: NuwaEventProcessProtocol {
             if shouldDisplayEvent(event: event) {
                 displayedItems.append(event)
             }
+
+            // Cap the in-memory event history so long-running monitoring cannot
+            // grow without bound when the periodic clear is disabled.
+            if reportedItems.count > MaxCacheSize {
+                reportedItems.removeFirst(reportedItems.count - MaxCacheSize)
+            }
+            if displayedItems.count > MaxCacheSize {
+                displayedItems.removeFirst(displayedItems.count - MaxCacheSize)
+            }
         }
     }
     

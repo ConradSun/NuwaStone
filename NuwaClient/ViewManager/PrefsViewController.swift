@@ -59,7 +59,7 @@ class PrefsViewController: NSViewController {
         }
         
         updateButton.isEnabled = eventProvider!.isExtConnected
-        
+
         logLevelButton.selectItem(withTag: Int(NuwaLog.logLevel.rawValue))
         auditSwitchButton.selectItem(withTag: (userPref.auditSwitch ? 1 : 0))
         
@@ -72,7 +72,7 @@ class PrefsViewController: NSViewController {
         physicalMemory.stringValue = getPhysicalMemory()
         batteryState.stringValue = getBatteryState()
         
-        intervalSlider.integerValue = Int(userPref.clearDuration) / 60
+        intervalSlider.integerValue = Int(userPref.clearDuration) / (15 * 60)
         sliderValueChanged(intervalSlider)
     }
     
@@ -120,13 +120,22 @@ class PrefsViewController: NSViewController {
     }
     
     @IBAction func sliderValueChanged(_ sender: NSSliderCell) {
-        let timeDuration = intervalSlider.integerValue
-        if timeDuration == 0 {
+        // Each slider tick represents 15 minutes; 0 means never clear.
+        let minutes = intervalSlider.integerValue * 15
+        if minutes == 0 {
             clearInterval.stringValue = "Never"
             return
         }
-        let minDesc = timeDuration == 1 ? "minute" : "minutes"
-        clearInterval.stringValue = "\(timeDuration) \(minDesc)"
+        let hours = minutes / 60
+        let mins = minutes % 60
+        switch (hours, mins) {
+        case (0, _):
+            clearInterval.stringValue = "\(mins)min"
+        case (_, 0):
+            clearInterval.stringValue = "\(hours)h"
+        default:
+            clearInterval.stringValue = "\(hours)h\(mins)min"
+        }
     }
     
     @IBAction func fileButtonClicked(_ sender: NSButton) {
@@ -212,8 +221,8 @@ class PrefsViewController: NSViewController {
         if (status > 0) != userPref.auditSwitch {
             userPref.auditSwitch = (status > 0)
         }
-        if intervalSlider.doubleValue * 60 != userPref.clearDuration {
-            userPref.clearDuration = intervalSlider.doubleValue * 60
+        if intervalSlider.doubleValue * 15 * 60 != userPref.clearDuration {
+            userPref.clearDuration = intervalSlider.doubleValue * 15 * 60
             NotificationCenter.default.post(name: NSNotification.Name(DurationChanged), object: nil)
         }
         ViewController.displayWithWindow(text: "The changes are saved.", style: .informational)

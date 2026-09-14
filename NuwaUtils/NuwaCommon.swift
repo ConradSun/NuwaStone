@@ -56,6 +56,7 @@ let MaxSignWaitTime = 3000  //   ms
 let MaxNEWaitTime   = 30000 //   ms
 let LogFileDirectory = "/var/nuwastone"
 let LogFileSizeLimit: UInt64 = 10 * 1024 * 1024 // bytes, rotate the log file once it reaches this size
+let MaxCacheSize = 10000 // upper bound of in-memory caches (event history, code sign), oldest dropped beyond this
 
 /// Error for ESClient init
 enum ESClientError: Error {

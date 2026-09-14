@@ -132,6 +132,12 @@ class NuwaEventInfo: Codable {
             signInfo = getSignInfoFromPath(self.procPath)
             if signInfo.count > 0 {
                 NuwaEventInfo.codeSignQueue.async(flags: .barrier) {
+                    // Bound the cache so a long-running process does not accumulate
+                    // an entry for every path it ever sees. Clearing only forces a
+                    // re-fetch later, it does not affect correctness.
+                    if NuwaEventInfo.codeSignCache.count >= MaxCacheSize {
+                        NuwaEventInfo.codeSignCache.removeAll()
+                    }
                     NuwaEventInfo.codeSignCache[self.procPath] = signInfo[0]
                 }
             }
