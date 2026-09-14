@@ -80,6 +80,7 @@ class ViewController: NSViewController {
                         controlButton.image = NSImage(named: "start")
                         controlLabel.stringValue = "start"
                         isStarted = false
+                        configMenuStatus(start: true, stop: false)
                     }
                     return
                 }

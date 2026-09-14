@@ -50,8 +50,21 @@ extension ViewController: NuwaEventProcessProtocol {
     }
     
     func handleBrokenConnection() {
-        DispatchQueue.main.sync {
-            controlButtonClicked(controlButton)
+        DispatchQueue.main.async { [self] in
+            // Reset to the stopped state only; reusing controlButtonClicked here
+            // would restart monitoring and bounce the start/stop state endlessly.
+            guard isStarted else {
+                return
+            }
+            if !eventProvider!.stopProvider() {
+                Logger(.Error, "Failed to stop provider for broken connection.")
+            }
+            controlButton.image = NSImage(named: "start")
+            controlLabel.stringValue = "start"
+            isStarted = false
+            displayTimer.invalidate()
+            clearTimer.invalidate()
+            configMenuStatus(start: true, stop: false)
             ViewController.displayWithWindow(text: "Connection with extension is broken.", style: .critical)
         }
     }

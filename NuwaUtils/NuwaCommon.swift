@@ -51,6 +51,7 @@ let PropReplyResult = "Reply"
 let MaxIPLength     = 41
 let MaxAuthWaitTime = 15000 //   ms, alert window timeout in nuwaclient, must be shorter than sext fallback
 let MaxAuthFallbackTime = 30000 // ms, sext fallback reply timeout, must leave headroom before kernel auth deadline
+let MaxConnectWaitTime = 10000 // ms, sext handshake timeout in nuwaclient
 let MaxSignWaitTime = 3000  //   ms
 let MaxNEWaitTime   = 30000 //   ms
 

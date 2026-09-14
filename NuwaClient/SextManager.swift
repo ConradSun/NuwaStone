@@ -73,30 +73,40 @@ extension SextManager: NuwaEventProviderProtocol {
     func startProvider() -> Bool {
         let semaphore = DispatchSemaphore(value: 0)
         XPCServer.shared.connectToSext(delegate: self) { success in
-            self.isConnected = success
-            if !success {
-                self.delegate?.handleBrokenConnection()
-            } else {
-                self.sextProxy = XPCServer.shared.connection?.remoteObjectProxy() as? SextXPCProtocol
+            if success {
+                self.sextProxy = XPCServer.shared.connection?.remoteObjectProxyWithErrorHandler({ error in
+                    Logger(.Error, "Sext proxy error [\(error)]")
+                }) as? SextXPCProtocol
             }
+            // Deriving from sextProxy neutralizes stale success replies
+            // after the connection has already been torn down.
+            self.isConnected = success && self.sextProxy != nil
             semaphore.signal()
+        } onDisconnect: {
+            // During the handshake failure handler(false) already covers it;
+            // only an established connection loss resets the UI.
+            guard self.isConnected else {
+                return
+            }
+            self.sextProxy = nil
+            self.isConnected = false
+            self.delegate?.handleBrokenConnection()
         }
-        
+
         // The XPC method is called on the other thread, so we need to wait for the operation to be finished.
-        semaphore.wait()
-        isConnected = sextProxy != nil
+        if semaphore.wait(timeout: .now() + .milliseconds(MaxConnectWaitTime)) == .timedOut {
+            Logger(.Error, "Timeout to wait for connecting the sext.")
+            _ = stopProvider()
+            return false
+        }
         return isConnected
     }
     
     func stopProvider() -> Bool {
-        let conn = XPCServer.shared.connection
-        XPCServer.shared.connection = nil
-        conn?.interruptionHandler = nil
-        conn?.invalidationHandler = nil
-        conn?.invalidate()
+        XPCServer.shared.disconnectFromSext()
         sextProxy = nil
         isConnected = false
-        
+
         return true
     }
     
@@ -112,19 +122,22 @@ extension SextManager: NuwaEventProviderProtocol {
     }
     
     func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool {
-        if eventID == 0 {
+        guard eventID != 0, let proxy = sextProxy else {
             return false
         }
-        sextProxy!.replyAuthEvent(index: eventID, isAllowed: isAllowed)
+        proxy.replyAuthEvent(index: eventID, isAllowed: isAllowed)
         return true
     }
     
     func udpateMuteList(list: [String], type: NuwaMuteType) -> Bool {
+        guard let proxy = sextProxy else {
+            return false
+        }
         var vnodeList = [UInt64]()
         for path in list {
             vnodeList.append(getFileVnodeID(path))
         }
-        sextProxy!.updateMuteList(vnodeID: vnodeList, type: type.rawValue)
+        proxy.updateMuteList(vnodeID: vnodeList, type: type.rawValue)
         return true
     }
 }
