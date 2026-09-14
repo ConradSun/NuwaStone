@@ -290,8 +290,12 @@ func getSignInfoFromPath(_ path: String) -> [String] {
 /// - Parameter path: File path
 /// - Returns: Vnode ID
 func getFileVnodeID(_ path: String) -> UInt64 {
+    guard let cPath = path.cString(using: .utf8) else {
+        Logger(.Warning, "Failed to convert path [\(path)] for vnodeID.")
+        return 0
+    }
     var fileStat = stat()
-    let result = stat(path.cString(using: .utf8), &fileStat)
+    let result = stat(cPath, &fileStat)
     if result != 0 {
         Logger(.Warning, "Failed to stat file [\(path)] for vnodeID, errno: \(errno)")
         return 0

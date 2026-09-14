@@ -63,6 +63,7 @@ class NuwaEventInfo: Codable {
     static var userName = [UInt32(0): "root"]
     static var codeSignCache = [String: String]()
     static let codeSignQueue = DispatchQueue(label: "com.nuwastone.event.codesign", attributes: .concurrent)
+    static let userNameQueue = DispatchQueue(label: "com.nuwastone.event.username", attributes: .concurrent)
     var eventID: UInt64
     var eventType: NuwaEventType
     var eventTime: UInt64
@@ -104,10 +105,15 @@ class NuwaEventInfo: Codable {
     /// Called to set user name with uid
     /// - Parameter uid: user ID, e.g. 0 is uid for root
     func setUserName(uid: uid_t) {
-        if NuwaEventInfo.userName[uid] == nil {
-            NuwaEventInfo.userName[uid] = getNameFromUid(uid)
+        let name = NuwaEventInfo.userNameQueue.sync(flags: .barrier) { () -> String in
+            if let cached = NuwaEventInfo.userName[uid] {
+                return cached
+            }
+            let name = getNameFromUid(uid)
+            NuwaEventInfo.userName[uid] = name
+            return name
         }
-        user = NuwaEventInfo.userName[uid]!
+        user = name
     }
     
     /// Called to get code signature for the main process

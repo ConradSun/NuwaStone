@@ -64,15 +64,19 @@ class ResponseManager {
 
     /// Called to reply all events in queue
     func replyAllEvents() {
-        dictQueue.sync(flags: .barrier) {
-            for (index, message) in self.underwayEvent {
-                let decision = ES_AUTH_RESULT_ALLOW
-                if !ClientManager.shared.replyAuthEvent(message: message, result: decision) {
-                    Logger(.Error, "Failed to reply auth event [index: \(index)].")
-                }
-                es_release_message(message)
-            }
+        // Take a snapshot under the lock, then respond outside it so slow XPC
+        // replies do not block other auth-event bookkeeping.
+        let pending = dictQueue.sync(flags: .barrier) { () -> [UInt64: UnsafePointer<es_message_t>] in
+            let events = self.underwayEvent
             self.underwayEvent.removeAll()
+            return events
+        }
+
+        for (index, message) in pending {
+            if !ClientManager.shared.replyAuthEvent(message: message, result: ES_AUTH_RESULT_ALLOW) {
+                Logger(.Error, "Failed to reply auth event [index: \(index)].")
+            }
+            es_release_message(message)
         }
     }
 }

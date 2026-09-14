@@ -218,13 +218,14 @@ extension ViewController {
     func setupDisplayTimer() {
         displayTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [self] _ in
             reloadEventInfo()
+            // Take a consistent snapshot of the counters on the event queue,
+            // then draw on the main thread.
+            let counts = eventQueue.sync { eventCount }
             // Only update for specific event types (exclude DisplayAll)
             for index in 1..<DisplayMode.allCases.count {
-                DispatchQueue.main.async(flags: .barrier) { [self] in
-                    // index-1: 0=Process, 1=File, 2=Network
-                    graphView.addPointToLine(CGFloat(eventCount[index]-eventCountCopy[index]), index: index-1)
-                    eventCountCopy[index] = eventCount[index]
-                }
+                // index-1: 0=Process, 1=File, 2=Network
+                graphView.addPointToLine(CGFloat(counts[index]-eventCountCopy[index]), index: index-1)
+                eventCountCopy[index] = counts[index]
             }
             graphView.needsDisplay = true
         })
@@ -311,15 +312,10 @@ extension ViewController {
     }
     
     func refreshDisplayedEvents() {
-        eventQueue.async(flags: .barrier) {
+        eventQueue.sync(flags: .barrier) {
             self.displayedItems.removeAll()
-        }
-        
-        for event in reportedItems {
-            if shouldDisplayEvent(event: event) {
-                eventQueue.async(flags: .barrier) {
-                    self.displayedItems.append(event)
-                }
+            for event in self.reportedItems where self.shouldDisplayEvent(event: event) {
+                self.displayedItems.append(event)
             }
         }
         reloadEventInfo()

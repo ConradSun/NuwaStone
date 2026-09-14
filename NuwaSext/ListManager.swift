@@ -14,50 +14,57 @@ class ListManager {
     private var denyExecList = Set<UInt64>()
     private var filePathsForFileMute = Set<UInt64>()
     private var procPathsForFileMute = Set<UInt64>()
-    
+    // Lists are written from the XPC queue and read from the ES event queue,
+    // so guard them with a concurrent queue: reads run in parallel, updates are barriers.
+    private let listQueue = DispatchQueue(label: "com.nuwastone.sext.listqueue", attributes: .concurrent)
+
     func updateAuthProcList(vnodeID: [UInt64], type: NuwaMuteType) {
-        if type == .AllowProcExec {
-            allowExecList.removeAll()
-            for vnode in vnodeID {
-                allowExecList.update(with: vnode)
-            }
-        } else {
-            denyExecList.removeAll()
-            for vnode in vnodeID {
-                denyExecList.update(with: vnode)
+        listQueue.async(flags: .barrier) {
+            if type == .AllowProcExec {
+                self.allowExecList.removeAll()
+                for vnode in vnodeID {
+                    self.allowExecList.update(with: vnode)
+                }
+            } else {
+                self.denyExecList.removeAll()
+                for vnode in vnodeID {
+                    self.denyExecList.update(with: vnode)
+                }
             }
         }
     }
-    
+
     func updateFilterFileList(vnodeID: [UInt64], type: NuwaMuteType) {
-        if type == .FilterFileByFilePath {
-            filePathsForFileMute.removeAll()
-            for vnode in vnodeID {
-                filePathsForFileMute.update(with: vnode)
-            }
-        } else {
-            procPathsForFileMute.removeAll()
-            for vnode in vnodeID {
-                procPathsForFileMute.update(with: vnode)
+        listQueue.async(flags: .barrier) {
+            if type == .FilterFileByFilePath {
+                self.filePathsForFileMute.removeAll()
+                for vnode in vnodeID {
+                    self.filePathsForFileMute.update(with: vnode)
+                }
+            } else {
+                self.procPathsForFileMute.removeAll()
+                for vnode in vnodeID {
+                    self.procPathsForFileMute.update(with: vnode)
+                }
             }
         }
     }
-    
+
     func shouldAllowProcExec(vnodeID: UInt64) -> Bool? {
-        if allowExecList.contains(vnodeID) {
-            return true
-        } else if denyExecList.contains(vnodeID) {
-            return false
-        } else {
-            return nil
+        return listQueue.sync {
+            if allowExecList.contains(vnodeID) {
+                return true
+            } else if denyExecList.contains(vnodeID) {
+                return false
+            } else {
+                return nil
+            }
         }
     }
-    
+
     func shouldAbandonFileEvent(fileVnodeID: UInt64, procVnodeID: UInt64) -> Bool {
-        if filePathsForFileMute.contains(fileVnodeID) || procPathsForFileMute.contains(procVnodeID) {
-            return true
+        return listQueue.sync {
+            filePathsForFileMute.contains(fileVnodeID) || procPathsForFileMute.contains(procVnodeID)
         }
-        
-        return false
     }
 }

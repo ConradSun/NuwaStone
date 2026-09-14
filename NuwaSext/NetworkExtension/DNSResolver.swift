@@ -94,6 +94,10 @@ class DNSResolver {
         var occupyCount = 0
         
         if originData[currentSite] == offsetSymbol {
+            guard currentSite + 1 < originData.count else {
+                Logger(.Warning, "Domain name is truncated.")
+                return false
+            }
             occupyCount = 2
             currentSite = Int(originData[currentSite + 1])
             Logger(.Debug, "Domain address is offseted.")
