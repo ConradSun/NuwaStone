@@ -45,12 +45,14 @@ struct NuwaLog {
 class FileLogger {
     static let shared = FileLogger()
 
-    /// Stop retrying file logging after this many consecutive failures.
-    private let maxFailures = 10
-
+    // Serializes appends so log lines are never interleaved or lost.
     private let queue = DispatchQueue(label: "com.nuwastone.filelogger")
+    // Runs the (potentially slow) gzip step off the append path.
+    private let compressQueue = DispatchQueue(label: "com.nuwastone.logcompress", qos: .utility)
+
     private let fileManager = FileManager.default
-    private var failureCount = 0
+    // Whether the log directory has been created successfully; avoids re-checking per line.
+    private var directoryReady = false
 
     private let lineTimestamp: DateFormatter = {
         let formatter = DateFormatter()
@@ -66,10 +68,8 @@ class FileLogger {
         return formatter
     }()
 
-    private init() {}
-
-    /// Map each target to a stable log file name (no extension).
-    private var logName: String {
+    // Map each target to a stable log file name (no extension), resolved once.
+    private lazy var logName: String = {
         switch Bundle.main.bundleIdentifier?.lowercased() {
         case "com.nuwastone.client":     return "nuwaclient"
         case "com.nuwastone.service":    return "nuwaservice"
@@ -80,27 +80,26 @@ class FileLogger {
                 .replacingOccurrences(of: ".", with: "_")
             return name.isEmpty ? "nuwa" : name
         }
-    }
+    }()
 
-    private var activePath: String {
+    private lazy var activePath: String = {
         "\(LogFileDirectory)/\(logName).log"
-    }
+    }()
+
+    private init() {}
 
     func write(level: NuwaLogLevel, file: String, lineNumber: Int, message: String) {
         queue.sync {
-            guard failureCount < maxFailures else { return }
-            do {
-                try append(level: level, file: file, lineNumber: lineNumber, message: message)
-                failureCount = 0
-            } catch {
-                failureCount += 1
-            }
+            append(level: level, file: file, lineNumber: lineNumber, message: message)
         }
     }
 
-    private func append(level: NuwaLogLevel, file: String, lineNumber: Int, message: String) throws {
-        try fileManager.createDirectory(atPath: LogFileDirectory, withIntermediateDirectories: true,
-                                        attributes: [.posixPermissions: 0o1777])
+    private func append(level: NuwaLogLevel, file: String, lineNumber: Int, message: String) {
+        do {
+            try prepareDirectory()
+        } catch {
+            return
+        }
 
         if !fileManager.fileExists(atPath: activePath) {
             fileManager.createFile(atPath: activePath, contents: nil, attributes: nil)
@@ -108,15 +107,23 @@ class FileLogger {
 
         let timestamp = lineTimestamp.string(from: Date())
         let line = "\(timestamp) [\(level)] \(file): \(lineNumber) [-] \(message)\n"
-        let handle = try FileHandle(forWritingTo: URL(fileURLWithPath: activePath))
+        guard let handle = try? FileHandle(forWritingTo: URL(fileURLWithPath: activePath)) else { return }
         defer { handle.closeFile() }
         handle.seekToEndOfFile()
-        handle.write(line.data(using: .utf8) ?? Data())
+        handle.write(Data(line.utf8))
 
         rotateIfNeeded()
     }
 
-    /// Rename + gzip the active file once it reaches the size limit.
+    /// Create the shared log directory once, writable by every Nuwa process (sticky 1777).
+    private func prepareDirectory() throws {
+        guard !directoryReady else { return }
+        try fileManager.createDirectory(atPath: LogFileDirectory, withIntermediateDirectories: true,
+                                        attributes: [.posixPermissions: 0o1777])
+        directoryReady = true
+    }
+
+    /// Rename the active file once it reaches the size limit, then compress it in the background.
     private func rotateIfNeeded() {
         guard let attrs = try? fileManager.attributesOfItem(atPath: activePath),
               let size = attrs[.size] as? NSNumber,
@@ -125,22 +132,44 @@ class FileLogger {
         }
 
         let stamped = "\(LogFileDirectory)/\(logName)-\(archiveTimestamp.string(from: Date())).log"
-        do {
-            try fileManager.moveItem(atPath: activePath, toPath: stamped)
-        } catch {
-            return
+        guard (try? fileManager.moveItem(atPath: activePath, toPath: stamped)) != nil else { return }
+        compressQueue.async { [weak self] in
+            self?.gzipFile(atPath: stamped)
         }
-        gzipFile(atPath: stamped)
     }
 
-    /// Compress a rotated log file into a standard gzip archive, then drop the original.
+    /// Compress a rotated log into a standard gzip archive; delete the original only on success.
     private func gzipFile(atPath path: String) {
         guard let data = fileManager.contents(atPath: path), !data.isEmpty else { return }
 
-        guard let gz = gzopen(path + ".gz", "wb") else { return }
-        defer { gzclose(gz) }
-        data.withUnsafeBytes { buffer in
-            _ = gzwrite(gz, buffer.baseAddress, UInt32(buffer.count))
+        // Write to a temp file first: a crash or exit mid-compression then leaves no
+        // half-written .gz behind, and the original .log is only removed once the
+        // archive is complete and valid.
+        let tempPath = path + ".gz.tmp"
+        guard let gz = gzopen(tempPath, "wb") else { return }
+        let written = data.withUnsafeBytes { buffer -> Int in
+            // gzwrite takes a UInt32 length, so feed it in chunks to avoid truncation.
+            var offset = 0
+            var total = 0
+            let bytes = buffer.bindMemory(to: UInt8.self)
+            while offset < bytes.count {
+                let chunk = min(bytes.count - offset, 1 << 20)
+                let n = Int(gzwrite(gz, bytes.baseAddress! + offset, UInt32(chunk)))
+                guard n > 0 else { break }
+                total += n
+                offset += n
+            }
+            return total
+        }
+        let closed = gzclose(gz)
+
+        guard written == data.count, closed == Z_OK else {
+            try? fileManager.removeItem(atPath: tempPath)
+            return
+        }
+        guard (try? fileManager.moveItem(atPath: tempPath, toPath: path + ".gz")) != nil else {
+            try? fileManager.removeItem(atPath: tempPath)
+            return
         }
         try? fileManager.removeItem(atPath: path)
     }
@@ -158,6 +187,6 @@ func Logger(_ level: NuwaLogLevel, _ message: Any..., file: String = #file, line
     }
     let fileName = (file as NSString).lastPathComponent
     let msg = message.map { "\($0)" }.joined(separator: " ")
-    NSLog("[\(level)] \(fileName): \(lineNumber) [-] \(msg)")
+    NSLog("%@", "[\(level)] \(fileName): \(lineNumber) [-] \(msg)")
     FileLogger.shared.write(level: level, file: fileName, lineNumber: lineNumber, message: msg)
 }

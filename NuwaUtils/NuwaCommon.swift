@@ -55,7 +55,7 @@ let MaxConnectWaitTime = 10000 // ms, sext handshake timeout in nuwaclient
 let MaxSignWaitTime = 3000  //   ms
 let MaxNEWaitTime   = 30000 //   ms
 let LogFileDirectory = "/var/nuwastone"
-let LogFileSizeLimit: UInt64 = 20 * 1024 * 1024 // bytes, rotate the log file once it reaches this size
+let LogFileSizeLimit: UInt64 = 10 * 1024 * 1024 // bytes, rotate the log file once it reaches this size
 
 /// Error for ESClient init
 enum ESClientError: Error {
@@ -226,22 +226,46 @@ func getNameFromUid(_ uid: uid_t) -> String {
     return String(cString: name)
 }
 
+/// Translate a POSIX/OSStatus code into a readable description for logs.
+/// - Parameter status: Raw status returned by a Security/POSIX API
+/// - Returns: Human readable message, or the numeric value if unavailable
+func secErrDesc(_ status: Int32) -> String {
+    if status > 100000, let code = POSIXErrorCode(rawValue: status - 100000) {
+        return POSIXError(code).localizedDescription
+    }
+    if let message = SecCopyErrorMessageString(status, nil) {
+        return message as String
+    }
+    return "\(status)"
+}
+
 /// Called to get process codesign by process path
 /// - Parameter path: Process path
 /// - Returns: Code signature
 func getSignInfoFromPath(_ path: String) -> [String] {
+    // Static code signing only applies to regular files
+    guard !path.isEmpty else {
+        Logger(.Debug, "Skip code signing for empty process path.")
+        return []
+    }
+    if let type = try? FileManager.default.attributesOfItem(atPath: path)[.type] as? FileAttributeType,
+       type != .typeRegular {
+        Logger(.Debug, "Skip code signing for non-regular file [\(path)] type [\(type.rawValue)].")
+        return []
+    }
+
     let fileUrl = URL(fileURLWithPath: path)
     var secCode: SecStaticCode?
     var status = SecStaticCodeCreateWithPath(fileUrl as CFURL, SecCSFlags(rawValue: 0), &secCode)
     if status != errSecSuccess || secCode == nil {
-        Logger(.Warning, "Failed to create static signed code for [\(path)] with error [\(status)].")
+        Logger(.Warning, "Failed to create static signed code for [\(path)] with error [\(status): \(secErrDesc(status))].")
         return []
     }
-    
+
     var secDict: CFDictionary?
     status = SecCodeCopySigningInformation(secCode!, SecCSFlags(rawValue: kSecCSSigningInformation), &secDict)
     if status != errSecSuccess || secDict == nil {
-        Logger(.Warning, "Failed to copy signed info for [\(path)] with error [\(status)].")
+        Logger(.Warning, "Failed to copy signed info for [\(path)] with error [\(status): \(secErrDesc(status))].")
         return []
     }
     let signedDict = secDict! as NSDictionary
