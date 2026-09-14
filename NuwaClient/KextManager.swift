@@ -134,7 +134,7 @@ class KextManager {
 extension KextManager {
     private func getString<T>(tuple: T) -> String {
         let pathStr = withUnsafePointer(to: tuple) { pointer in
-            pointer.withMemoryRebound(to: UInt8.self, capacity: MemoryLayout.size(ofValue: pointer)) { ptr in
+            pointer.withMemoryRebound(to: UInt8.self, capacity: MemoryLayout<T>.size) { ptr in
                 String(cString: ptr)
             }
         }

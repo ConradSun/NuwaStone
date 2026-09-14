@@ -24,8 +24,8 @@ class ContentFilter: NEFilterDataProvider {
         let filterSettings = NEFilterSettings(rules: [ipv4LocalFilterRule, ipv6LocalFilterRule, normalFilterRule], defaultAction: .allow)
         
         apply(filterSettings) { error in
-            if error != nil {
-                Logger(.Error, "Failed to apply filter settings [\(error!)]")
+            if let error = error {
+                Logger(.Error, "Failed to apply filter settings [\(error)]")
             }
             completionHandler(error)
         }

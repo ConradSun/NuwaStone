@@ -28,14 +28,14 @@ class UpdateViewController: NSViewController {
         
         DispatchQueue.global().async { [self] in
             var latestVersion = String()
-            let currentVersion = Bundle.main.object(forInfoDictionaryKey: VersionInfoKey) as! String
+            let currentVersion = Bundle.main.object(forInfoDictionaryKey: VersionInfoKey) as? String ?? "unknown"
             
             initCheckTask()
             if let checkResult = launchCheckTask() {
                 let contentList = checkResult.split(separator: "\r\n")
                 for contentItem in contentList {
                     if contentItem.contains("location") {
-                        let tag = contentItem.split(separator: "/").last!
+                        guard let tag = contentItem.split(separator: "/").last else { continue }
                         if tag.first == "v" {
                             Logger(.Info, "The latest version is \(tag).")
                             latestVersion = tag.dropFirst().lowercased()
@@ -48,9 +48,8 @@ class UpdateViewController: NSViewController {
                 setupInfoWindow(latestVersion: latestVersion, currentVersion: currentVersion)
                 view.window?.close()
                 let resp = checkInfoWindow?.runModal()
-                if resp == .alertSecondButtonReturn {
-                    let downloadAddr = URL(string: PackageURL)
-                    NSWorkspace.shared.open(downloadAddr!)
+                if resp == .alertSecondButtonReturn, let downloadAddr = URL(string: PackageURL) {
+                    NSWorkspace.shared.open(downloadAddr)
                 }
             }
         }

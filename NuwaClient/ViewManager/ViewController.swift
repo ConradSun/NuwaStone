@@ -269,7 +269,8 @@ extension ViewController {
                 return false
             }
             if event.eventType == .NetAccess {
-                guard let remoteIP = event.props[PropRemoteAddr]!.split(separator: " ").first?.lowercased() else {
+                guard let remoteAddr = event.props[PropRemoteAddr],
+                      let remoteIP = remoteAddr.split(separator: " ").first?.lowercased() else {
                     return false
                 }
                 if userPref.ipAddrsForNetMute.contains(remoteIP) {

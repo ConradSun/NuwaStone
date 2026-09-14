@@ -59,8 +59,17 @@ extension ClientManager {
     }
     
     func parseCreateEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
-        event.eventID = getVnodeID(fileStat: message.pointee.event.create.destination.existing_file.pointee.stat)
-        event.props[PropFilePath] = getString(token: message.pointee.event.create.destination.existing_file.pointee.path)
+        // destination is a union: existing_file only applies when the object was
+        // actually created, otherwise the path has to be built from new_path.
+        let destination = message.pointee.event.create.destination
+        if message.pointee.event.create.destination_type == ES_DESTINATION_TYPE_EXISTING_FILE {
+            event.eventID = getVnodeID(fileStat: destination.existing_file.pointee.stat)
+            event.props[PropFilePath] = getString(token: destination.existing_file.pointee.path)
+        } else {
+            let dir = getString(token: destination.new_path.dir.pointee.path)
+            let name = getString(token: destination.new_path.filename)
+            event.props[PropFilePath] = "\(dir)/\(name)"
+        }
     }
     
     func parseUnlinkEvent(message: UnsafePointer<es_message_t>, event: inout NuwaEventInfo) {
