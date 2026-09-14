@@ -54,6 +54,8 @@ let MaxAuthFallbackTime = 30000 // ms, sext fallback reply timeout, must leave h
 let MaxConnectWaitTime = 10000 // ms, sext handshake timeout in nuwaclient
 let MaxSignWaitTime = 3000  //   ms
 let MaxNEWaitTime   = 30000 //   ms
+let LogFileDirectory = "/var/nuwastone"
+let LogFileSizeLimit: UInt64 = 20 * 1024 * 1024 // bytes, rotate the log file once it reaches this size
 
 /// Error for ESClient init
 enum ESClientError: Error {
