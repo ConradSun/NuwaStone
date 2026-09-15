@@ -70,12 +70,6 @@ extension XPCConnection: NSXPCListenerDelegate {
         let peerName = getMachServiceName(from: peerBundle)
         return peerName == ClientBundle
     }
-    
-    private func getMachServiceName(from bundle: Bundle) -> String {
-        let clientKeys = bundle.object(forInfoDictionaryKey: ClientName) as? [String: Any]
-        let machServiceName = clientKeys?[MachServiceKey] as? String
-        return machServiceName ?? ""
-    }
 }
 
 extension XPCConnection: DaemonXPCProtocol {

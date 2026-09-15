@@ -49,11 +49,7 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if #available(macOS 11.0, *) {
-            eventProvider = SextManager.shared
-        } else {
-            eventProvider = KextManager.shared
-        }
+        eventProvider = makeEventProvider()
         eventProvider!.processDelegate = self
         
         eventView.delegate = self
@@ -209,10 +205,10 @@ extension ViewController {
     }
     
     func initMutePaths() {
-        _ = eventProvider!.udpateMuteList(list: userPref.allowExecList, type: .AllowProcExec)
-        _ = eventProvider!.udpateMuteList(list: userPref.denyExecList, type: .DenyProcExec)
-        _ = eventProvider!.udpateMuteList(list: userPref.filePathsForFileMute, type: .FilterFileByFilePath)
-        _ = eventProvider!.udpateMuteList(list: userPref.procPathsForFileMute, type: .FilterFileByProcPath)
+        _ = eventProvider!.updateMuteList(list: userPref.allowExecList, type: .AllowProcExec)
+        _ = eventProvider!.updateMuteList(list: userPref.denyExecList, type: .DenyProcExec)
+        _ = eventProvider!.updateMuteList(list: userPref.filePathsForFileMute, type: .FilterFileByFilePath)
+        _ = eventProvider!.updateMuteList(list: userPref.procPathsForFileMute, type: .FilterFileByProcPath)
     }
     
     func setupDisplayTimer() {

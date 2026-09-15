@@ -97,7 +97,7 @@ class UpdateViewController: NSViewController {
             checkInfoWindow?.informativeText = "NuwaStone \(currentVersion) is the latest version."
         } else {
             checkInfoWindow?.messageText = "You're out-of-date!"
-            checkInfoWindow?.informativeText = "Newer version \(latestVersion) is currently avaliable."
+            checkInfoWindow?.informativeText = "Newer version \(latestVersion) is currently available."
             checkInfoWindow?.addButton(withTitle: "Ignore")
             checkInfoWindow?.addButton(withTitle: "Update")
         }

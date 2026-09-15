@@ -70,8 +70,8 @@ func getAvailableRAM() -> String {
         return DeviceInfoConst.unknown
     }
     let freeSpace = Double(freeSize) / (1024*1024*1024.0)
-    let avaliableMem = String(format: "%.2f G", freeSpace)
-    return avaliableMem
+    let availableMem = String(format: "%.2f G", freeSpace)
+    return availableMem
 }
 
 func getBatteryState() -> String {

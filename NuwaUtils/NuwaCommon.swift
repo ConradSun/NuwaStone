@@ -227,6 +227,15 @@ func getNameFromUid(_ uid: uid_t) -> String {
     return String(cString: name)
 }
 
+/// Called to get mach service name
+/// - Parameter bundle: APP bundle
+/// - Returns: Mach service name
+func getMachServiceName(from bundle: Bundle) -> String {
+    let clientKeys = bundle.object(forInfoDictionaryKey: ClientName) as? [String: Any]
+    let machServiceName = clientKeys?[MachServiceKey] as? String
+    return machServiceName ?? ""
+}
+
 /// Translate a POSIX/OSStatus code into a readable description for logs.
 /// - Parameter status: Raw status returned by a Security/POSIX API
 /// - Returns: Human readable message, or the numeric value if unavailable

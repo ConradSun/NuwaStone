@@ -26,11 +26,7 @@ class AlertWindowController: NSWindowController {
     override func windowDidLoad() {
         super.windowDidLoad()
         
-        if #available(macOS 11.0, *) {
-            eventProvider = SextManager.shared
-        } else {
-            eventProvider = KextManager.shared
-        }
+        eventProvider = makeEventProvider()
         
         let icon = NSWorkspace.shared.icon(forFile: authEvent!.procPath)
         icon.size = NSMakeSize(96, 96)
@@ -64,7 +60,7 @@ class AlertWindowController: NSWindowController {
                 list.append(contentsOf: userPref.denyExecList)
                 userPref.denyExecList = list
             }
-            _ = eventProvider!.udpateMuteList(list: list, type: muteType)
+            _ = eventProvider!.updateMuteList(list: list, type: muteType)
         }
         window?.close()
         authEvent = nil

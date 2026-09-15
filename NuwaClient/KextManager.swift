@@ -12,6 +12,7 @@ class KextManager {
     private var notificationPort: IONotificationPortRef?
     private let authEventQueue = DispatchQueue(label: "com.nuwastone.client.authqueue")
     private let notifyEventQueue = DispatchQueue(label: "com.nuwastone.client.notifyqueue")
+    private let connectSemaphore = DispatchSemaphore(value: 0)
     private lazy var proxy = XPCConnection.shared.connection?.remoteObjectProxy as? DaemonXPCProtocol
     static let shared = KextManager()
     var connection: io_connect_t = 0
@@ -43,6 +44,7 @@ class KextManager {
             IOObjectRelease(nextService)
             IONotificationPortDestroy(notificationPort)
             isConnected = true
+            connectSemaphore.signal()
             Logger(.Info, "Connected with kext successfully.")
         } while true
     }
@@ -98,10 +100,6 @@ class KextManager {
     }
     
     func listenRequestsForType(type: UInt32) {
-        while !isConnected {
-            usleep(1000000)
-        }
-        
         DispatchQueue.global().async {
             let recvPort = IODataQueueAllocateNotificationPort()
             if recvPort == MACH_PORT_NULL {
@@ -259,7 +257,14 @@ extension KextManager: NuwaEventProviderProtocol {
         
         Logger(.Info, "Wait for kext to be connected.")
         waitForDriver(matchingDict: service)
-        
+
+        // waitForDriver signals on the connect path; if the kext is not loaded yet
+        // the notification fires later, so bound the wait and let the user retry.
+        if connectSemaphore.wait(timeout: .now() + .milliseconds(MaxConnectWaitTime)) == .timedOut {
+            Logger(.Error, "Timeout to wait for connecting the kext.")
+            return false
+        }
+
         listenRequestsForType(type: kQueueTypeAuth.rawValue)
         listenRequestsForType(type: kQueueTypeNotify.rawValue)
         return isConnected
@@ -285,7 +290,7 @@ extension KextManager: NuwaEventProviderProtocol {
             Logger(.Error, "Failed to set log level for kext [\(String.init(format: "0x%x", result))].")
             return false
         }
-        Logger(.Info, "Log level is setted to \(NuwaLog.logLevel)")
+        Logger(.Info, "Log level is set to \(NuwaLog.logLevel)")
         return true
     }
     
@@ -309,7 +314,7 @@ extension KextManager: NuwaEventProviderProtocol {
         return true
     }
     
-    func udpateMuteList(list: [String], type: NuwaMuteType) -> Bool {
+    func updateMuteList(list: [String], type: NuwaMuteType) -> Bool {
         var result = KERN_SUCCESS
         var muteInfo = NuwaKextMuteInfo()
         muteInfo.muteType.rawValue = UInt32(type.rawValue)

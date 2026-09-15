@@ -122,15 +122,6 @@ extension XPCServer: NSXPCListenerDelegate {
         let peerName = getMachServiceName(from: peerBundle)
         return peerName == ClientBundle
     }
-    
-    /// Called to get mach service name
-    /// - Parameter bundle: APP bundle
-    /// - Returns: Mach service name
-    private func getMachServiceName(from bundle: Bundle) -> String {
-        let clientKeys = bundle.object(forInfoDictionaryKey: ClientName) as? [String: Any]
-        let machServiceName = clientKeys?[MachServiceKey] as? String
-        return machServiceName ?? ""
-    }
 }
 
 extension XPCServer: SextXPCProtocol {
@@ -141,7 +132,7 @@ extension XPCServer: SextXPCProtocol {
     
     func setLogLevel(_ level: UInt8) {
         NuwaLog.logLevel = NuwaLogLevel.from(level)
-        Logger(.Info, "Log level is setted to \(NuwaLog.logLevel)")
+        Logger(.Info, "Log level is set to \(NuwaLog.logLevel)")
     }
     
     func replyAuthEvent(index: UInt64, isAllowed: Bool) {

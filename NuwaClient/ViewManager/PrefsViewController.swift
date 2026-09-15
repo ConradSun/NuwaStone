@@ -38,7 +38,7 @@ class PrefsViewController: NSViewController {
     @IBOutlet weak var updateButton: NSButtonCell!
     
     private var userPref = Preferences()
-    private var isUpButtonChoosed = true
+    private var isUpButtonChosen = true
     private var muteChoice = MuteChoice.FilterFile
     private var muteType = NuwaMuteType.TypeNil
     private var eventProvider: NuwaEventProviderProtocol?
@@ -52,12 +52,8 @@ class PrefsViewController: NSViewController {
         upRadioButton.state = .off
         downRadioButton.state = .off
         
-        if #available(macOS 11.0, *) {
-            eventProvider = SextManager.shared
-        } else {
-            eventProvider = KextManager.shared
-        }
-        
+        eventProvider = makeEventProvider()
+
         updateButton.isEnabled = eventProvider!.isExtConnected
 
         logLevelButton.selectItem(withTag: Int(NuwaLog.logLevel.rawValue))
@@ -94,11 +90,11 @@ class PrefsViewController: NSViewController {
     private func displayPrefList() {
         switch muteChoice {
         case .FilterFile:
-            muteType = isUpButtonChoosed ? .FilterFileByFilePath : .FilterFileByProcPath
+            muteType = isUpButtonChosen ? .FilterFileByFilePath : .FilterFileByProcPath
         case .FilterNetwork:
-            muteType = isUpButtonChoosed ? .FilterNetByProcPath : .FilterNetByIPAddr
+            muteType = isUpButtonChosen ? .FilterNetByProcPath : .FilterNetByIPAddr
         case .MuteProcess:
-            muteType = isUpButtonChoosed ? .AllowProcExec : .DenyProcExec
+            muteType = isUpButtonChosen ? .AllowProcExec : .DenyProcExec
         }
         
         switch muteType {
@@ -167,14 +163,14 @@ class PrefsViewController: NSViewController {
     @IBAction func upButtonClicked(_ sender: NSButton) {
         upRadioButton.state = .on
         downRadioButton.state = .off
-        isUpButtonChoosed = true
+        isUpButtonChosen = true
         displayPrefList()
     }
     
     @IBAction func downButtonClicked(_ sender: NSButton) {
         upRadioButton.state = .off
         downRadioButton.state = .on
-        isUpButtonChoosed = false
+        isUpButtonChosen = false
         displayPrefList()
     }
     
@@ -211,7 +207,7 @@ class PrefsViewController: NSViewController {
             userPref.denyExecList = inputs
         }
         if (muteType != .TypeNil) {
-            _ = eventProvider.udpateMuteList(list: inputs, type: muteType)
+            _ = eventProvider.updateMuteList(list: inputs, type: muteType)
         }
         if level != NuwaLog.logLevel.rawValue {
             let newLevel = NuwaLogLevel.from(UInt8(level))

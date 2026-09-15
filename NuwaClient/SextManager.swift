@@ -117,7 +117,7 @@ extension SextManager: NuwaEventProviderProtocol {
         }
         proxy.setLogLevel(level.rawValue)
         NuwaLog.logLevel = level
-        Logger(.Info, "Log level is setted to \(NuwaLog.logLevel)")
+        Logger(.Info, "Log level is set to \(NuwaLog.logLevel)")
         return true
     }
     
@@ -129,7 +129,7 @@ extension SextManager: NuwaEventProviderProtocol {
         return true
     }
     
-    func udpateMuteList(list: [String], type: NuwaMuteType) -> Bool {
+    func updateMuteList(list: [String], type: NuwaMuteType) -> Bool {
         guard let proxy = sextProxy else {
             return false
         }

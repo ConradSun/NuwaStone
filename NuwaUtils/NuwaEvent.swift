@@ -55,7 +55,7 @@ protocol NuwaEventProviderProtocol {
     func stopProvider() -> Bool
     func setLogLevel(level: NuwaLogLevel) -> Bool
     func replyAuthEvent(eventID: UInt64, isAllowed: Bool) -> Bool
-    func udpateMuteList(list: [String], type: NuwaMuteType) -> Bool
+    func updateMuteList(list: [String], type: NuwaMuteType) -> Bool
 }
 
 /// Event info for sext reporting and NuwaClient displaying

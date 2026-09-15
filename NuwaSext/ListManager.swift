@@ -21,15 +21,9 @@ class ListManager {
     func updateAuthProcList(vnodeID: [UInt64], type: NuwaMuteType) {
         listQueue.async(flags: .barrier) {
             if type == .AllowProcExec {
-                self.allowExecList.removeAll()
-                for vnode in vnodeID {
-                    self.allowExecList.update(with: vnode)
-                }
+                self.allowExecList = Set(vnodeID)
             } else {
-                self.denyExecList.removeAll()
-                for vnode in vnodeID {
-                    self.denyExecList.update(with: vnode)
-                }
+                self.denyExecList = Set(vnodeID)
             }
         }
     }
@@ -37,15 +31,9 @@ class ListManager {
     func updateFilterFileList(vnodeID: [UInt64], type: NuwaMuteType) {
         listQueue.async(flags: .barrier) {
             if type == .FilterFileByFilePath {
-                self.filePathsForFileMute.removeAll()
-                for vnode in vnodeID {
-                    self.filePathsForFileMute.update(with: vnode)
-                }
+                self.filePathsForFileMute = Set(vnodeID)
             } else {
-                self.procPathsForFileMute.removeAll()
-                for vnode in vnodeID {
-                    self.procPathsForFileMute.update(with: vnode)
-                }
+                self.procPathsForFileMute = Set(vnodeID)
             }
         }
     }

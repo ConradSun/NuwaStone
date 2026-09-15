@@ -81,3 +81,12 @@ extension AppDelegate {
         stopMenuItem.isEnabled = stop
     }
 }
+
+/// Resolve the active event provider for the current OS: SExt on 11.0+, Kext on older systems.
+func makeEventProvider() -> NuwaEventProviderProtocol {
+    if #available(macOS 11.0, *) {
+        return SextManager.shared
+    } else {
+        return KextManager.shared
+    }
+}
